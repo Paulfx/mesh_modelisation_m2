@@ -5,7 +5,8 @@
 // ------------------------------------------------------------------------
 
 Mesh::Mesh() {
-    createTetrahedron();
+    //createTetrahedron();
+    std::cout << "open = " << load_off_file("./Documents/cours/m2/geoAlgo/mesh_modelisation/queen.off") << std:: endl;
 }
 
 void Mesh::createTetrahedron() {
@@ -24,6 +25,88 @@ void Mesh::createTetrahedron() {
 
 void Mesh::createPyramid() {
     //TODO manual
+}
+
+/**
+ * Load data from .off file
+ */
+int Mesh::load_off_file(std::string path_to_file) {
+    std::string line;
+    std::ifstream myfile (path_to_file);
+    std::string spaceDelimiter = " ";
+    std::string lineDelimiter = "\n";
+    int nbVertices;
+    int nbFaces;
+    if (myfile.is_open()) {
+
+        /** read first line of file **/
+        getline(myfile, line);
+        nbVertices = atoi(line.substr(0, line.find(spaceDelimiter)).c_str());
+        nbFaces = atoi(line.substr(line.find(spaceDelimiter), line.find(lineDelimiter)).c_str());
+
+        /** read point positions to create vertices **/
+        for (int i = 0; i < nbVertices; i++) {
+            getline(myfile, line);
+            double x = atof(line.substr(0, line.find(spaceDelimiter)).c_str());
+            double y = atof(line.substr(line.find(spaceDelimiter), line.rfind(spaceDelimiter)).c_str());
+            double z = atof(line.substr(line.rfind(spaceDelimiter), line.find(lineDelimiter)).c_str());
+            vertexTab.push_front(Vertex(x, y, z, -1));//-1 -> no info yet
+        }
+
+        /** faces definition + adjacency map construction **/
+
+        std::map<std::pair<VERTEX_INDEX, VERTEX_INDEX>, FACE_INDEX> infoEdges; //map between edge and id of face
+
+        for (int idCurrentFace = 0; idCurrentFace < nbFaces; idCurrentFace++) {
+            getline(myfile, line);
+
+            int vertexId1 = atoi(line.substr(line.find(spaceDelimiter, 1), line.find(spaceDelimiter, 2)).c_str());
+            int vertexId2 = atoi(line.substr(line.find(spaceDelimiter, 2), line.rfind(spaceDelimiter)).c_str());
+            int vertexId3 = atoi(line.substr(line.rfind(spaceDelimiter), line.find(lineDelimiter)).c_str());
+
+            faceTab.push_back(Face(vertexId1, vertexId2, vertexId3, -1, -1, -1));//-1 useless values, need to change constructor
+
+            for (int j = 0; j < 3; j++) { //3 edges by face
+                VERTEX_INDEX v1;
+                VERTEX_INDEX v2;
+                if (j == 0) {
+                    v1 = faceTab[idCurrentFace].v1(); //first vertex of the edge
+                    v2 = faceTab[idCurrentFace].v2(); //second
+
+                } else if (j == 1) {
+                    v1 = faceTab[idCurrentFace].v1();
+                    v2 = faceTab[idCurrentFace].v2();
+                } else {
+                    v1 = faceTab[idCurrentFace].v1();
+                    v2 = faceTab[idCurrentFace].v2();
+                }
+
+                std::pair<VERTEX_INDEX, VERTEX_INDEX> edge (v1, v2); //edge creation
+
+                //map construction, if no entry for the edge (key) in the map, we add it with the FACE_INDEX (value)
+                if (infoEdges.find(edge) != infoEdges.end()) { //find(x) return .end if x doesn't exist in map - NEED TO IMPROVE IN ORDER TO ACCEPT <v1,v2> == <v2,v1>
+                    /** Entry found for this edge in map, so... **/
+
+                    //...set Fi for current face and also ...
+                    unsigned int oppositeToEdge = getOppositeVextex(idCurrentFace, v1, v2);
+                    vertexTab[faceTab[idCurrentFace].v(oppositeToEdge)].setFi(infoEdges[edge]);
+
+                    //...set Fi for opposite face
+                    oppositeToEdge = getOppositeVextex(infoEdges[edge], v1, v2);
+                    vertexTab[faceTab[infoEdges[edge]].v(oppositeToEdge)].setFi(idCurrentFace);
+
+                    //todo: delete edge entry in map
+
+                } else { //edge doesn't exist yet in map
+                    infoEdges[edge] = idCurrentFace; //save id of current face
+                }
+            }
+        }
+        myfile.close();
+        return 0;
+    }
+    else std::cout << "Unable to open file";
+    return -1;
 }
 
 
@@ -60,6 +143,13 @@ void Mesh::resetVertexFaceIndex() {
     currentStartVertexIndex = -1;
     currentNeighborVertex = -1;
     currentNeighborFace = -1;
+}
+
+// return local id of third vertex in face (v1, v2 are global ids)
+unsigned int Mesh::getOppositeVextex(FACE_INDEX f_id, VERTEX_INDEX v1, VERTEX_INDEX v2) {
+    int id1 = faceTab[f_id].getIndexOf(v1);
+    int id2 = faceTab[f_id].getIndexOf(v2);
+    return 3 - (id1 + id2);
 }
 
 // The following functions could be displaced into a module OpenGLDisplayMesh that would include Mesh

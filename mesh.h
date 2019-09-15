@@ -3,6 +3,8 @@
 
 #include <QGLWidget>
 #include <stdlib.h>
+#include <iostream>
+#include <fstream>
 
 #include "mesh_iterators.h" 
 
@@ -42,6 +44,7 @@ public:
     const Point & getPoint() const { return p; }
     //Return incident face
     FACE_INDEX fi() const { return faceIndex; }
+    void setFi(FACE_INDEX fi) { faceIndex = fi; }
 };
 
 
@@ -117,12 +120,15 @@ private:
     void drawSelectedPoints();
     void drawCurrentNeighborFace();
 
+    unsigned int getOppositeVextex(FACE_INDEX f_id, VERTEX_INDEX v1, VERTEX_INDEX v2);
+
 public:
 
     Mesh();
 
     void createTetrahedron();
     void createPyramid();
+    int load_off_file(std::string path_to_file);
 
     unsigned int vertexNb() { return vertexTab.size(); }
     unsigned int faceNb() { return faceTab.size(); }
