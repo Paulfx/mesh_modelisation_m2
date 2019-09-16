@@ -21,8 +21,10 @@ public:
     unsigned int vertexNb() { return _mesh.vertexNb(); }
     unsigned int faceNb() { return _mesh.faceNb(); }
     void setVertexStart(unsigned int vs) { _mesh.setVertexStart(vs); }
-    void nextFace() { _mesh.nextFace(); }
-    void nextVertex() { _mesh.nextVertex(); }
+    void nextFace() { _mesh.nextFace(+1); }
+    void prevFace() { _mesh.nextFace(-1); }
+    void nextVertex() { _mesh.nextVertex(+1); }
+    void prevVertex() { _mesh.nextVertex(-1); }
     int currentFace() { return _mesh.currFace(); }
     int currentStartVertex() { return _mesh.currStartVertex(); }
     int currentVertex() { return _mesh.currVertex(); }

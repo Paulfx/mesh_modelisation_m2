@@ -6,6 +6,8 @@
 
 Mesh::Mesh() {
     createTetrahedron();
+
+    //testLaplacian();
 }
 
 void Mesh::createTetrahedron() {
@@ -35,24 +37,26 @@ void Mesh::setVertexStart(int vs) {
     //Circulator on faces
     fcirc = incident_faces_circulator(vertexTab[vs]);
     //Circulator on neighbor vertices
-    vcirc = Vertices_circulator_begin(vs);
+    vcirc = vertices_circulator_begin(vs);
 
     currentNeighborFace = fcirc.currentFaceIndex;
     currentNeighborVertex = vcirc.currentVertexIndex;
 }
 
 
-void Mesh::nextFace() {
+void Mesh::nextFace(int s) {
     if (currentStartVertexIndex < 0 || 
         currentStartVertexIndex >= vertexTab.size()) return;
-    fcirc++;
+    if (s < 0) fcirc--;
+    else fcirc++;
     currentNeighborFace = fcirc.currentFaceIndex;
 }
 
-void Mesh::nextVertex() {
+void Mesh::nextVertex(int s) {
     if (currentStartVertexIndex < 0 || 
         currentStartVertexIndex >= vertexTab.size()) return;
-    vcirc++;
+    if (s < 0) vcirc--;
+    else vcirc++;
     currentNeighborVertex = vcirc.currentVertexIndex;
 }
 
@@ -65,7 +69,7 @@ void Mesh::resetVertexFaceIndex() {
 // The following functions could be displaced into a module OpenGLDisplayMesh that would include Mesh
 // Draw a vertex
 void glVertexDraw(const Point & p) {
-    glVertex3f(p.x(), p.y(), p.z());
+    glVertex3f(p.x, p.y, p.z);
 }
 
 void glVertexDraw(const Vertex & v) {
@@ -155,4 +159,15 @@ void Mesh::drawMeshWireFrame() {
     drawCurrentNeighborFace();
 
 }
+
+void Mesh::testLaplacian() {
+
+    LaplacianCalc lcalc(this);
+
+    Vertex v0 = vertexTab[0];
+    Vertex v1 = vertexTab[1];
+
+    printf("Cotan : %f\n", lcalc.cotan(v0,v1));
+}
+
 

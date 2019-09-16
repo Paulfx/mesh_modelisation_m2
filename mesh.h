@@ -4,33 +4,35 @@
 #include <QGLWidget>
 #include <stdlib.h>
 
+#include "vec.h"
 #include "mesh_iterators.h" 
+#include "laplacianCalc.h"
 
 
 // ------------------------------------------------------------------------
 //                        POINT
 // ------------------------------------------------------------------------
 
-class Point {
-    double _x;
-    double _y;
-    double _z;
+// class Point {
+//     double _x;
+//     double _y;
+//     double _z;
 
-public:
-    Point():_x(),_y(),_z() {}
-    Point(float x_, float y_, float z_):_x(x_),_y(y_),_z(z_) {}
-    // get
-    double x() const { return _x; }
-    double y() const { return _y; }
-    double z() const { return _z; }
-};
-
-typedef int FACE_INDEX;
-typedef int VERTEX_INDEX;
+// public:
+//     Point():_x(),_y(),_z() {}
+//     Point(float x_, float y_, float z_):_x(x_),_y(y_),_z(z_) {}
+//     // get
+//     double x() const { return _x; }
+//     double y() const { return _y; }
+//     double z() const { return _z; }
+// };
 
 // ------------------------------------------------------------------------
 //                        VERTEX
 // ------------------------------------------------------------------------
+
+typedef int FACE_INDEX;
+typedef int VERTEX_INDEX;
 
 class Vertex {
     Point p;
@@ -131,13 +133,14 @@ public:
     VERTEX_INDEX currVertex() { return currentNeighborVertex; }
 
     void setVertexStart(int vs);
-    void nextFace();
-    void nextVertex();
+    void nextFace(int);
+    void nextVertex(int);
     void resetVertexFaceIndex();
 
     void drawMesh();
     void drawMeshWireFrame();
 
+    void testLaplacian();
 
     //Iterators
     Vertices_iterator vertices_iterator_begin() { 
@@ -153,7 +156,7 @@ public:
         return Faces_circulator(v, this);
     }
 
-    Vertices_circulator Vertices_circulator_begin(const VERTEX_INDEX vi) {
+    Vertices_circulator vertices_circulator_begin(const VERTEX_INDEX vi) {
         return Vertices_circulator(this, vi);
     }
 

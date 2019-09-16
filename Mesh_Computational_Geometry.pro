@@ -16,12 +16,16 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     gldisplaywidget.cpp \
     mesh.cpp \
-    mesh_iterators.cpp
+    mesh_iterators.cpp \
+    vec.cpp \
+    laplacianCalc.cpp
 
 HEADERS  += mainwindow.h \
     gldisplaywidget.h \
     mesh.h \
-    mesh_iterators.h
+    mesh_iterators.h \
+    laplacianCalc.h \
+    vec.h
 
 FORMS    += mainwindow.ui
 

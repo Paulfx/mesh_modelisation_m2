@@ -71,7 +71,7 @@ void GLDisplayWidget::testIterators() {
         
         p = (*vi).getPoint();
 
-        printf("Sommet %d : x=%f, y=%f, z=%f\n", i, p.x(), p.y(), p.z());
+        printf("Sommet %d : x=%f, y=%f, z=%f\n", i, p.x, p.y, p.z);
         i++;
 
         Faces_circulator fcBegin = _mesh.incident_faces_circulator(*vi);

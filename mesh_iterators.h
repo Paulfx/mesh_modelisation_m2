@@ -66,6 +66,7 @@ public:
     Faces_circulator(const Faces_circulator& fc);
 
     Faces_circulator& operator++();
+    Faces_circulator& operator--(int);
     Faces_circulator operator++(int);
     const Face& operator*() const;
     friend bool operator !=(const Faces_circulator&,
@@ -104,14 +105,11 @@ private:
 public:
 
     Vertices_circulator& operator++();
+    Vertices_circulator& operator--(int);
     Vertices_circulator operator++(int);
-
     const Vertex& operator*() const;
-
     friend bool operator !=(const Vertices_circulator&,
                             const Vertices_circulator&);
-
-
     friend bool operator ==(const Vertices_circulator&,
                             const Vertices_circulator&);
 

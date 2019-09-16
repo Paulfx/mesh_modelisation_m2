@@ -56,7 +56,7 @@ void Faces_circulator::update() {
     const Face& frontFaceOfStartVertex = _mesh->faceTab[frontFaceIndexOfStartVertex];
     VERTEX_INDEX nextVertex = frontFaceOfStartVertex.v(startVertexIndex);
     currentFaceIndex = _mesh->vertexTab[nextVertex].fi();
-    startVertexIndex = (startVertexIndex + 1) % 3; 
+    //startVertexIndex = (startVertexIndex + 1) % 3; 
 }
 
 const Face& Faces_circulator::operator*() const {
@@ -64,12 +64,20 @@ const Face& Faces_circulator::operator*() const {
 }
 
 Faces_circulator& Faces_circulator::operator++() {
+    startVertexIndex = (startVertexIndex + 1) % 3;
+    update();
+    return *this;
+}
+
+Faces_circulator& Faces_circulator::operator--(int) {
+    startVertexIndex = (startVertexIndex - 1) % 3;
     update();
     return *this;
 }
 
 Faces_circulator Faces_circulator::operator++(int) {
     Faces_circulator tmp(*this);
+    startVertexIndex = (startVertexIndex + 1) % 3;
     update();
     return tmp;
 }
@@ -123,6 +131,13 @@ const Vertex& Vertices_circulator::operator*() const {
 Vertices_circulator& Vertices_circulator::operator++() {
     //On change de face
     fit++;
+    update();
+    return *this;
+}
+
+Vertices_circulator& Vertices_circulator::operator--(int) {
+    //On change de face
+    fit--;
     update();
     return *this;
 }

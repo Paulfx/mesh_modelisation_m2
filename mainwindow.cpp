@@ -78,3 +78,15 @@ void MainWindow::on_lineEditStartVertex_returnPressed()
     ui->widget->setVertexStart(vs);
     updateTextCurrentIndex();
 }
+
+void MainWindow::on_pbPrevFace_released()
+{
+    ui->widget->prevFace();
+    updateTextCurrentIndex();
+}
+
+void MainWindow::on_pbPrevVertex_released()
+{
+    ui->widget->prevVertex();
+    updateTextCurrentIndex();
+}

@@ -29,6 +29,10 @@ private slots:
 
     void on_lineEditStartVertex_returnPressed();
 
+    void on_pbPrevFace_released();
+
+    void on_pbPrevVertex_released();
+
 private:
     Ui::MainWindow *ui;
 
