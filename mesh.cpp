@@ -12,10 +12,10 @@ Mesh::Mesh() {
 
 void Mesh::createTetrahedron() {
 
-    vertexTab.push_back(Vertex(-0.5,-0.5,-0.5   , 0));
-    vertexTab.push_back(Vertex(0.5,-0.5,-0.5    , 1));
-    vertexTab.push_back(Vertex(0,0.5,-0.5       , 2));
-    vertexTab.push_back(Vertex(0,-0.5,0.5       , 3));
+    vertexTab.push_back(Vertex(-0.5,-0.5,-0.5   , 3));
+    vertexTab.push_back(Vertex(0.5,-0.5,-0.5    , 0));
+    vertexTab.push_back(Vertex(0,0.5,-0.5       , 1));
+    vertexTab.push_back(Vertex(0,-0.5,0.5       , 2));
 
     faceTab.push_back(Face(1,2,3, 1,2,3)); //BCD
     faceTab.push_back(Face(3,2,0, 3,2,0)); //DCA
@@ -35,7 +35,7 @@ void Mesh::setVertexStart(int vs) {
     currentStartVertexIndex = vs;
 
     //Circulator on faces
-    fcirc = incident_faces_circulator(vertexTab[vs]);
+    fcirc = incident_faces_circulator(vs);
     //Circulator on neighbor vertices
     vcirc = vertices_circulator_begin(vs);
 
@@ -47,6 +47,7 @@ void Mesh::setVertexStart(int vs) {
 void Mesh::nextFace(int s) {
     if (currentStartVertexIndex < 0 || 
         currentStartVertexIndex >= vertexTab.size()) return;
+    printf("Next face : %d\n", s);
     if (s < 0) fcirc--;
     else fcirc++;
     currentNeighborFace = fcirc.currentFaceIndex;

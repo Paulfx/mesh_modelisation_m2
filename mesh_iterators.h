@@ -55,8 +55,8 @@ private:
     FACE_INDEX currentFaceIndex;
 
     //Todo ctor affectation + operator
-    Faces_circulator(const Vertex& v, Mesh* mesh);
-    Faces_circulator(VERTEX_INDEX vi, Mesh* mesh);
+    //Faces_circulator(const Vertex& v, Mesh* mesh);
+    Faces_circulator(Mesh* mesh, VERTEX_INDEX vi);
     
 
     void update();

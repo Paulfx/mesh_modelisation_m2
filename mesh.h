@@ -10,24 +10,6 @@
 
 
 // ------------------------------------------------------------------------
-//                        POINT
-// ------------------------------------------------------------------------
-
-// class Point {
-//     double _x;
-//     double _y;
-//     double _z;
-
-// public:
-//     Point():_x(),_y(),_z() {}
-//     Point(float x_, float y_, float z_):_x(x_),_y(y_),_z(z_) {}
-//     // get
-//     double x() const { return _x; }
-//     double y() const { return _y; }
-//     double z() const { return _z; }
-// };
-
-// ------------------------------------------------------------------------
 //                        VERTEX
 // ------------------------------------------------------------------------
 
@@ -36,14 +18,14 @@ typedef int VERTEX_INDEX;
 
 class Vertex {
     Point p;
-    FACE_INDEX faceIndex; //In front
+    FACE_INDEX incidentFace;
 
 public:
-    Vertex(): p(), faceIndex(-1) {}
-    Vertex(float x_, float y_, float z_, FACE_INDEX fi_): p(x_,y_,z_), faceIndex(fi_) {}
+    Vertex(): p(), incidentFace(-1) {}
+    Vertex(float x_, float y_, float z_, FACE_INDEX if_): p(x_,y_,z_), incidentFace(if_) {}
     const Point & getPoint() const { return p; }
     //Return incident face
-    FACE_INDEX fi() const { return faceIndex; }
+    FACE_INDEX getIncidentFace() const { return incidentFace; }
 };
 
 
@@ -54,18 +36,19 @@ public:
 class Face
 {
     VERTEX_INDEX _v[3];
-    FACE_INDEX _f1, _f2, _f3; //INUTILE ?? Redondance
-    //Peut etre on s'est trompé..
-    //Il serait plus logique de stocker l'indice dans _v de chaque vertex
-
+    FACE_INDEX _f[3]; //Face in front of vertex
 public:
 
-    Face(): _f1(), _f2(), _f3() {}
+    Face() {}
     Face(   VERTEX_INDEX v1_, VERTEX_INDEX v2_, VERTEX_INDEX v3_,
-            FACE_INDEX f1_, FACE_INDEX f2_, FACE_INDEX f3_) : _f1(f1_), _f2(f2_), _f3(f3_) {
+            FACE_INDEX f1_, FACE_INDEX f2_, FACE_INDEX f3_) {
         _v[0] = v1_;
         _v[1] = v2_;
         _v[2] = v3_;
+
+        _f[0] = f1_;
+        _f[1] = f2_;
+        _f[2] = f3_;
     }
 
     // Accessors
@@ -74,8 +57,12 @@ public:
     VERTEX_INDEX v3() const { return _v[2]; }
 
     //TODO rename
-    VERTEX_INDEX v(unsigned int i) const {
+    VERTEX_INDEX vertex(unsigned int i) const {
         return _v[i];
+    }
+
+    FACE_INDEX face(unsigned int i) const {
+        return _f[i];
     }
 
     //Peut être pas meilleure solution..
@@ -85,6 +72,11 @@ public:
             if (_v[i] == vi) return i;
         return -1;
     }
+
+    FACE_INDEX getFrontFaceOf(VERTEX_INDEX vi) const {
+        return _f[getIndexOf(vi)];
+    }
+
 };
 
 // ------------------------------------------------------------------------
@@ -98,9 +90,9 @@ class Mesh {
 
 private:
     //Les sommets
-    QVector<Vertex> vertexTab;
+    std::vector<Vertex> vertexTab;
     //Les faces
-    QVector<Face> faceTab;
+    std::vector<Face> faceTab;
 
     //Itérateurs pour le parcours
     Faces_circulator fcirc;
@@ -152,8 +144,12 @@ public:
     }
 
     //TODO use index of vertex??
-    Faces_circulator incident_faces_circulator(const Vertex& v) {
-        return Faces_circulator(v, this);
+    // Faces_circulator incident_faces_circulator(const Vertex& v) {
+    //     return Faces_circulator(v, this);
+    // }
+
+    Faces_circulator incident_faces_circulator(const VERTEX_INDEX vi) {
+        return Faces_circulator(this, vi);
     }
 
     Vertices_circulator vertices_circulator_begin(const VERTEX_INDEX vi) {

@@ -6,7 +6,7 @@
 // ------------------------------------------------------------------------
 
 const Vertex& Vertices_iterator::operator*() const { 
-    return _mesh->vertexTab[_index]; 
+    return _mesh->vertexTab[_index];
 }
 
 Vertices_iterator& Vertices_iterator::operator++() {
@@ -34,16 +34,20 @@ bool operator ==(   const Vertices_iterator& vi1,
 //                        FACES_CIRCULATOR
 // ------------------------------------------------------------------------
 
-Faces_circulator::Faces_circulator(const Vertex& v, Mesh* mesh) : _mesh(mesh), startVertexIndex(0) {
+// Faces_circulator::Faces_circulator(Mesh* mesh, const Vertex& v) : _mesh(mesh), startVertexIndex(0) {
 
-    frontFaceIndexOfStartVertex = v.fi(); //Indice de la face en face de v
+//     //Indice de la face en face de v
+//     frontFaceIndexOfStartVertex = 0;
 
-    update();
-}
+//     //frontFaceIndexOfStartVertex = _mesh->faceTab[v.fi()].getFrontFaceOf(); //TODO, pb poujr trouver index du vertex..
 
-Faces_circulator::Faces_circulator(VERTEX_INDEX vi, Mesh* mesh) : _mesh(mesh), startVertexIndex(0) {
+//     update();
+// }
 
-    frontFaceIndexOfStartVertex = _mesh->vertexTab[vi].fi();
+Faces_circulator::Faces_circulator(Mesh* mesh, VERTEX_INDEX vi) : _mesh(mesh), startVertexIndex(0) {
+
+    frontFaceIndexOfStartVertex = _mesh->faceTab[_mesh->vertexTab[vi].getIncidentFace()].getFrontFaceOf(vi);
+
     update();
 }
 
@@ -54,12 +58,17 @@ Faces_circulator::Faces_circulator(const Faces_circulator& fc)
 
 void Faces_circulator::update() {
     const Face& frontFaceOfStartVertex = _mesh->faceTab[frontFaceIndexOfStartVertex];
-    VERTEX_INDEX nextVertex = frontFaceOfStartVertex.v(startVertexIndex);
-    currentFaceIndex = _mesh->vertexTab[nextVertex].fi();
+    VERTEX_INDEX nextVertex = frontFaceOfStartVertex.vertex(startVertexIndex);
+    
+    //currentFaceIndex = _mesh->vertexTab[nextVertex].fi();
+    
+    currentFaceIndex = frontFaceOfStartVertex.getFrontFaceOf(nextVertex);
+
     //startVertexIndex = (startVertexIndex + 1) % 3; 
 }
 
 const Face& Faces_circulator::operator*() const {
+    
     return _mesh->faceTab[currentFaceIndex];
 }
 
@@ -70,7 +79,8 @@ Faces_circulator& Faces_circulator::operator++() {
 }
 
 Faces_circulator& Faces_circulator::operator--(int) {
-    startVertexIndex = (startVertexIndex - 1) % 3;
+    if (startVertexIndex == 0) startVertexIndex = 2;
+    else startVertexIndex = (startVertexIndex - 1) % 3;
     update();
     return *this;
 }
@@ -96,7 +106,7 @@ bool operator ==(   const Faces_circulator& fc1,
 //                        VERTICES_CIRCULATOR
 // ------------------------------------------------------------------------
 
-Vertices_circulator::Vertices_circulator(Mesh* mesh, VERTEX_INDEX base) : _mesh(mesh), baseVertexIndex(base), fit(base, mesh) {
+Vertices_circulator::Vertices_circulator(Mesh* mesh, VERTEX_INDEX base) : _mesh(mesh), baseVertexIndex(base), fit(mesh, base) {
 
     //premier sommet
     update();
@@ -121,7 +131,7 @@ void Vertices_circulator::update() {
         printf("indexOfBaseVertexInCurrFace == -1, ERROR ! \n");
     }
     VERTEX_INDEX nextVertex = (indexOfBaseVertexInCurrFace + 1)%3;
-    currentVertexIndex = currentFace.v(nextVertex);
+    currentVertexIndex = currentFace.vertex(nextVertex);
 }
 
 const Vertex& Vertices_circulator::operator*() const {
