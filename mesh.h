@@ -3,8 +3,6 @@
 
 #include <QGLWidget>
 #include <stdlib.h>
-#include <iostream>
-#include <fstream>
 
 #include "vec.h"
 #include "mesh_iterators.h" 
@@ -116,15 +114,12 @@ private:
     void drawSelectedPoints();
     void drawCurrentNeighborFace();
 
-    unsigned int getOppositeVextex(FACE_INDEX f_id, VERTEX_INDEX v1, VERTEX_INDEX v2);
-
 public:
 
     Mesh();
 
     void createTetrahedron();
     void createPyramid();
-    int load_off_file(std::string path_to_file);
 
     unsigned int vertexNb() { return vertexTab.size(); }
     unsigned int faceNb() { return faceTab.size(); }
