@@ -26,6 +26,9 @@ public:
     const Point & getPoint() const { return p; }
     //Return incident face
     FACE_INDEX getIncidentFace() const { return incidentFace; }
+
+    //Operator -, return a Vector
+    Vector operator-(const Vertex& v);
 };
 
 
@@ -97,7 +100,7 @@ private:
     //Itérateurs pour le parcours
     Faces_circulator fcirc;
     Vertices_circulator vcirc;
-
+    //Faces_circulator(const Vertex& v, Mesh* mesh);
     //Pour l'affichage des face actuelle
     VERTEX_INDEX currentStartVertexIndex = -1;//Le vertex dont on cherche les voisins
     FACE_INDEX currentNeighborFace = -1; //Face voisine sélectionnée
@@ -142,11 +145,6 @@ public:
     Vertices_iterator vertices_iterator_end() {
         return Vertices_iterator(this, vertexTab.size());
     }
-
-    //TODO use index of vertex??
-    // Faces_circulator incident_faces_circulator(const Vertex& v) {
-    //     return Faces_circulator(v, this);
-    // }
 
     Faces_circulator incident_faces_circulator(const VERTEX_INDEX vi) {
         return Faces_circulator(this, vi);

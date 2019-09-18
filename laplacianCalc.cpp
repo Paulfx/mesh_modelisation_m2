@@ -19,13 +19,8 @@ LaplacianCalc::LaplacianCalc(Mesh* mesh) {
 
 }
 
-float LaplacianCalc::cotan(const Vertex& Vi, const Vertex& Vj) {
-	//Transformation en vec3
-	vec3 vi = vec3(Vi.getPoint());
-	vec3 vj = vec3(Vj.getPoint());
-	
-	return dot(vi, vj) / length(cross(vi, vj));
-
+float LaplacianCalc::cotan(const Vector& Vi, const Vector& Vj) {
+	return dot(Vi, Vj) / length(cross(Vi, Vj));
 }
 
 void LaplacianCalc::calculate() {
@@ -58,7 +53,44 @@ void LaplacianCalc::calculate() {
 	// 		//vec3 v4 = Vj - Vnext
 
 
-	// }
+	// } TODO !!!!
 
+	// int i = 0; //Get from vit?
+
+	// Vertex vi;
+	// Vertex vj;
+	// Vertex vprev;
+	// Vertex vnext;
+
+	// //Les vecteurs
+	// Vector v1,v2,v3,v4;
+
+	// //Les deux angles
+	// float cotAlpha, cotBeta;
+
+	// for (Vertices_iterator vit = _mesh->vertices_iterator_begin(); vit != _mesh->vertices_iterator_end(); vit++) {
+
+	// 	vi = *vit;
+
+	// 	for (Vertices_circulator vcirc = _mesh->vertices_circulator_begin(i); ; vcirc++) {
+
+	// 		vj = *vcirc;
+
+	// 		//Voisin précédent
+	// 		vprev = *vcirc--;
+	// 		vnext = *vcirc++;
+
+	// 		v1 = vi - vprev;
+	// 		v2 = vj - vprev;
+	// 		v3 = vi - vnext;
+	// 		v4 = vj - vnext;
+
+	// 		cotAlpha = cotan(v1, v2);
+	// 		cotBeta = cotan(v3, v4);
+
+	// 	}
+
+
+	// }
 
 }

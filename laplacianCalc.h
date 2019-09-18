@@ -22,7 +22,7 @@ public:
     LaplacianCalc(Mesh* mesh);
 
     //Cotangente entre deux vecteurs
-	float cotan(const Vertex& Vi, const Vertex& Vj);
+	float cotan(const Vector& Vi, const Vector& Vj);
 
 	void calculate();
 

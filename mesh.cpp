@@ -1,6 +1,15 @@
 #include "mesh.h"
 
 // ------------------------------------------------------------------------
+//                        VERTEX
+// ------------------------------------------------------------------------
+
+Vector Vertex::operator-(const Vertex &v) {
+    return p - v.p;
+}
+
+
+// ------------------------------------------------------------------------
 //                        MESH
 // ------------------------------------------------------------------------
 
@@ -165,10 +174,10 @@ void Mesh::testLaplacian() {
 
     LaplacianCalc lcalc(this);
 
-    Vertex v0 = vertexTab[0];
-    Vertex v1 = vertexTab[1];
+    //Vertex v0 = vertexTab[0];
+    //Vertex v1 = vertexTab[1];
 
-    printf("Cotan : %f\n", lcalc.cotan(v0,v1));
+    //printf("Cotan : %f\n", lcalc.cotan(v0,v1));
 }
 
 

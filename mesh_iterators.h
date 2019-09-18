@@ -58,7 +58,6 @@ private:
     //Faces_circulator(const Vertex& v, Mesh* mesh);
     Faces_circulator(Mesh* mesh, VERTEX_INDEX vi);
     
-
     void update();
 
 public:
@@ -98,7 +97,6 @@ private:
 
 
     Vertices_circulator(Mesh* mesh, VERTEX_INDEX base);
-    Vertices_circulator(const Vertices_circulator& vc);
 
     void update();
 
@@ -115,7 +113,7 @@ public:
 
 
     Vertices_circulator() : _mesh(nullptr), baseVertexIndex(0) {};
-
+    Vertices_circulator(const Vertices_circulator& vc);
 
 };
 

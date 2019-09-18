@@ -79,8 +79,9 @@ Faces_circulator& Faces_circulator::operator++() {
 }
 
 Faces_circulator& Faces_circulator::operator--(int) {
-    if (startVertexIndex == 0) startVertexIndex = 2;
-    else startVertexIndex = (startVertexIndex - 1) % 3;
+    //if (startVertexIndex == 0) startVertexIndex = 2;
+    //Cas -1
+    startVertexIndex = (startVertexIndex - 1 + 3) % 3;
     update();
     return *this;
 }
