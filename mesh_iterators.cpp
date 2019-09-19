@@ -34,20 +34,7 @@ bool operator ==(   const Vertices_iterator& vi1,
 //                        FACES_CIRCULATOR
 // ------------------------------------------------------------------------
 
-// Faces_circulator::Faces_circulator(Mesh* mesh, const Vertex& v) : _mesh(mesh), startVertexIndex(0) {
-
-//     //Indice de la face en face de v
-//     frontFaceIndexOfStartVertex = 0;
-
-//     //frontFaceIndexOfStartVertex = _mesh->faceTab[v.fi()].getFrontFaceOf(); //TODO, pb poujr trouver index du vertex..
-
-//     update();
-// }
-
 Faces_circulator::Faces_circulator(Mesh* mesh, VERTEX_INDEX vi) : _mesh(mesh), refVertex(vi) {
-
-    //frontFaceIndexOfStartVertex = _mesh->faceTab[_mesh->vertexTab[vi].getIncidentFace()].getFrontFaceOf(vi);
-
     //Au départ, la face voisine est la face incidente au vertex
     currentFaceIndex = mesh->vertexTab[vi].getIncidentFace();
 }
@@ -55,20 +42,7 @@ Faces_circulator::Faces_circulator(Mesh* mesh, VERTEX_INDEX vi) : _mesh(mesh), r
 Faces_circulator::Faces_circulator(const Faces_circulator& fc) 
 : _mesh(fc._mesh), refVertex(fc.refVertex), currentFaceIndex(fc.currentFaceIndex) {}
 
-
-//Direction == -1 ou 1
 void Faces_circulator::update(DIRECTION dir) {
-    // const Face& frontFaceOfStartVertex = _mesh->faceTab[frontFaceIndexOfStartVertex];
-    // VERTEX_INDEX nextVertex = frontFaceOfStartVertex.vertex(startVertexIndex);
-    
-    // //currentFaceIndex = _mesh->vertexTab[nextVertex].fi();
-    
-    // currentFaceIndex = frontFaceOfStartVertex.getFrontFaceOf(nextVertex);
-
-    //startVertexIndex = (startVertexIndex + 1) % 3; 
-
-
-
     //La face actuelle
     const Face& actualFace = _mesh->faceTab[currentFaceIndex];
 
@@ -142,7 +116,7 @@ void Vertices_circulator::update() {
     VERTEX_INDEX indexOfBaseVertexInCurrFace = currentFace.getIndexOf(baseVertexIndex);
     
     if (indexOfBaseVertexInCurrFace == -1) {
-        //GROS PROBLEME
+        //Problème du mesh mal construit...
         printf("indexOfBaseVertexInCurrFace == -1, ERROR ! \n");
     }
     VERTEX_INDEX nextVertex = (indexOfBaseVertexInCurrFace + 1)%3;

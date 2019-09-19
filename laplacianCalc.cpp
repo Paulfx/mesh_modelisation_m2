@@ -21,6 +21,10 @@ LaplacianCalc::LaplacianCalc(Mesh* mesh) {
 
 }
 
+float LaplacianCalc::map(float value, float istart, float istop, float ostart, float ostop) {
+	return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
+}
+
 float LaplacianCalc::cotan(const Vector& Vi, const Vector& Vj) {
 	return dot(Vi, Vj) / length(cross(Vi, Vj));
 }
@@ -91,6 +95,9 @@ void LaplacianCalc::calculate() {
 		//1/3	
 		aire /= 3.f;
         laplacian.push_back(sum);
+
+        curvatures.push_back(getCurvature(i));
+
         i++;
 	}
 
@@ -101,10 +108,23 @@ void LaplacianCalc::calculate() {
 
     // }
 
+	//Compute min and max curvature
+    minCurvature = *std::min_element(curvatures.begin(), curvatures.end());
+    maxCurvature = *std::max_element(curvatures.begin(), curvatures.end());
 }
 
 Vector LaplacianCalc::getNormal(VERTEX_INDEX vi) {
 	return normalize(laplacian[vi]);
+}
+
+float LaplacianCalc::getCurvatureMapped(VERTEX_INDEX vi, float start, float stop) {
+
+	//Map from [min,max] to [start,stop];
+	float curvature = 1/2.f * length(laplacian[vi]); //TODO store curvature to not recalculate it
+
+	float curvatureMapped = map(curvature, minCurvature, maxCurvature, start, stop); 
+
+	return curvatureMapped;
 }
 
 float LaplacianCalc::getCurvature(VERTEX_INDEX vi) {

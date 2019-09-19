@@ -18,18 +18,21 @@ Mesh::Mesh()  {
     createTetrahedron();
 
     //On créé le laplacien
-    // lcalc = new LaplacianCalc(this);
-    // lcalc->calculate();
+    lcalc = new LaplacianCalc(this);
+    lcalc->calculate();
 
-    // printf("Courbure au vertex 0 : %f\n", lcalc->getCurvature(0));
-    // printf("Courbure au vertex 1 : %f\n", lcalc->getCurvature(1));
-    // printf("Courbure au vertex 2 : %f\n", lcalc->getCurvature(2));
-    // printf("Courbure au vertex 3 : %f\n", lcalc->getCurvature(3));
+    float start = 0.f;
+    float stop = 360.f;
 
-    // Vector v = lcalc->getNormal(0);
-    // printf("Normale vertex 0 : x=%f, y=%f, z=%f\n", v.x, v.y, v.z);
+    printf("Courbure au vertex 0 : %f\n", lcalc->getCurvatureMapped(0, start, stop));
+    printf("Courbure au vertex 1 : %f\n", lcalc->getCurvatureMapped(1, start, stop));
+    printf("Courbure au vertex 2 : %f\n", lcalc->getCurvatureMapped(2, start, stop));
+    printf("Courbure au vertex 3 : %f\n", lcalc->getCurvatureMapped(3, start, stop));
 
-    // delete lcalc;
+    Vector v = lcalc->getNormal(0);
+    printf("Normale vertex 0 : x=%f, y=%f, z=%f\n", v.x, v.y, v.z);
+
+    delete lcalc;
     //testLaplacian();
 }
 
@@ -131,6 +134,10 @@ void glVertexDraw(const Vertex & v) {
 
 void Mesh::glFaceDraw(const Face & f) {
     glBegin(GL_TRIANGLES);
+
+
+    //glColor3d()
+
     glVertexDraw(vertexTab[f.v1()]);
     glVertexDraw(vertexTab[f.v2()]);
     glVertexDraw(vertexTab[f.v3()]);

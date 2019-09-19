@@ -54,13 +54,7 @@ class Faces_circulator {
 
 private:
     Mesh* _mesh;
-    //L'indice de la face dont on parcourt les sommets
-    //FACE_INDEX frontFaceIndexOfStartVertex; 
-
-    //VERTEX_INDEX startVertexIndex;
     FACE_INDEX currentFaceIndex;
-
-
     //L'indice du vertex référence
     VERTEX_INDEX refVertex;
 
