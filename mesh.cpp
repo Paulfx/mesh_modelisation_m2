@@ -13,10 +13,36 @@ Vector Vertex::operator-(const Vertex &v) {
 //                        MESH
 // ------------------------------------------------------------------------
 
-Mesh::Mesh() {
-    createTetrahedron();
+Mesh::Mesh()  {
+    createPyramid();
+    //createTetrahedron();
 
+    //On créé le laplacien
+    lcalc = new LaplacianCalc(this);
+    lcalc->calculate();
+
+    printf("Courbure au vertex 0 : %f\n", lcalc->getCurvature(0));
+    printf("Courbure au vertex 1 : %f\n", lcalc->getCurvature(1));
+    printf("Courbure au vertex 2 : %f\n", lcalc->getCurvature(2));
+    printf("Courbure au vertex 3 : %f\n", lcalc->getCurvature(3));
+
+    Vector v = lcalc->getNormal(0);
+    printf("Normale vertex 0 : x=%f, y=%f, z=%f\n", v.x, v.y, v.z);
+
+    delete lcalc;
     //testLaplacian();
+}
+
+void Mesh::testLaplacian() {
+
+    LaplacianCalc lcalc(this);
+
+    lcalc.calculate();
+
+    //Vertex v0 = vertexTab[0];
+    //Vertex v1 = vertexTab[1];
+
+    //printf("Cotan : %f\n", lcalc.cotan(v0,v1));
 }
 
 void Mesh::createTetrahedron() {
@@ -35,6 +61,23 @@ void Mesh::createTetrahedron() {
 
 void Mesh::createPyramid() {
     //TODO manual
+
+    vertexTab.push_back(Vertex(-0.5,0,-0.5   , 3));
+    vertexTab.push_back(Vertex(0.5,0,-0.5    , 0));
+    vertexTab.push_back(Vertex(-0.5,0,0.5       , 1));
+    vertexTab.push_back(Vertex(0.5,0,0.5       , 1));
+    vertexTab.push_back(Vertex(0,1,0       , 2));
+
+    
+
+    faceTab.push_back(Face(0,2,1, 4,1,5)); //ACB
+    faceTab.push_back(Face(1,2,3, 5,1,0)); //BCD
+    faceTab.push_back(Face(0,4,1, 4,1,5)); //AEB
+    faceTab.push_back(Face(1,4,3, 5,1,0)); //BED
+    faceTab.push_back(Face(3,4,2, 0,1,1)); //DEC
+    faceTab.push_back(Face(2,4,0, 1,1,4)); //CEA
+
+
 }
 
 
@@ -102,6 +145,8 @@ void Mesh::drawMesh() {
         else if (i == 2) glColor3d(0,0,1);
         else glColor3d(1,1,0);
 
+        //Couleurs en fonction de la courbure
+
         if (i == currentNeighborFace) glColor3d(1,1,1);
 
         glFaceDraw(faceTab[i]);
@@ -168,16 +213,6 @@ void Mesh::drawMeshWireFrame() {
     drawSelectedPoints();
     drawCurrentNeighborFace();
 
-}
-
-void Mesh::testLaplacian() {
-
-    LaplacianCalc lcalc(this);
-
-    //Vertex v0 = vertexTab[0];
-    //Vertex v1 = vertexTab[1];
-
-    //printf("Cotan : %f\n", lcalc.cotan(v0,v1));
 }
 
 

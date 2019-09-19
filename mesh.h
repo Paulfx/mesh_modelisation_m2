@@ -86,6 +86,8 @@ public:
 //                        MESH
 // ------------------------------------------------------------------------
 
+class LaplacianCalc; //WHY??
+
 class Mesh {
     friend class Vertices_iterator;
     friend class Faces_circulator;
@@ -100,15 +102,18 @@ private:
     //Itérateurs pour le parcours
     Faces_circulator fcirc;
     Vertices_circulator vcirc;
-    //Faces_circulator(const Vertex& v, Mesh* mesh);
+
     //Pour l'affichage des face actuelle
     VERTEX_INDEX currentStartVertexIndex = -1;//Le vertex dont on cherche les voisins
     FACE_INDEX currentNeighborFace = -1; //Face voisine sélectionnée
     VERTEX_INDEX currentNeighborVertex = -1; //Les vertex voisins de startVertex
 
-    //Pour l'affichage d'un point sur un vertex
+    //Pour l'affichage d'un point sur un vertex avec une taille qui varie
     float pointSize = 1.0f;
     float decreaseFactorPointSize = 0.01;
+
+    //Les laplaciens
+    LaplacianCalc* lcalc; 
     
     void glFaceDraw(const Face & f);
     void drawSelectedPoints();

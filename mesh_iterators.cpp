@@ -48,6 +48,8 @@ Faces_circulator::Faces_circulator(Mesh* mesh, VERTEX_INDEX vi) : _mesh(mesh), s
 
     frontFaceIndexOfStartVertex = _mesh->faceTab[_mesh->vertexTab[vi].getIncidentFace()].getFrontFaceOf(vi);
 
+    //Au départ, la face voisine est la face incidente au vertex
+
     update();
 }
 
@@ -73,22 +75,24 @@ const Face& Faces_circulator::operator*() const {
 }
 
 Faces_circulator& Faces_circulator::operator++() {
-    startVertexIndex = (startVertexIndex + 1) % 3;
+    //startVertexIndex = (startVertexIndex + 1) % 3; //Sens horaire
+    startVertexIndex = (startVertexIndex + 2) % 3; //Sens antihoraire
     update();
     return *this;
 }
 
 Faces_circulator& Faces_circulator::operator--(int) {
-    //if (startVertexIndex == 0) startVertexIndex = 2;
     //Cas -1
-    startVertexIndex = (startVertexIndex - 1 + 3) % 3;
+    //startVertexIndex = (startVertexIndex - 1 + 3) % 3; //Sens horaire
+    startVertexIndex = (startVertexIndex +1) % 3; //Sens antihoraire
     update();
     return *this;
 }
 
 Faces_circulator Faces_circulator::operator++(int) {
     Faces_circulator tmp(*this);
-    startVertexIndex = (startVertexIndex + 1) % 3;
+    //startVertexIndex = (startVertexIndex + 1) % 3; //horaire
+    startVertexIndex = (startVertexIndex + 2) % 3; //Antihoraire
     update();
     return tmp;
 }

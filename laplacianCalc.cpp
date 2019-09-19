@@ -3,6 +3,8 @@
 LaplacianCalc::LaplacianCalc(Mesh* mesh) {
 	_mesh = mesh;
 	//Create function U for each vertex
+	//TODO comprendre U
+
 	vertexNb = mesh->vertexNb();
 
 
@@ -23,74 +25,88 @@ float LaplacianCalc::cotan(const Vector& Vi, const Vector& Vj) {
 	return dot(Vi, Vj) / length(cross(Vi, Vj));
 }
 
+float LaplacianCalc::aireTriangle(const Vector& v1, const Vector& v2) {
+
+    return 1/2.f * length(cross(v1,v2));
+}
+
 void LaplacianCalc::calculate() {
+    int i = 0; //Get from vit?
 
-	// int i = 0;
-	// //Pour tout les vertex
-	// for (Vertices_iterator vit = _mesh->vertices_iterator_begin(); vit != _mesh->vertices_iterator_end(); vit++) {
+	Vertex vi;
+	Vertex vj;
+	Vertex vprev;
+	Vertex vnext;
 
-	// 	//Vi = *vit;
+	//Les vecteurs
+	Vector v1,v2,v3,v4;
 
-	// 	//Parcours des voisins
-	// 	Vertices_circulator vcirc;
+	//Les deux angles
+	float cotAlpha, cotBeta;
 
-	// 	for (vcirc = _mesh->vertices_circulator_begin(i); )
+	//La somme
+	Vector sum;
+	//Aire des triangles locaux;
+	float aire;
 
-	// 		//Vj = *vcirc
-
-	// 		//Il faudrait prendre pour chaque voisin
-	// 		//Le voisin -- et le voisin ++
-			
-	// 		//Vprev = vcirc--;
-	// 		//Vnext = vcirc++:
-
-
-	// 		//et faire 
-	// 		//vec3 v1 = Vi - Vprev 
-	// 		//vec3 v2 = Vj - Vprev 
-
-	// 		//vec3 v3 = Vi - Vnext
-	// 		//vec3 v4 = Vj - Vnext
+	Vertices_circulator vcircFirst;
 
 
-	// } TODO !!!!
+	for (Vertices_iterator vit = _mesh->vertices_iterator_begin(); vit != _mesh->vertices_iterator_end(); vit++) {
 
-	// int i = 0; //Get from vit?
+		vi = *vit;
 
-	// Vertex vi;
-	// Vertex vj;
-	// Vertex vprev;
-	// Vertex vnext;
+        vcircFirst = _mesh->vertices_circulator_begin(i); //TODO change
+		sum = Vector(0.f,0.f,0.f);
+        aire = 0.f;
 
-	// //Les vecteurs
-	// Vector v1,v2,v3,v4;
+        //printf("Vertex %d\n", i);
 
-	// //Les deux angles
-	// float cotAlpha, cotBeta;
+        for (Vertices_circulator vcirc = vcircFirst--; vcirc != _mesh->vertices_circulator_begin(i); vcirc++) {
+            if (aire==0.f) vcirc++; //On incrémente la première fois pour passer le test du for
 
-	// for (Vertices_iterator vit = _mesh->vertices_iterator_begin(); vit != _mesh->vertices_iterator_end(); vit++) {
+			vj = *vcirc;
 
-	// 	vi = *vit;
+			//Voisin précédent
+			vprev = *vcirc--;
+			vnext = *vcirc++;
 
-	// 	for (Vertices_circulator vcirc = _mesh->vertices_circulator_begin(i); ; vcirc++) {
+			v1 = vi - vprev;
+			v2 = vj - vprev;
+			v3 = vi - vnext;
+			v4 = vj - vnext;
 
-	// 		vj = *vcirc;
+			cotAlpha = cotan(v1, v2);
+			cotBeta = cotan(v3, v4);
 
-	// 		//Voisin précédent
-	// 		vprev = *vcirc--;
-	// 		vnext = *vcirc++;
+			//Somme
+			sum = sum + (cotAlpha + cotBeta) * (vj - vi);
+			//+ somme aire, à partir des faces ?
+            aire += aireTriangle(vprev- vi, vj - vi);
 
-	// 		v1 = vi - vprev;
-	// 		v2 = vj - vprev;
-	// 		v3 = vi - vnext;
-	// 		v4 = vj - vnext;
+            //printf("Aire triangle %f\n", aireTriangle(vprev-vi, vj-vi));
 
-	// 		cotAlpha = cotan(v1, v2);
-	// 		cotBeta = cotan(v3, v4);
+		}
 
-	// 	}
+		//1/3	
+		aire /= 3.f;
+        laplacian.push_back(sum);
+        i++;
+	}
 
 
-	// }
+    // for (i = 0; i < laplacian.size(); ++i) {
 
+    //     printf("Laplacian vertex %d, x=%f, y=%f, z=%f, norme=%f\n", i, laplacian[i].x, laplacian[i].y, laplacian[i].z, length(laplacian[i]));
+
+    // }
+
+}
+
+Vector LaplacianCalc::getNormal(VERTEX_INDEX vi) {
+	return normalize(laplacian[vi]);
+}
+
+float LaplacianCalc::getCurvature(VERTEX_INDEX vi) {
+	return 1/2.f * length(laplacian[vi]);
 }
