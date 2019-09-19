@@ -64,10 +64,6 @@ public:
         return _v[i];
     }
 
-    FACE_INDEX face(unsigned int i) const {
-        return _f[i];
-    }
-
     //Peut être pas meilleure solution..
     int getIndexOf(VERTEX_INDEX vi) const {
         //Retourne l'indice dans _v du vertex vi
@@ -76,6 +72,12 @@ public:
         return -1;
     }
 
+    //Return the front face of the vertex number i in the face
+    FACE_INDEX getFrontFace(unsigned int i) const  {
+        return _f[i];
+    }
+
+    //Return the front face of vertexIndex vi  
     FACE_INDEX getFrontFaceOf(VERTEX_INDEX vi) const {
         return _f[getIndexOf(vi)];
     }

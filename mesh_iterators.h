@@ -46,19 +46,31 @@ class Faces_circulator {
     friend class Mesh;
     friend class Vertices_circulator;
 
+    enum DIRECTION
+    {
+        BACKWARD = 2, // -1 + 3
+        FORWARD  = 1
+    };
+
 private:
     Mesh* _mesh;
     //L'indice de la face dont on parcourt les sommets
-    FACE_INDEX frontFaceIndexOfStartVertex; 
+    //FACE_INDEX frontFaceIndexOfStartVertex; 
 
-    VERTEX_INDEX startVertexIndex;
+    //VERTEX_INDEX startVertexIndex;
     FACE_INDEX currentFaceIndex;
+
+
+    //L'indice du vertex référence
+    VERTEX_INDEX refVertex;
 
     //Todo ctor affectation + operator
     //Faces_circulator(const Vertex& v, Mesh* mesh);
     Faces_circulator(Mesh* mesh, VERTEX_INDEX vi);
     
-    void update();
+    //++ => direction = 1
+    //== => direction = -1
+    void update(DIRECTION dir);
 
 public:
 
@@ -74,7 +86,7 @@ public:
                             const Faces_circulator&);
 
 
-    Faces_circulator() : _mesh(nullptr) {}; //TODO constrain functions
+    Faces_circulator() : refVertex(0), _mesh(nullptr) {}; //TODO constrain functions
 
 };
 

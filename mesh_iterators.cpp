@@ -44,56 +44,67 @@ bool operator ==(   const Vertices_iterator& vi1,
 //     update();
 // }
 
-Faces_circulator::Faces_circulator(Mesh* mesh, VERTEX_INDEX vi) : _mesh(mesh), startVertexIndex(0) {
+Faces_circulator::Faces_circulator(Mesh* mesh, VERTEX_INDEX vi) : _mesh(mesh), refVertex(vi) {
 
-    frontFaceIndexOfStartVertex = _mesh->faceTab[_mesh->vertexTab[vi].getIncidentFace()].getFrontFaceOf(vi);
+    //frontFaceIndexOfStartVertex = _mesh->faceTab[_mesh->vertexTab[vi].getIncidentFace()].getFrontFaceOf(vi);
 
     //Au départ, la face voisine est la face incidente au vertex
-
-    update();
+    currentFaceIndex = mesh->vertexTab[vi].getIncidentFace();
 }
 
 Faces_circulator::Faces_circulator(const Faces_circulator& fc) 
-: _mesh(fc._mesh), frontFaceIndexOfStartVertex(fc.frontFaceIndexOfStartVertex), 
-    startVertexIndex(fc.startVertexIndex), currentFaceIndex(fc.currentFaceIndex) {}
+: _mesh(fc._mesh), refVertex(fc.refVertex), currentFaceIndex(fc.currentFaceIndex) {}
 
 
-void Faces_circulator::update() {
-    const Face& frontFaceOfStartVertex = _mesh->faceTab[frontFaceIndexOfStartVertex];
-    VERTEX_INDEX nextVertex = frontFaceOfStartVertex.vertex(startVertexIndex);
+//Direction == -1 ou 1
+void Faces_circulator::update(DIRECTION dir) {
+    // const Face& frontFaceOfStartVertex = _mesh->faceTab[frontFaceIndexOfStartVertex];
+    // VERTEX_INDEX nextVertex = frontFaceOfStartVertex.vertex(startVertexIndex);
     
-    //currentFaceIndex = _mesh->vertexTab[nextVertex].fi();
+    // //currentFaceIndex = _mesh->vertexTab[nextVertex].fi();
     
-    currentFaceIndex = frontFaceOfStartVertex.getFrontFaceOf(nextVertex);
+    // currentFaceIndex = frontFaceOfStartVertex.getFrontFaceOf(nextVertex);
 
     //startVertexIndex = (startVertexIndex + 1) % 3; 
+
+
+
+    //La face actuelle
+    const Face& actualFace = _mesh->faceTab[currentFaceIndex];
+
+    //Get index of the ref vertex in the actual face
+    unsigned int indexRefVertex = actualFace.getIndexOf(refVertex);
+
+    //Next face is the front face of indexRefVertex +- 1 (mod 3)
+    VERTEX_INDEX nextVertex = (indexRefVertex + dir) % 3;
+    currentFaceIndex = actualFace.getFrontFace(nextVertex);
+
 }
 
 const Face& Faces_circulator::operator*() const {
-    
     return _mesh->faceTab[currentFaceIndex];
 }
 
 Faces_circulator& Faces_circulator::operator++() {
     //startVertexIndex = (startVertexIndex + 1) % 3; //Sens horaire
-    startVertexIndex = (startVertexIndex + 2) % 3; //Sens antihoraire
-    update();
+    //startVertexIndex = (startVertexIndex + 2) % 3; //Sens antihoraire
+    update(FORWARD);
     return *this;
 }
 
 Faces_circulator& Faces_circulator::operator--(int) {
     //Cas -1
     //startVertexIndex = (startVertexIndex - 1 + 3) % 3; //Sens horaire
-    startVertexIndex = (startVertexIndex +1) % 3; //Sens antihoraire
-    update();
+    //startVertexIndex = (startVertexIndex +1) % 3; //Sens antihoraire
+    update(BACKWARD);
     return *this;
 }
 
 Faces_circulator Faces_circulator::operator++(int) {
     Faces_circulator tmp(*this);
     //startVertexIndex = (startVertexIndex + 1) % 3; //horaire
-    startVertexIndex = (startVertexIndex + 2) % 3; //Antihoraire
-    update();
+    //startVertexIndex = (startVertexIndex + 2) % 3; //Antihoraire
+    update(FORWARD);
     return tmp;
 }
 
@@ -122,7 +133,6 @@ Vertices_circulator::Vertices_circulator(const Vertices_circulator& vc)
 
 
 void Vertices_circulator::update() {
-
 
     //currentvertexIndex doit ê != de baseVertexIndex..
     //On doit connaitre l'indice du base vertex dans les faces voisines qu'on

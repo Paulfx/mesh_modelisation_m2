@@ -14,22 +14,22 @@ Vector Vertex::operator-(const Vertex &v) {
 // ------------------------------------------------------------------------
 
 Mesh::Mesh()  {
-    createPyramid();
-    //createTetrahedron();
+    //createPyramid();
+    createTetrahedron();
 
     //On créé le laplacien
-    lcalc = new LaplacianCalc(this);
-    lcalc->calculate();
+    // lcalc = new LaplacianCalc(this);
+    // lcalc->calculate();
 
-    printf("Courbure au vertex 0 : %f\n", lcalc->getCurvature(0));
-    printf("Courbure au vertex 1 : %f\n", lcalc->getCurvature(1));
-    printf("Courbure au vertex 2 : %f\n", lcalc->getCurvature(2));
-    printf("Courbure au vertex 3 : %f\n", lcalc->getCurvature(3));
+    // printf("Courbure au vertex 0 : %f\n", lcalc->getCurvature(0));
+    // printf("Courbure au vertex 1 : %f\n", lcalc->getCurvature(1));
+    // printf("Courbure au vertex 2 : %f\n", lcalc->getCurvature(2));
+    // printf("Courbure au vertex 3 : %f\n", lcalc->getCurvature(3));
 
-    Vector v = lcalc->getNormal(0);
-    printf("Normale vertex 0 : x=%f, y=%f, z=%f\n", v.x, v.y, v.z);
+    // Vector v = lcalc->getNormal(0);
+    // printf("Normale vertex 0 : x=%f, y=%f, z=%f\n", v.x, v.y, v.z);
 
-    delete lcalc;
+    // delete lcalc;
     //testLaplacian();
 }
 
