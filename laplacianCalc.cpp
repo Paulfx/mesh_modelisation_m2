@@ -13,6 +13,9 @@ float LaplacianCalc::triangleArea(const Vector& v1, const Vector& v2) {
 }
 
 void LaplacianCalc::calculate(Mesh* mesh) {
+    laplacian.clear();
+    curvatures.clear();
+
     int i = 0; //Get from vit? TODO
 
 	Vertex vi,vj,vprev,vnext; //Use to construct the differents vectors

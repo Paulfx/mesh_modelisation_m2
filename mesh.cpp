@@ -21,7 +21,7 @@ Mesh::Mesh()  {
     std::string filename = "./M2/maillage/Mesh_Computational_Geometry/queen.off";
     std::cout << "open = " << load_off_file(filename) << std:: endl;
 
-
+    createTetrahedron();
     //glEnable(GL_LIGHTING);
 
     //Create the laplacian calculator
@@ -43,6 +43,8 @@ Mesh::Mesh()  {
 Mesh::~Mesh() { delete lcalc; }
 
 void Mesh::createTetrahedron() {
+    _vertices.clear();
+    _faces.clear();
 
     _vertices.push_back(Vertex(-0.5,-0.5,-0.5   , 3));
     _vertices.push_back(Vertex(0.5,-0.5,-0.5    , 0));
@@ -58,6 +60,8 @@ void Mesh::createTetrahedron() {
 
 void Mesh::createPyramid() {
     //TODO manual
+    _vertices.clear();
+    _faces.clear();
 
     _vertices.push_back(Vertex(-0.5,0,-0.5   , 3));
     _vertices.push_back(Vertex(0.5,0,-0.5    , 0));
@@ -65,7 +69,7 @@ void Mesh::createPyramid() {
     _vertices.push_back(Vertex(0.5,0,0.5       , 1));
     _vertices.push_back(Vertex(0,1,0       , 2));
 
-    
+
 
     _faces.push_back(Face(0,2,1, 4,1,5)); //ACB
     _faces.push_back(Face(1,2,3, 5,1,0)); //BCD
@@ -184,7 +188,7 @@ void Mesh::setVertexStart(int vs) {
 
 
 void Mesh::nextFace(int s) {
-    if (currentStartVertexIndex < 0 || 
+    if (currentStartVertexIndex < 0 ||
         currentStartVertexIndex >= (int)_vertices.size()) return;
     printf("Next face : %d\n", s);
     if (s < 0) fcirc--;
@@ -193,7 +197,7 @@ void Mesh::nextFace(int s) {
 }
 
 void Mesh::nextVertex(int s) {
-    if (currentStartVertexIndex < 0 || 
+    if (currentStartVertexIndex < 0 ||
         currentStartVertexIndex >= (int)_vertices.size()) return;
     if (s < 0) vcirc--;
     else vcirc++;
@@ -299,25 +303,26 @@ void HSVToRGB(double hue, double s, double v, double& r, double& g, double& b) {
     // rgb.B = b * 255;
 }
 
-void Mesh::glVertexIndexDraw(const VERTEX_INDEX vi) {
+void Mesh::glVertexIndexDraw(const VERTEX_INDEX vi, bool isCurrentFace) {
     //The normal
     const Vector& normal = lcalc->getNormal(vi);
     //The curvature
-    float curvature = lcalc->getCurvatureMapped(vi,0.f,360.f);
-    double r,g,b;
-    HSVToRGB(curvature, 1, 1, r, g, b);
-
-    //printf("Color from angle = %f, to r=%f, g=%f, b=%f\n", curvature, r,g,b);
-
+    if (isCurrentFace) //Use color white
+        glColor3f(1,1,1);
+    else {
+        float curvature = lcalc->getCurvatureMapped(vi,0.f,360.f);
+        double r,g,b;
+        //Convert curvature to rgb color
+        HSVToRGB(curvature, 1, 1, r, g, b);
+        glColor3d(r,g,b);
+    }
     glNormal3f(normal.x, normal.y, normal.z);
-    glColor3d(r,g,b);
-
     const Point& p = _vertices[vi].getPoint();
     glVertexDraw(p);
 
 }
 
-void Mesh::glFaceDraw(const Face & f) {
+void Mesh::glFaceDraw(const Face & f, bool isCurrentFace) {
     glBegin(GL_TRIANGLES);
 
 
@@ -325,11 +330,11 @@ void Mesh::glFaceDraw(const Face & f) {
     // glVertexDraw(_vertices[f.v1()]);
     // glVertexDraw(_vertices[f.v2()]);
     // glVertexDraw(_vertices[f.v3()]);
-    
-    glVertexIndexDraw(f.v1());
-    glVertexIndexDraw(f.v2());
-    glVertexIndexDraw(f.v3());
-    
+
+    glVertexIndexDraw(f.v1(), isCurrentFace);
+    glVertexIndexDraw(f.v2(), isCurrentFace);
+    glVertexIndexDraw(f.v3(), isCurrentFace);
+
 
     glEnd();
 }
@@ -337,28 +342,18 @@ void Mesh::glFaceDraw(const Face & f) {
 
 void Mesh::drawMesh() {
     for(unsigned i = 0; i < _faces.size(); i++) {
-        
-        // if (i == 0) glColor3d(1,0,0);
-        // else if (i == 1) glColor3d(0,1,0);
-        // else if (i == 2) glColor3d(0,0,1);
-        // else glColor3d(1,1,0);
-
-        //TODO color depending on the curvatures
-
-        if ((int)i == currentNeighborFace) glColor3d(1,1,1);
-
-        glFaceDraw(_faces[i]);
+        glFaceDraw(_faces[i], i == currentNeighborFace);
     }
 
     drawSelectedPoints();
-    drawCurrentNeighborFace();
+    //drawCurrentNeighborFace();
 }
 
 void Mesh::drawCurrentNeighborFace() {
     if (currentNeighborFace == -1 ||
         currentNeighborFace >= (int)_faces.size()) return;
     glColor3d(1,1,1);
-    glFaceDraw(_faces[currentNeighborFace]);
+    glFaceDraw(_faces[currentNeighborFace], true);
 }
 
 void Mesh::drawSelectedPoints() {
@@ -380,7 +375,7 @@ void Mesh::drawSelectedPoints() {
     //Start vertex index
     glColor3d(1,1,1); //White
     glVertexDraw(_vertices[currentStartVertexIndex]);
-    
+
     //Neighbor vertex index
     glColor3d(1,0,1);
     glVertexDraw(_vertices[currentNeighborVertex]);

@@ -133,8 +133,11 @@ private:
     //Compute local id of an opposite face for a face (v1, v2 are global ids representing the edge)
     int getIndexOfOpposite(FACE_INDEX f_id, VERTEX_INDEX v1, VERTEX_INDEX v2);
 
-    void glVertexIndexDraw(const VERTEX_INDEX vi);
-    void glFaceDraw(const Face & f);
+    //Draw the vertex 'vi' and use hsv color for the curvature if isCurrentFace is false
+    //Else use white color if the vertex vi is in the isCurrentFace
+    void glVertexIndexDraw(const VERTEX_INDEX vi, bool isCurrentFace);
+    //Draw the face with curvature colors if isCurrentFace is false, else use white color
+    void glFaceDraw(const Face & f, bool isCurrentFace);
     void drawSelectedPoints();
     void drawCurrentNeighborFace();
 
