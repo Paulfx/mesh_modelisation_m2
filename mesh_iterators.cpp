@@ -49,11 +49,10 @@ void Faces_circulator::update(DIRECTION dir) {
     //Get index of the ref vertex in the actual face
     unsigned int indexRefVertex = actualFace.getIndexOf(refVertex);
 
-    fprintf(stderr,"refVertex = %d, actualFace = %d\n", refVertex, currentFaceIndex);
-
     if (indexRefVertex == -1) {
 
-        fprintf(stderr, "Error -1 refVertex=%d, actualFace=%d\n",refVertex, currentFaceIndex);
+        //fprintf(stderr, "Error -1 refVertex=%d, actualFace=%d\n",refVertex, currentFaceIndex);
+        //BIG BUG
         indexRefVertex = 0;
 
     }
@@ -61,8 +60,6 @@ void Faces_circulator::update(DIRECTION dir) {
     //Next face is the front face of indexRefVertex +- 1 (mod 3)
     VERTEX_INDEX nextVertex = (indexRefVertex + dir) % 3;
     currentFaceIndex = actualFace.getFrontFace(nextVertex);
-
-    fprintf(stderr, "next face : %d\n", currentFaceIndex);
 }
 
 const Face& Faces_circulator::operator*() const {
