@@ -74,9 +74,6 @@ void Mesh::createPyramid() {
 
 }
 
-/**
- * Load data from .off file
- */
 int Mesh::load_off_file(std::string path_to_file) {
     std::string line;
     std::ifstream myfile (path_to_file);

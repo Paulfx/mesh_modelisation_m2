@@ -35,9 +35,8 @@ void LaplacianCalc::calculate(Mesh* mesh) {
             if (area==0.f) vcirc++; //We increment only once to pass the test of the for loop
 			vj = *vcirc;
 
-			//Voisin précédent
-			vprev = *vcirc--;
-			vnext = *vcirc++;
+			vprev = *vcirc--; //Previous vertex
+			vnext = *vcirc++; //Next vertex
 
 			v1 = vi - vprev;
 			v2 = vj - vprev;
@@ -47,9 +46,9 @@ void LaplacianCalc::calculate(Mesh* mesh) {
 			cotAlpha = cotan(v1, v2);
 			cotBeta = cotan(v3, v4);
 
-			//Somme
+			//Sum of the cotan angles
 			sum = sum + (cotAlpha + cotBeta) * (vj - vi);
-			//+ somme area, à partir des faces ?
+			//Sum of the triangles
             area += triangleArea(vprev- vi, vj - vi);
 		}
 

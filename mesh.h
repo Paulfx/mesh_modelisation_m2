@@ -32,7 +32,7 @@ public:
     FACE_INDEX getIncidentFace() const { return incidentFace; }
     void setFi(FACE_INDEX fi) { incidentFace = fi; }
 
-    //Operator -, return a Vector
+    //Operator -, return a Vector (used in laplacianCalc)
     Vector operator-(const Vertex& v);
 };
 
@@ -64,14 +64,12 @@ public:
     VERTEX_INDEX v2() const { return _v[1]; }
     VERTEX_INDEX v3() const { return _v[2]; }
 
-    //TODO rename
     VERTEX_INDEX vertex(unsigned int i) const {
         return _v[i];
     }
 
-    //Peut être pas meilleure solution..
+    //Return the local index of the vertex index vi
     int getIndexOf(VERTEX_INDEX vi) const {
-        //Retourne l'indice dans _v du vertex vi
         for (int i = 0; i < 3; ++i) {
             if (_v[i] == vi){
                 return i;
@@ -85,7 +83,7 @@ public:
         return _f[i];
     }
 
-    //Return the front face of vertexIndex vi  
+    //Return the front face of vertexIndex vi
     FACE_INDEX getFrontFaceOf(VERTEX_INDEX vi) const {
         return _f[getIndexOf(vi)];
     }
@@ -102,7 +100,7 @@ public:
 //                        MESH
 // ------------------------------------------------------------------------
 
-class LaplacianCalc; //WHY??
+class LaplacianCalc; //Forward declaration
 
 class Mesh {
     friend class Vertices_iterator;
@@ -115,7 +113,7 @@ private:
     //Faces
     std::vector<Face> _faces;
 
-    //Itérateurs pour le parcours
+    //Iterators
     Faces_circulator fcirc;
     Vertices_circulator vcirc;
 
@@ -145,20 +143,29 @@ public:
 
     void createTetrahedron();
     void createPyramid();
+
+    //Load data from an .off file
     int load_off_file(std::string path_to_file);
 
-    unsigned int vertexNb() { return _vertices.size(); }
-    unsigned int faceNb() { return _faces.size(); }
+    //The number of vertices
+    unsigned int numberOfVertices() { return _vertices.size(); }
+    unsigned int numberOfFaces() { return _faces.size(); }
     FACE_INDEX currFace() { return currentNeighborFace; }
     VERTEX_INDEX currStartVertex() { return currentStartVertexIndex; }
     VERTEX_INDEX currVertex() { return currentNeighborVertex; }
 
+    //Set the index of the vertex to iterate over its neighbors
     void setVertexStart(int vs);
+    //Next neighboring face of currentStartVertex
     void nextFace(int);
+    //Next neighboring vertex of currentStartVertex
     void nextVertex(int);
+    //Put indexes of currentStartVertex, currentNeighbors to -1
     void resetVertexFaceIndex();
 
+    //Draw the mesh with colors on faces
     void drawMesh();
+    //Draw the mesh with wireframe
     void drawMeshWireFrame();
 
     //Iterators

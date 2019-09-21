@@ -22,8 +22,8 @@ class Vertices_iterator {
 
 private :
     Mesh* _mesh;
-    unsigned int _index; //Index du vertex actuel dans mesh
-    Vertices_iterator(Mesh* mesh, unsigned int index) : _mesh(mesh), _index(index) {}
+    VERTEX_INDEX _index; //Index du vertex actuel dans mesh
+    Vertices_iterator(Mesh* mesh, VERTEX_INDEX index) : _mesh(mesh), _index(index) {}
 
 public :
 
@@ -37,7 +37,7 @@ public :
     friend bool operator ==(const Vertices_iterator&,
                             const Vertices_iterator&);
 
-    unsigned int getIndex() {
+    VERTEX_INDEX getIndex() {
         return _index;
     }
 };
@@ -98,11 +98,11 @@ class Vertices_circulator {
 
 private:
     Mesh* _mesh;
-    //Le vertex de référence (autour duquel on cherche les voisins)
+    //We iterate over the neighbors of baseVertexIndex
     VERTEX_INDEX baseVertexIndex;
-    //Version 1.0 : à l'aide d'un faces_circulator
+    //We use a faces_circulator to get the next vertices
     Faces_circulator fit;
-    //Le vertex actuel
+    //The actual vertex
     VERTEX_INDEX currentVertexIndex;
 
 
