@@ -29,7 +29,9 @@ public:
     int currentStartVertex() { return _mesh.currStartVertex(); }
     int currentVertex() { return _mesh.currVertex(); }
     void resetVertexFaceIndex() { _mesh.resetVertexFaceIndex(); }
-    
+    void createPyramid() { _mesh.createPyramid(); }
+    void createTetrahedron() { _mesh.createTetrahedron(); }
+    void createFromOFF(const std::string& filename) { _mesh.createFromOFF(filename); }
     void testIterators();
 
 

@@ -90,3 +90,25 @@ void MainWindow::on_pbPrevVertex_released()
     ui->widget->prevVertex();
     updateTextCurrentIndex();
 }
+
+void MainWindow::on_pbPyramid_released()
+{
+    ui->widget->createPyramid();
+}
+
+void MainWindow::on_pbTetrahedron_released()
+{
+    ui->widget->createTetrahedron();
+}
+
+void MainWindow::on_pbOpenFile_released()
+{
+    std::string fileName = QFileDialog::getOpenFileName(this,
+        tr("Open Image"), "./", tr("OFF Files (*.off)")).toStdString();
+
+    ui->widget->createFromOFF(fileName);
+
+
+
+
+}

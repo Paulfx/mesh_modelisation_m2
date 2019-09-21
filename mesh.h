@@ -141,6 +141,14 @@ private:
     void drawSelectedPoints();
     void drawCurrentNeighborFace();
 
+
+    double _maxX, _maxY, _maxZ;
+    //Compute the max X, max Y of points of the mesh (used to know the frustrum and eye position)
+    void computeMaxValues();
+
+    //Load data from an .off file
+    int load_off_file(const std::string& path_to_file);
+
 public:
 
     Mesh();
@@ -148,9 +156,7 @@ public:
 
     void createTetrahedron();
     void createPyramid();
-
-    //Load data from an .off file
-    int load_off_file(std::string path_to_file);
+    void createFromOFF(const std::string& filename);
 
     //The number of vertices
     unsigned int numberOfVertices() { return _vertices.size(); }
@@ -158,6 +164,9 @@ public:
     FACE_INDEX currFace() { return currentNeighborFace; }
     VERTEX_INDEX currStartVertex() { return currentStartVertexIndex; }
     VERTEX_INDEX currVertex() { return currentNeighborVertex; }
+    double maxX() { return _maxX; }
+    double maxY() { return _maxY; }
+    double maxZ() { return _maxZ; }
 
     //Set the index of the vertex to iterate over its neighbors
     void setVertexStart(int vs);

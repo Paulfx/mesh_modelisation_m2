@@ -14,30 +14,19 @@ Vector Vertex::operator-(const Vertex &v) {
 // ------------------------------------------------------------------------
 
 Mesh::Mesh()  {
-    //createPyramid();
-    //createTetrahedron();
-    //std::string filename = "./Documents/cours/m2/geoAlgo/mesh_modelisation/queen.off";
-
-    std::string filename = "./M2/maillage/Mesh_Computational_Geometry/queen.off";
-    std::cout << "open = " << load_off_file(filename) << std:: endl;
-
-    createTetrahedron();
-    //glEnable(GL_LIGHTING);
-
     //Create the laplacian calculator
     lcalc = new LaplacianCalc();
-    lcalc->calculate(this);
 
-    float start = 0.f;
-    float stop = 360.f;
+    //createPyramid();
+    createTetrahedron();
 
-    printf("Courbure au vertex 0 : %f\n", lcalc->getCurvatureMapped(0, start, stop));
-    printf("Courbure au vertex 1 : %f\n", lcalc->getCurvatureMapped(1, start, stop));
-    printf("Courbure au vertex 2 : %f\n", lcalc->getCurvatureMapped(2, start, stop));
-    printf("Courbure au vertex 3 : %f\n", lcalc->getCurvatureMapped(3, start, stop));
+    //std::string filename = "./Documents/cours/m2/geoAlgo/mesh_modelisation/queen.off";
+    //std::string filename = "./M2/maillage/Mesh_Computational_Geometry/queen.off";
+    //createFromOFF(filename);
 
-    Vector v = lcalc->getNormal(0);
-    printf("Normale vertex 0 : x=%f, y=%f, z=%f\n", v.x, v.y, v.z);
+    glEnable(GL_LIGHTING);
+
+    
 }
 
 Mesh::~Mesh() { delete lcalc; }
@@ -45,6 +34,7 @@ Mesh::~Mesh() { delete lcalc; }
 void Mesh::createTetrahedron() {
     _vertices.clear();
     _faces.clear();
+    //resetVertexFaceIndex();
 
     _vertices.push_back(Vertex(-0.5,-0.5,-0.5   , 3));
     _vertices.push_back(Vertex(0.5,-0.5,-0.5    , 0));
@@ -56,12 +46,17 @@ void Mesh::createTetrahedron() {
     _faces.push_back(Face(3,0,1, 3,0,1)); //DAB
     _faces.push_back(Face(0,2,1, 0,2,1)); //ACB
 
+    //Calculate laplacian
+    lcalc->calculate(this);
+    //Compute max X and Y of the mesh
+    //computeMaxValues();
 }
 
 void Mesh::createPyramid() {
     //TODO manual
     _vertices.clear();
     _faces.clear();
+    //resetVertexFaceIndex();
 
     _vertices.push_back(Vertex(-0.5,0,-0.5   , 3));
     _vertices.push_back(Vertex(0.5,0,-0.5    , 0));
@@ -78,10 +73,24 @@ void Mesh::createPyramid() {
     _faces.push_back(Face(3,4,2, 0,1,1)); //DEC
     _faces.push_back(Face(2,4,0, 1,1,4)); //CEA
 
-
+    //Calculate laplacian
+    lcalc->calculate(this);
+    //computeMaxValues();
 }
 
-int Mesh::load_off_file(std::string path_to_file) {
+void Mesh::createFromOFF(const std::string &filename) {
+    _vertices.clear();
+    _faces.clear();
+    //resetVertexFaceIndex();
+
+    load_off_file(filename);
+
+    //Calculate laplacian
+    lcalc->calculate(this);
+    //computeMaxValues();
+}
+
+int Mesh::load_off_file(const std::string& path_to_file) {
     std::string line;
     std::ifstream myfile (path_to_file);
     std::string spaceDelimiter = " ";
@@ -92,6 +101,10 @@ int Mesh::load_off_file(std::string path_to_file) {
 
         /** read first line of file **/
         getline(myfile, line);
+
+        //If file begin by a letter, try to discard the line..
+        if (!isdigit(line[0])) getline(myfile, line);
+
         nbVertices = atoi(line.substr(0, line.find(spaceDelimiter)).c_str());
         nbFaces = atoi(line.substr(line.find(spaceDelimiter), line.find(lineDelimiter)).c_str());
 
@@ -170,6 +183,19 @@ int Mesh::load_off_file(std::string path_to_file) {
     }
     else std::cout << "Unable to open file";
     return -1;
+}
+
+void Mesh::computeMaxValues() {
+    // _maxX = 0, _maxY = 0, _maxZ = 0;
+    // Point p;
+    // for(unsigned i = 0; i<_vertices.size(); ++i) {
+    //     p = _vertices[i].getPoint();
+    //     if (p.x > _maxX) _maxX = p.x; 
+    //     if (p.y > _maxY) _maxY = p.y; 
+    //     if (p.z > _maxZ) _maxZ = p.z; 
+    // }
+
+    // printf("Max : %d, %d, %d\n", _maxX, _maxY, _maxZ);
 }
 
 void Mesh::setVertexStart(int vs) {

@@ -59,7 +59,7 @@ class Faces_circulator {
 private:
     Mesh* _mesh;
     FACE_INDEX currentFaceIndex;
-    //L'indice du vertex référence
+    //Reference vertex
     VERTEX_INDEX refVertex;
 
     //Todo ctor affectation + operator

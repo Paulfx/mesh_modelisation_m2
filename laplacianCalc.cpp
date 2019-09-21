@@ -14,8 +14,8 @@ float LaplacianCalc::triangleArea(const Vector& v1, const Vector& v2) {
 
 void LaplacianCalc::calculate(Mesh* mesh) {
     laplacian.clear();
-    curvatures.clear();
-
+	curvatures.clear();
+    
     int i = 0; //Get from vit? TODO
 
 	Vertex vi,vj,vprev,vnext; //Use to construct the differents vectors
@@ -26,6 +26,7 @@ void LaplacianCalc::calculate(Mesh* mesh) {
 	Vector sum;
 	//Local triangle area;
 	float area;
+	bool firstLoop;
 
 	Vertices_circulator vcircFirst;
     for (Vertices_iterator vit = mesh->vertices_iterator_begin(); vit != mesh->vertices_iterator_end(); vit++) {
@@ -33,13 +34,16 @@ void LaplacianCalc::calculate(Mesh* mesh) {
         vcircFirst = mesh->vertices_circulator_begin(i); //TODO change with a vertex?
 		sum = Vector(0.f,0.f,0.f);
         area = 0.f;
-
+        firstLoop = true;
         for (Vertices_circulator vcirc = vcircFirst--; vcirc != mesh->vertices_circulator_begin(i); vcirc++) {
-            if (area==0.f) vcirc++; //We increment only once to pass the test of the for loop
+            if (firstLoop) {
+            	vcirc++; //We increment only once to pass the test of the for loop
+				firstLoop = false;
+			}
 			vj = *vcirc;
 
 			vprev = *vcirc--; //Previous vertex
-			vnext = *vcirc++; //Next vertex
+			vnext = *vcirc++; //Next vertex = actual
 
 			v1 = vi - vprev;
 			v2 = vj - vprev;

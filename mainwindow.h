@@ -33,6 +33,12 @@ private slots:
 
     void on_pbPrevVertex_released();
 
+    void on_pbPyramid_released();
+
+    void on_pbTetrahedron_released();
+
+    void on_pbOpenFile_released();
+
 private:
     Ui::MainWindow *ui;
 
