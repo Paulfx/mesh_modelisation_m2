@@ -67,7 +67,7 @@ private:
     Faces_circulator(Mesh* mesh, VERTEX_INDEX vi);
     
     //++ => direction = 1
-    //== => direction = -1
+    //== => direction = +2 = +3 - 1
     void update(DIRECTION dir);
 
 public:
@@ -84,7 +84,7 @@ public:
                             const Faces_circulator&);
 
 
-    Faces_circulator() : refVertex(0), _mesh(nullptr) {}; //TODO constrain functions
+    Faces_circulator() : _mesh(nullptr) { refVertex = 0; }; //TODO constrain functions
 
 };
 

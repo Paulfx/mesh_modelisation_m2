@@ -3,6 +3,7 @@
 
 #include <QGLWidget>
 #include <stdlib.h>
+#include <string>
 #include <iostream>
 #include <fstream>
 
@@ -109,25 +110,25 @@ class Mesh {
     friend class Vertices_circulator;
 
 private:
-    //Les sommets
-    std::vector<Vertex> vertexTab;
-    //Les faces
-    std::vector<Face> faceTab;
+    //Vertices
+    std::vector<Vertex> _vertices;
+    //Faces
+    std::vector<Face> _faces;
 
     //Itérateurs pour le parcours
     Faces_circulator fcirc;
     Vertices_circulator vcirc;
 
-    //Pour l'affichage des face actuelle
-    VERTEX_INDEX currentStartVertexIndex = -1;//Le vertex dont on cherche les voisins
-    FACE_INDEX currentNeighborFace = -1; //Face voisine sélectionnée
-    VERTEX_INDEX currentNeighborVertex = -1; //Les vertex voisins de startVertex
+    //Infos for the drawing of currentFace, currentVertex..
+    VERTEX_INDEX currentStartVertexIndex = -1;//The starting vertex (chose by the user)
+    FACE_INDEX currentNeighborFace = -1;
+    VERTEX_INDEX currentNeighborVertex = -1; //Neighboring vertices of start vertex
 
-    //Pour l'affichage d'un point sur un vertex avec une taille qui varie
+    //Used to show a point with a varying point size for selected vertices
     float pointSize = 1.0f;
     float decreaseFactorPointSize = 0.01;
 
-    //Les laplaciens
+    //The calculator of the laplacian vectors
     LaplacianCalc* lcalc; 
 
     //Compute local id of an opposite face for a face (v1, v2 are global ids representing the edge)
@@ -140,13 +141,14 @@ private:
 public:
 
     Mesh();
+    ~Mesh(); //Erase the laplacian calculator
 
     void createTetrahedron();
     void createPyramid();
     int load_off_file(std::string path_to_file);
 
-    unsigned int vertexNb() { return vertexTab.size(); }
-    unsigned int faceNb() { return faceTab.size(); }
+    unsigned int vertexNb() { return _vertices.size(); }
+    unsigned int faceNb() { return _faces.size(); }
     FACE_INDEX currFace() { return currentNeighborFace; }
     VERTEX_INDEX currStartVertex() { return currentStartVertexIndex; }
     VERTEX_INDEX currVertex() { return currentNeighborVertex; }
@@ -159,15 +161,13 @@ public:
     void drawMesh();
     void drawMeshWireFrame();
 
-    void testLaplacian();
-
     //Iterators
     Vertices_iterator vertices_iterator_begin() { 
         return Vertices_iterator(this, 0); 
     }
 
     Vertices_iterator vertices_iterator_end() {
-        return Vertices_iterator(this, vertexTab.size());
+        return Vertices_iterator(this, _vertices.size());
     }
 
     Faces_circulator incident_faces_circulator(const VERTEX_INDEX vi) {

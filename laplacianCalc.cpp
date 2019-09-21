@@ -1,26 +1,5 @@
 #include "laplacianCalc.h"
 
-LaplacianCalc::LaplacianCalc(Mesh* mesh) {
-	_mesh = mesh;
-	//Create function U for each vertex
-	//TODO comprendre U
-
-	vertexNb = mesh->vertexNb();
-
-
-	//Calcul:
-
-	//Pour tout les vertex
-	//On calcule son laplacien (un vec3)
-	//En parcourant tous ses vertex voisins via un circulator
-
-	//Et en sommant la formule de la cotangente
-
-	//valeur de Ai => tiers de l'aire de la face
-	//Ou bien barycentrique..
-
-}
-
 float LaplacianCalc::map(float value, float istart, float istop, float ostart, float ostop) {
 	return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
 }
@@ -29,49 +8,36 @@ float LaplacianCalc::cotan(const Vector& Vi, const Vector& Vj) {
 	return dot(Vi, Vj) / length(cross(Vi, Vj));
 }
 
-float LaplacianCalc::aireTriangle(const Vector& v1, const Vector& v2) {
-
+float LaplacianCalc::triangleArea(const Vector& v1, const Vector& v2) {
     return 1/2.f * length(cross(v1,v2));
 }
 
-void LaplacianCalc::calculate() {
+void LaplacianCalc::calculate(Mesh* mesh) {
     int i = 0; //Get from vit? TODO
-	Vertex vi;
-	Vertex vj;
-	Vertex vprev;
-	Vertex vnext;
 
-	//Les vecteurs
-	Vector v1,v2,v3,v4;
-
-	//Les deux angles
+	Vertex vi,vj,vprev,vnext; //Use to construct the differents vectors
+	Vector v1,v2,v3,v4; //Vectors to compute the cotan angle
+	//The cotan angle
 	float cotAlpha, cotBeta;
-
-	//La somme
+	//The sum of the cotan angles
 	Vector sum;
-	//Aire des triangles locaux;
-	float aire;
+	//Local triangle area;
+	float area;
 
 	Vertices_circulator vcircFirst;
-
-    for (Vertices_iterator vit = _mesh->vertices_iterator_begin(); vit != _mesh->vertices_iterator_end(); vit++) {
-
+    for (Vertices_iterator vit = mesh->vertices_iterator_begin(); vit != mesh->vertices_iterator_end(); vit++) {
 		vi = *vit;
-        vcircFirst = _mesh->vertices_circulator_begin(i); //TODO change
+        vcircFirst = mesh->vertices_circulator_begin(i); //TODO change with a vertex?
 		sum = Vector(0.f,0.f,0.f);
-        aire = 0.f;
+        area = 0.f;
 
-        //printf("Vertex %d\n", i);
-
-        for (Vertices_circulator vcirc = vcircFirst--; vcirc != _mesh->vertices_circulator_begin(i); vcirc++) {
-            if (aire==0.f) vcirc++; //On incrémente la première fois pour passer le test du for
-
+        for (Vertices_circulator vcirc = vcircFirst--; vcirc != mesh->vertices_circulator_begin(i); vcirc++) {
+            if (area==0.f) vcirc++; //We increment only once to pass the test of the for loop
 			vj = *vcirc;
 
 			//Voisin précédent
 			vprev = *vcirc--;
 			vnext = *vcirc++;
-
 
 			v1 = vi - vprev;
 			v2 = vj - vprev;
@@ -83,28 +49,16 @@ void LaplacianCalc::calculate() {
 
 			//Somme
 			sum = sum + (cotAlpha + cotBeta) * (vj - vi);
-			//+ somme aire, à partir des faces ?
-            aire += aireTriangle(vprev- vi, vj - vi);
-
-            //printf("Aire triangle %f\n", aireTriangle(vprev-vi, vj-vi));
-
+			//+ somme area, à partir des faces ?
+            area += triangleArea(vprev- vi, vj - vi);
 		}
 
-		//1/3	
-		aire /= 3.f;
+		//1/3 (not barycentric)	
+		area /= 3.f;
         laplacian.push_back(sum);
-
         curvatures.push_back(getCurvature(i));
-
         i++;
 	}
-
-
-    // for (i = 0; i < laplacian.size(); ++i) {
-
-    //     printf("Laplacian vertex %d, x=%f, y=%f, z=%f, norme=%f\n", i, laplacian[i].x, laplacian[i].y, laplacian[i].z, length(laplacian[i]));
-
-    // }
 
 	//Compute min and max curvature
     minCurvature = *std::min_element(curvatures.begin(), curvatures.end());
@@ -116,12 +70,10 @@ Vector LaplacianCalc::getNormal(VERTEX_INDEX vi) {
 }
 
 float LaplacianCalc::getCurvatureMapped(VERTEX_INDEX vi, float start, float stop) {
-
 	//Map from [min,max] to [start,stop];
-	float curvature = 1/2.f * length(laplacian[vi]); //TODO store curvature to not recalculate it
-
+	//float curvature = 1/2.f * length(laplacian[vi]); //TODO store curvature to not recalculate it
+	float curvature = curvatures[vi];
 	float curvatureMapped = map(curvature, minCurvature, maxCurvature, start, stop); 
-
 	return curvatureMapped;
 }
 

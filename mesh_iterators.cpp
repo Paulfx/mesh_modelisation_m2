@@ -6,7 +6,7 @@
 // ------------------------------------------------------------------------
 
 const Vertex& Vertices_iterator::operator*() const { 
-    return _mesh->vertexTab[_index];
+    return _mesh->_vertices[_index];
 }
 
 Vertices_iterator& Vertices_iterator::operator++() {
@@ -35,20 +35,19 @@ bool operator ==(   const Vertices_iterator& vi1,
 // ------------------------------------------------------------------------
 
 Faces_circulator::Faces_circulator(Mesh* mesh, VERTEX_INDEX vi) : _mesh(mesh), refVertex(vi) {
-    //Au départ, la face voisine est la face incidente au vertex
-    currentFaceIndex = mesh->vertexTab[vi].getIncidentFace();
+    //At first, the neighboring face is the incident face of the vertex vi
+    currentFaceIndex = mesh->_vertices[vi].getIncidentFace();
 }
 
 Faces_circulator::Faces_circulator(const Faces_circulator& fc) 
 : _mesh(fc._mesh), refVertex(fc.refVertex), currentFaceIndex(fc.currentFaceIndex) {}
 
 void Faces_circulator::update(DIRECTION dir) {
-    //La face actuelle
-    const Face& actualFace = _mesh->faceTab[currentFaceIndex];
+    //Actual face
+    const Face& actualFace = _mesh->_faces[currentFaceIndex];
 
     //Get index of the ref vertex in the actual face
     unsigned int indexRefVertex = actualFace.getIndexOf(refVertex);
-
 
     //Next face is the front face of indexRefVertex +- 1 (mod 3)
     VERTEX_INDEX nextVertex = (indexRefVertex + dir) % 3;
@@ -56,28 +55,21 @@ void Faces_circulator::update(DIRECTION dir) {
 }
 
 const Face& Faces_circulator::operator*() const {
-    return _mesh->faceTab[currentFaceIndex];
+    return _mesh->_faces[currentFaceIndex];
 }
 
 Faces_circulator& Faces_circulator::operator++() {
-    //startVertexIndex = (startVertexIndex + 1) % 3; //Sens horaire
-    //startVertexIndex = (startVertexIndex + 2) % 3; //Sens antihoraire
     update(FORWARD);
     return *this;
 }
 
 Faces_circulator& Faces_circulator::operator--(int) {
-    //Cas -1
-    //startVertexIndex = (startVertexIndex - 1 + 3) % 3; //Sens horaire
-    //startVertexIndex = (startVertexIndex +1) % 3; //Sens antihoraire
     update(BACKWARD);
     return *this;
 }
 
 Faces_circulator Faces_circulator::operator++(int) {
     Faces_circulator tmp(*this);
-    //startVertexIndex = (startVertexIndex + 1) % 3; //horaire
-    //startVertexIndex = (startVertexIndex + 2) % 3; //Antihoraire
     update(FORWARD);
     return tmp;
 }
@@ -97,8 +89,7 @@ bool operator ==(   const Faces_circulator& fc1,
 // ------------------------------------------------------------------------
 
 Vertices_circulator::Vertices_circulator(Mesh* mesh, VERTEX_INDEX base) : _mesh(mesh), baseVertexIndex(base), fit(mesh, base) {
-
-    //premier sommet;
+    //First vertex
     update();
 }
 
@@ -107,36 +98,32 @@ Vertices_circulator::Vertices_circulator(const Vertices_circulator& vc)
 
 
 void Vertices_circulator::update() {
-
-    //currentvertexIndex doit ê != de baseVertexIndex..
-    //On doit connaitre l'indice du base vertex dans les faces voisines qu'on
-    //Parcours..
     const Face& currentFace = *fit;
-    //Le sommet voisin est l'indice de baseVertex dans currentFace + 1
-
+    //Next vertex is the local index of baseVertex in the current face + 1
     VERTEX_INDEX indexOfBaseVertexInCurrFace = currentFace.getIndexOf(baseVertexIndex);
 
     if (indexOfBaseVertexInCurrFace == -1) {
-        //Problème du mesh mal construit...
+        //We shouldn't get here, it mean that the mesh is not well constructed
         printf("indexOfBaseVertexInCurrFace == -1, ERROR ! \n");
     }
-    VERTEX_INDEX nextVertex = (indexOfBaseVertexInCurrFace + 1)%3;
+
+    VERTEX_INDEX nextVertex = (indexOfBaseVertexInCurrFace + 1) % 3;
     currentVertexIndex = currentFace.vertex(nextVertex);
 }
 
 const Vertex& Vertices_circulator::operator*() const {
-    return _mesh->vertexTab[currentVertexIndex];
+    return _mesh->_vertices[currentVertexIndex];
 }
 
 Vertices_circulator& Vertices_circulator::operator++() {
-    //On change de face
+    //We go to the next face
     fit++;
     update();
     return *this;
 }
 
 Vertices_circulator& Vertices_circulator::operator--(int) {
-    //On change de face
+    //We go to the previous face
     fit--;
     update();
     return *this;

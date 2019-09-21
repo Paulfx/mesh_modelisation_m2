@@ -14,28 +14,27 @@ private:
 
 	//Result
 	std::vector<Vector> laplacian;
-
+	//The curvatures = the length of the laplacian vectors
 	std::vector<float> curvatures;
 	float minCurvature, maxCurvature;
 
-	Mesh* _mesh;
-	unsigned int vertexNb;
-
+	//Mesh* _mesh;
+	//unsigned int vertexNb; //Number of vertices of the mesh
 public:
 
 	LaplacianCalc() {};
-    LaplacianCalc(Mesh* mesh);
 
     //Cotangente between two vectors
 	float cotan(const Vector& Vi, const Vector& Vj);
-	//Aire du triangle formé par les deux vecteurs
+
+	//Area of the triangle created from the two vectors
 	//TODO aire signée? convexe/pas convexe
-	float aireTriangle(const Vector& v1, const Vector& v2);
+	float triangleArea(const Vector& v1, const Vector& v2);
 
 	//Map value from [istart,istop] to [ostart,ostop] linearly
 	float map(float value, float istart, float istop, float ostart, float ostop);
 
-	void calculate();
+	void calculate(Mesh* mesh);
 
 	//Accesseurs
 	Vector getNormal(VERTEX_INDEX vi);
