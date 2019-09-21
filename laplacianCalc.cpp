@@ -54,8 +54,12 @@ void LaplacianCalc::calculate() {
 
 	Vertices_circulator vcircFirst;
 
+    Vertices_iterator vit = _mesh->vertices_iterator_begin();
 
-	for (Vertices_iterator vit = _mesh->vertices_iterator_begin(); vit != _mesh->vertices_iterator_end(); vit++) {
+    i = vit.getIndex();
+    std::cout << "turn around: " << i << std::endl;
+
+    for (; vit != _mesh->vertices_iterator_end(); vit++) {
 
 		vi = *vit;
         vcircFirst = _mesh->vertices_circulator_begin(i); //TODO change
@@ -64,6 +68,7 @@ void LaplacianCalc::calculate() {
 
         //printf("Vertex %d\n", i);
 
+        /* @Bug infinite loop */
         for (Vertices_circulator vcirc = vcircFirst--; vcirc != _mesh->vertices_circulator_begin(i); vcirc++) {
             if (aire==0.f) vcirc++; //On incrémente la première fois pour passer le test du for
 
@@ -97,7 +102,6 @@ void LaplacianCalc::calculate() {
 
         curvatures.push_back(getCurvature(i));
 
-        std::cout << "i++" << std::endl;
         i++;
 	}
 
