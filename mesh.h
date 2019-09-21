@@ -3,6 +3,8 @@
 
 #include <QGLWidget>
 #include <stdlib.h>
+#include <iostream>
+#include <fstream>
 
 #include "vec.h"
 #include "mesh_iterators.h" 
@@ -24,8 +26,10 @@ public:
     Vertex(): p(), incidentFace(-1) {}
     Vertex(float x_, float y_, float z_, FACE_INDEX if_): p(x_,y_,z_), incidentFace(if_) {}
     const Point & getPoint() const { return p; }
+
     //Return incident face
     FACE_INDEX getIncidentFace() const { return incidentFace; }
+    void setFi(FACE_INDEX fi) { incidentFace = fi; }
 
     //Operator -, return a Vector
     Vector operator-(const Vertex& v);
@@ -67,8 +71,11 @@ public:
     //Peut être pas meilleure solution..
     int getIndexOf(VERTEX_INDEX vi) const {
         //Retourne l'indice dans _v du vertex vi
-        for (int i = 0; i < 3; ++i)
-            if (_v[i] == vi) return i;
+        for (int i = 0; i < 3; ++i) {
+            if (_v[i] == vi){
+                return i;
+            }
+        }
         return -1;
     }
 
@@ -81,6 +88,12 @@ public:
     FACE_INDEX getFrontFaceOf(VERTEX_INDEX vi) const {
         return _f[getIndexOf(vi)];
     }
+
+    //Set the opposite face of vertex (local index i)
+    void setOppositeFace(FACE_INDEX fi, unsigned int i) {
+            _f[i] = fi;
+        }
+
 
 };
 
@@ -116,7 +129,10 @@ private:
 
     //Les laplaciens
     LaplacianCalc* lcalc; 
-    
+
+    //Compute local id of an opposite face for a face (v1, v2 are global ids representing the edge)
+    int getIndexOfOpposite(FACE_INDEX f_id, VERTEX_INDEX v1, VERTEX_INDEX v2);
+
     void glFaceDraw(const Face & f);
     void drawSelectedPoints();
     void drawCurrentNeighborFace();
@@ -127,6 +143,7 @@ public:
 
     void createTetrahedron();
     void createPyramid();
+    int load_off_file(std::string path_to_file);
 
     unsigned int vertexNb() { return vertexTab.size(); }
     unsigned int faceNb() { return faceTab.size(); }

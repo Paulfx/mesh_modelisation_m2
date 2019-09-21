@@ -49,10 +49,10 @@ void Faces_circulator::update(DIRECTION dir) {
     //Get index of the ref vertex in the actual face
     unsigned int indexRefVertex = actualFace.getIndexOf(refVertex);
 
+
     //Next face is the front face of indexRefVertex +- 1 (mod 3)
     VERTEX_INDEX nextVertex = (indexRefVertex + dir) % 3;
     currentFaceIndex = actualFace.getFrontFace(nextVertex);
-
 }
 
 const Face& Faces_circulator::operator*() const {
@@ -98,7 +98,7 @@ bool operator ==(   const Faces_circulator& fc1,
 
 Vertices_circulator::Vertices_circulator(Mesh* mesh, VERTEX_INDEX base) : _mesh(mesh), baseVertexIndex(base), fit(mesh, base) {
 
-    //premier sommet
+    //premier sommet;
     update();
 }
 
@@ -113,8 +113,9 @@ void Vertices_circulator::update() {
     //Parcours..
     const Face& currentFace = *fit;
     //Le sommet voisin est l'indice de baseVertex dans currentFace + 1
+
     VERTEX_INDEX indexOfBaseVertexInCurrFace = currentFace.getIndexOf(baseVertexIndex);
-    
+
     if (indexOfBaseVertexInCurrFace == -1) {
         //Problème du mesh mal construit...
         printf("indexOfBaseVertexInCurrFace == -1, ERROR ! \n");

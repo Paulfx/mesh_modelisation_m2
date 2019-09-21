@@ -35,8 +35,7 @@ float LaplacianCalc::aireTriangle(const Vector& v1, const Vector& v2) {
 }
 
 void LaplacianCalc::calculate() {
-    int i = 0; //Get from vit?
-
+    int i = 0; //Get from vit? TODO
 	Vertex vi;
 	Vertex vj;
 	Vertex vprev;
@@ -59,7 +58,6 @@ void LaplacianCalc::calculate() {
 	for (Vertices_iterator vit = _mesh->vertices_iterator_begin(); vit != _mesh->vertices_iterator_end(); vit++) {
 
 		vi = *vit;
-
         vcircFirst = _mesh->vertices_circulator_begin(i); //TODO change
 		sum = Vector(0.f,0.f,0.f);
         aire = 0.f;
@@ -74,6 +72,7 @@ void LaplacianCalc::calculate() {
 			//Voisin précédent
 			vprev = *vcirc--;
 			vnext = *vcirc++;
+
 
 			v1 = vi - vprev;
 			v2 = vj - vprev;
@@ -98,6 +97,7 @@ void LaplacianCalc::calculate() {
 
         curvatures.push_back(getCurvature(i));
 
+        std::cout << "i++" << std::endl;
         i++;
 	}
 

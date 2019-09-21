@@ -15,7 +15,8 @@ Vector Vertex::operator-(const Vertex &v) {
 
 Mesh::Mesh()  {
     //createPyramid();
-    createTetrahedron();
+    //createTetrahedron();
+    std::cout << "open = " << load_off_file("./Documents/cours/m2/geoAlgo/mesh_modelisation/queen.off") << std:: endl;
 
     //On créé le laplacien
     lcalc = new LaplacianCalc(this);
@@ -83,6 +84,103 @@ void Mesh::createPyramid() {
 
 }
 
+/**
+ * Load data from .off file
+ */
+int Mesh::load_off_file(std::string path_to_file) {
+    std::string line;
+    std::ifstream myfile (path_to_file);
+    std::string spaceDelimiter = " ";
+    std::string lineDelimiter = "\n";
+    int nbVertices;
+    int nbFaces;
+    if (myfile.is_open()) {
+
+        /** read first line of file **/
+        getline(myfile, line);
+        nbVertices = atoi(line.substr(0, line.find(spaceDelimiter)).c_str());
+        nbFaces = atoi(line.substr(line.find(spaceDelimiter), line.find(lineDelimiter)).c_str());
+
+        /** read point positions to create vertices **/
+        for (int i = 0; i < nbVertices; i++) {
+            getline(myfile, line);
+            double x = atof(line.substr(0, line.find(spaceDelimiter)).c_str());
+            double y = atof(line.substr(line.find(spaceDelimiter), line.rfind(spaceDelimiter)).c_str());
+            double z = atof(line.substr(line.rfind(spaceDelimiter), line.find(lineDelimiter)).c_str());
+            vertexTab.push_back(Vertex(x, y, z, -1));//-1 -> no info yet
+        }
+
+        /** faces definition + adjacency map construction **/
+
+        std::map<std::pair<VERTEX_INDEX, VERTEX_INDEX>, FACE_INDEX> infoEdges; //map between edge and id of face
+
+        for (int idCurrentFace = 0; idCurrentFace < nbFaces; idCurrentFace++) {
+            getline(myfile, line);
+
+            int vertexId1 = atoi(line.substr(line.find(spaceDelimiter, 1), line.find(spaceDelimiter, 2)).c_str());
+            int vertexId2 = atoi(line.substr(line.find(spaceDelimiter, 2), line.rfind(spaceDelimiter)).c_str());
+            int vertexId3 = atoi(line.substr(line.rfind(spaceDelimiter), line.find(lineDelimiter)).c_str());
+
+            faceTab.push_back(Face(vertexId1, vertexId2, vertexId3, -1, -1, -1));// Face creation (-1 useless values, need to change constructor)
+
+            //add incident faces into vertices (we store the last id of face who holding the vertex)
+            vertexTab[vertexId1].setFi(idCurrentFace);
+            vertexTab[vertexId2].setFi(idCurrentFace);
+            vertexTab[vertexId3].setFi(idCurrentFace);
+
+            for (int j = 0; j < 3; j++) { //3 edges by face
+                VERTEX_INDEX v1;
+                VERTEX_INDEX v2;
+
+                v1 = faceTab[idCurrentFace].vertex(std::max(0,j - 1));//first vertex of the edge
+                v2 = faceTab[idCurrentFace].vertex(std::min(j + 1, 2));//second
+
+                std::pair<VERTEX_INDEX, VERTEX_INDEX> edge (v1, v2); //edge creation
+
+                std::pair<VERTEX_INDEX, VERTEX_INDEX> edge2 (v2, v1); // IN ORDER TO ACCEPT <v1,v2> == <v2,v1>
+
+                //map construction: if an entry elready exist for the edge (key) in the map, we create an association, else we add the edge with the FACE_INDEX (value) to the map
+                if (infoEdges.find(edge) != infoEdges.end()) {//find(x) return .end if x doesn't exist in map
+                    // Entry found for this edge (same edge order <v1,v2>), so...
+
+                    //...set opposite for current face and also ...
+                    int index = getIndexOfOpposite(idCurrentFace, v1, v2);
+                    faceTab[idCurrentFace].setOppositeFace(infoEdges[edge], index);
+
+                    //...set opposite for opposite face (=current)
+                    index = getIndexOfOpposite(infoEdges[edge], v1, v2);
+                    faceTab[infoEdges[edge]].setOppositeFace(idCurrentFace, index);
+
+                } else if (infoEdges.find(edge2) != infoEdges.end()) {
+
+                    //We do the same but according to diffrent edge direction (<v2,v1>) for the two faces
+                    int index = getIndexOfOpposite(idCurrentFace, v1, v2);
+                    faceTab[idCurrentFace].setOppositeFace(infoEdges[edge2], index);
+
+                    index = getIndexOfOpposite(infoEdges[edge2], v1, v2);// edge is not in the same direction in this face (using edge2)
+                    faceTab[infoEdges[edge2]].setOppositeFace(idCurrentFace, index);
+
+                }
+
+                //todo: delete edge entry in map
+
+                else { //edge doesn't exist yet in map
+                    infoEdges[edge] = idCurrentFace; //save id of current face
+                }
+            }
+        }
+
+
+        myfile.close();
+        return 0;
+    }
+    else std::cout << "Unable to open file";
+    return -1;
+}
+
+
+
+
 
 void Mesh::setVertexStart(int vs) {
     if (vs < 0 || vs >= vertexTab.size()) return;
@@ -121,6 +219,13 @@ void Mesh::resetVertexFaceIndex() {
     currentNeighborVertex = -1;
     currentNeighborFace = -1;
 }
+
+int Mesh::getIndexOfOpposite(FACE_INDEX f_id, VERTEX_INDEX v1, VERTEX_INDEX v2) {
+    int id1 = faceTab[f_id].getIndexOf(v1);
+    int id2 = faceTab[f_id].getIndexOf(v2);
+    return (id1 + id2) - 1;
+}
+
 
 // The following functions could be displaced into a module OpenGLDisplayMesh that would include Mesh
 // Draw a vertex
