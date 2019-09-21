@@ -15,7 +15,7 @@ Vector Vertex::operator-(const Vertex &v) {
 
 Mesh::Mesh()  {
     //createPyramid();
-    //createTetrahedron();
+   // createTetrahedron();
     std::cout << "open = " << load_off_file("./Documents/cours/m2/geoAlgo/mesh_modelisation/queen.off") << std:: endl;
 
     //On créé le laplacien
@@ -223,7 +223,8 @@ void Mesh::resetVertexFaceIndex() {
 int Mesh::getIndexOfOpposite(FACE_INDEX f_id, VERTEX_INDEX v1, VERTEX_INDEX v2) {
     int id1 = faceTab[f_id].getIndexOf(v1);
     int id2 = faceTab[f_id].getIndexOf(v2);
-    return (id1 + id2) - 1;
+    //return (id1 + id2) - 1;
+    return (3 - (id1 + id2));
 }
 
 
