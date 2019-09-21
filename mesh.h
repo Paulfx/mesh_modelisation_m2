@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <math.h>
 
 #include "vec.h"
 #include "mesh_iterators.h" 
@@ -132,6 +133,7 @@ private:
     //Compute local id of an opposite face for a face (v1, v2 are global ids representing the edge)
     int getIndexOfOpposite(FACE_INDEX f_id, VERTEX_INDEX v1, VERTEX_INDEX v2);
 
+    void glVertexIndexDraw(const VERTEX_INDEX vi);
     void glFaceDraw(const Face & f);
     void drawSelectedPoints();
     void drawCurrentNeighborFace();

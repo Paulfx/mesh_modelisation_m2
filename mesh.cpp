@@ -17,9 +17,12 @@ Mesh::Mesh()  {
     //createPyramid();
     //createTetrahedron();
     //std::string filename = "./Documents/cours/m2/geoAlgo/mesh_modelisation/queen.off";
-    std::string filename = "./M2/maillage/Mesh_Computational_Geometry/queen.off";
 
+    std::string filename = "./M2/maillage/Mesh_Computational_Geometry/queen.off";
     std::cout << "open = " << load_off_file(filename) << std:: endl;
+
+
+    //glEnable(GL_LIGHTING);
 
     //Create the laplacian calculator
     lcalc = new LaplacianCalc();
@@ -221,29 +224,128 @@ void glVertexDraw(const Vertex & v) {
     glVertexDraw(v.getPoint());
 }
 
+
+//Code from www.programmingalgorithms.com/algorithm/hsv-to-rgb?lang=C
+void HSVToRGB(double hue, double s, double v, double& r, double& g, double& b) {
+    r=0, g=0, b=0;
+
+    if (s == 0)
+    {
+        r = v;
+        g = v;
+        b = v;
+    }
+    else
+    {
+        int i;
+        double f, p, q, t;
+
+        if (hue == 360)
+            hue = 0;
+        else
+            hue = hue / 60;
+
+        i = (int)trunc(hue);
+        f = hue - i;
+
+        p = v * (1.0 - s);
+        q = v * (1.0 - (s * f));
+        t = v * (1.0 - (s * (1.0 - f)));
+
+        switch (i)
+        {
+        case 0:
+            r = v;
+            g = t;
+            b = p;
+            break;
+
+        case 1:
+            r = q;
+            g = v;
+            b = p;
+            break;
+
+        case 2:
+            r = p;
+            g = v;
+            b = t;
+            break;
+
+        case 3:
+            r = p;
+            g = q;
+            b = v;
+            break;
+
+        case 4:
+            r = t;
+            g = p;
+            b = v;
+            break;
+
+        default:
+            r = v;
+            g = p;
+            b = q;
+            break;
+        }
+
+    }
+
+    // struct RGB rgb;
+    // rgb.R = r * 255;
+    // rgb.G = g * 255;
+    // rgb.B = b * 255;
+}
+
+void Mesh::glVertexIndexDraw(const VERTEX_INDEX vi) {
+    //The normal
+    const Vector& normal = lcalc->getNormal(vi);
+    //The curvature
+    float curvature = lcalc->getCurvatureMapped(vi,0.f,360.f);
+    double r,g,b;
+    HSVToRGB(curvature, 1, 1, r, g, b);
+
+    //printf("Color from angle = %f, to r=%f, g=%f, b=%f\n", curvature, r,g,b);
+
+    glNormal3f(normal.x, normal.y, normal.z);
+    glColor3d(r,g,b);
+
+    const Point& p = _vertices[vi].getPoint();
+    glVertexDraw(p);
+
+}
+
 void Mesh::glFaceDraw(const Face & f) {
     glBegin(GL_TRIANGLES);
 
 
     //glColor3d()
+    // glVertexDraw(_vertices[f.v1()]);
+    // glVertexDraw(_vertices[f.v2()]);
+    // glVertexDraw(_vertices[f.v3()]);
+    
+    glVertexIndexDraw(f.v1());
+    glVertexIndexDraw(f.v2());
+    glVertexIndexDraw(f.v3());
+    
 
-    glVertexDraw(_vertices[f.v1()]);
-    glVertexDraw(_vertices[f.v2()]);
-    glVertexDraw(_vertices[f.v3()]);
     glEnd();
 }
 
 
 void Mesh::drawMesh() {
     for(unsigned i = 0; i < _faces.size(); i++) {
-        if (i == 0) glColor3d(1,0,0);
-        else if (i == 1) glColor3d(0,1,0);
-        else if (i == 2) glColor3d(0,0,1);
-        else glColor3d(1,1,0);
+        
+        // if (i == 0) glColor3d(1,0,0);
+        // else if (i == 1) glColor3d(0,1,0);
+        // else if (i == 2) glColor3d(0,0,1);
+        // else glColor3d(1,1,0);
 
         //TODO color depending on the curvatures
 
-        if (i == currentNeighborFace) glColor3d(1,1,1);
+        if ((int)i == currentNeighborFace) glColor3d(1,1,1);
 
         glFaceDraw(_faces[i]);
     }

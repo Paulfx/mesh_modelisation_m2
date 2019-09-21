@@ -18,8 +18,8 @@ public:
     void setWireframe();
     bool wf() { return wireframe; }
 
-    unsigned int vertexNb() { return _mesh.vertexNb(); }
-    unsigned int faceNb() { return _mesh.faceNb(); }
+    unsigned int vertexNb() { return _mesh.numberOfVertices(); }
+    unsigned int faceNb() { return _mesh.numberOfFaces(); }
     void setVertexStart(unsigned int vs) { _mesh.setVertexStart(vs); }
     void nextFace() { _mesh.nextFace(+1); }
     void prevFace() { _mesh.nextFace(-1); }
