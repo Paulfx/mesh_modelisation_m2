@@ -42,7 +42,7 @@ Theses files define a Point structure, and a Vector struct with geometrical oper
 Theses files define the vertex, face and mesh classes. The vertex hold a Point (defined in *vec.h*) and one of his incident face.
 The face contains 3 vertices, and holds an array that store the front face of its vertices. For example, if the first vertex of a face is **vertex 3**, the first element of the array **_f** will be the index of the front face of **vertex 3**. This informations is used to iterate over the neighboring faces of a vertex.
 
-The mesh contains informations about all faces and vertices. It's created from an '.off' file stored in the root directory of this project.
+The mesh contains informations about all faces and vertices. It's created from an '.off' file stored in the root directory of this project but it is possible to load it from a custom path.
 During mesh loading, we use a map structure to set front faces of vertices. In order to add these informations we search shared edges.
 
 ##### Files *mesh_iterators.cpp/.h*
