@@ -8,7 +8,7 @@ by Langlade Maxime and Lafoix Paul (M2 image)
 
 The mesh is displayed in a GL_Display_Widget. The mesh is colorized depending on the value of the curvature of each vertex. The curvature is converted from HSV to RGB value.
 
-##### At the left	
+##### At the left side
 
 Infos about the mesh and buttons to create a pyramid (not functional), a tetrahedron or open a OFF file.
 
@@ -33,3 +33,27 @@ You can exit the application.
 
 ### Code
 
+##### Files *vec.cpp/.h* extracted from GKit (link!!)
+
+Theses files define a Point structure, and a Vector struct with geometrical operations such as dot product, cross product, and so on..
+
+##### Files *mesh.cpp/.h*
+
+Theses files define the vertex, face and mesh classes. The vertex hold a Point (defined in *vec.h*) and one of his incident face.
+The face contains 3 vertices, and holds an array that store the front face of its vertices. For example, if the first vertex of a face is **vertex 3**, the first element of the array **_f** will be the index of the front face of **vertex 3**. This informations is used to iterate over the neighboring faces of a vertex.
+
+The mesh contains.... creation....
+
+##### Files *mesh_iterators.cpp/.h*
+
+Define 3 iterators for the mesh.
+
+First, an iterator on all the vertices of the mesh (**VerticesIterator**)
+
+Then, a circulator on neighboring faces of a vertex (**FacesCirculator**)
+
+Finally a circulator on neighboring vertices of a vertex (**VerticesCirculator**). This circulator encapsulate a **facesCirculator** to iterate over the neighboors.
+
+##### Files *laplacianCalc.cpp/.h*
+
+Define a class that calculate the laplacian vector for each vertex of an input mesh. Contain functions to get the resulting curvature (mapped between values, or not) and the resulting normal for each vertex.
