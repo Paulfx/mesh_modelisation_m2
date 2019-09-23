@@ -95,6 +95,10 @@ public:
         _f[i] = fi;
     }
 
+    void setVertex(unsigned int i, VERTEX_INDEX vi) {
+        _v[i] = vi;
+    }
+
 };
 
 // ------------------------------------------------------------------------
