@@ -43,6 +43,7 @@ private:
     Ui::MainWindow *ui;
 
     void updateTextCurrentIndex();
+    void updateTextInfos();
 };
 
 #endif // MAINWINDOW_H

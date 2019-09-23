@@ -12,11 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //Font size..
    // ui->labelInfo->setFont();
 
-    QString t = "Nb vertex : " + QString::number(ui->widget->vertexNb());
-    ui->labelVertexNb->setText(t);
-
-    QString tFace = "Nb face : " + QString::number(ui->widget->faceNb());
-    ui->labelFaceNb->setText(tFace);
+    updateTextInfos();
 
     updateTextCurrentIndex();
 
@@ -25,6 +21,14 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::updateTextInfos() {
+    QString t = "Nb vertex : " + QString::number(ui->widget->vertexNb());
+    ui->labelVertexNb->setText(t);
+
+    QString tFace = "Nb face : " + QString::number(ui->widget->faceNb());
+    ui->labelFaceNb->setText(tFace);
 }
 
 
@@ -94,11 +98,13 @@ void MainWindow::on_pbPrevVertex_released()
 void MainWindow::on_pbPyramid_released()
 {
     ui->widget->createPyramid();
+    updateTextInfos();
 }
 
 void MainWindow::on_pbTetrahedron_released()
 {
     ui->widget->createTetrahedron();
+    updateTextInfos();
 }
 
 void MainWindow::on_pbOpenFile_released()
@@ -107,6 +113,7 @@ void MainWindow::on_pbOpenFile_released()
         tr("Open Image"), "./", tr("OFF Files (*.off)")).toStdString();
 
     ui->widget->createFromOFF(fileName);
+    updateTextInfos();
 
 
 
