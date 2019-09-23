@@ -10,7 +10,7 @@ The mesh is displayed in a GL_Display_Widget. The mesh is colorized depending on
 
 ##### At the left side
 
-Infos about the mesh and buttons to create a pyramid (not functional), a tetrahedron or open a OFF file.
+Infos about the mesh and buttons to create a pyramid, a tetrahedron or open a OFF file.
 
 ##### At the middle
 
@@ -33,7 +33,7 @@ You can exit the application.
 
 ### Code
 
-##### Files *vec.cpp/.h* extracted from GKit (link!!)
+##### Files *vec.cpp/.h* extracted from GKit [(Source)](https://forge.univ-lyon1.fr/Alexandre.Meyer/gkit2light)
 
 Theses files define a Point structure, and a Vector struct with geometrical operations such as dot product, cross product, and so on..
 
@@ -42,7 +42,8 @@ Theses files define a Point structure, and a Vector struct with geometrical oper
 Theses files define the vertex, face and mesh classes. The vertex hold a Point (defined in *vec.h*) and one of his incident face.
 The face contains 3 vertices, and holds an array that store the front face of its vertices. For example, if the first vertex of a face is **vertex 3**, the first element of the array **_f** will be the index of the front face of **vertex 3**. This informations is used to iterate over the neighboring faces of a vertex.
 
-The mesh contains.... creation....
+The mesh contains informations about all faces and vertices. It's created from an '.off' file stored in the root directory of this project but it is possible to load it from a custom path.
+During mesh loading, we use a map structure to set front faces of vertices. In order to add these informations we search shared edges. If no front face of a vertex was found, then we use an unexisting value as id of face (is value represente a fictitious vertex).
 
 ##### Files *mesh_iterators.cpp/.h*
 
