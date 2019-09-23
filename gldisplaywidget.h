@@ -48,7 +48,7 @@ private:
     float _X, _Y ,_Z; // Translation
     float _angleX, _angleY; // Rotation
 
-    bool wireframe = false;
+    bool wireframe = true;
 
     QPoint _lastPosMouse; // To keep the last position of the mouse
 
