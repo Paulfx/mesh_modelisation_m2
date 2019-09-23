@@ -27,6 +27,7 @@ class Vertex {
 public:
     Vertex(): p(), incidentFace(-1) {}
     Vertex(float x_, float y_, float z_, FACE_INDEX if_): p(x_,y_,z_), incidentFace(if_) {}
+    Vertex(const Point& p_, FACE_INDEX if_) : p(p_), incidentFace(if_) {}
     const Point & getPoint() const { return p; }
 
     //Return incident face
@@ -103,6 +104,10 @@ public:
     //Set the opposite face of vertex (local index i)
     void setOppositeFace(FACE_INDEX fi, unsigned int i) {
         _f[i] = fi;
+    }
+
+    void setVertex(unsigned int i, VERTEX_INDEX vi) {
+        _v[i] = vi;
     }
 
 };
