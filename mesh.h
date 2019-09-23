@@ -49,6 +49,17 @@ class Face
 public:
 
     Face() {}
+
+    Face(   VERTEX_INDEX v1_, VERTEX_INDEX v2_, VERTEX_INDEX v3_) {
+        _v[0] = v1_;
+        _v[1] = v2_;
+        _v[2] = v3_;
+
+        _f[0] = -1;
+        _f[1] = -1;
+        _f[2] = -1;
+    }
+
     Face(   VERTEX_INDEX v1_, VERTEX_INDEX v2_, VERTEX_INDEX v3_,
             FACE_INDEX f1_, FACE_INDEX f2_, FACE_INDEX f3_) {
         _v[0] = v1_;
