@@ -6,8 +6,8 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <math.h>
 
+#include "utils.h"
 #include "vec.h"
 #include "mesh_iterators.h" 
 #include "laplacianCalc.h"
@@ -91,9 +91,8 @@ public:
 
     //Set the opposite face of vertex (local index i)
     void setOppositeFace(FACE_INDEX fi, unsigned int i) {
-            _f[i] = fi;
-        }
-
+        _f[i] = fi;
+    }
 
 };
 
@@ -148,6 +147,9 @@ private:
 
     //Load data from an .off file
     int load_off_file(const std::string& path_to_file);
+
+    //Split face into 3 faces
+    void split_face(const Point& newPoint);
 
 public:
 
