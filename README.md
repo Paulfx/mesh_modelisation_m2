@@ -10,7 +10,7 @@ The mesh is displayed in a GL_Display_Widget. The mesh is colorized depending on
 
 ##### At the left side
 
-Infos about the mesh and buttons to create a pyramid (not functional), a tetrahedron or open a OFF file.
+Infos about the mesh and buttons to create a pyramid, a tetrahedron or open a OFF file.
 
 ##### At the middle
 
