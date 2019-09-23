@@ -36,7 +36,7 @@ void GLDisplayWidget::paintGL(){
     // Center the camera
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(0,0,5,  0,0,0,   0,1,0);
+    gluLookAt(0,0,10,  0,0,0,   0,1,0);
 
     // Translation
     glTranslated(_X, _Y, _Z);
@@ -59,7 +59,7 @@ void GLDisplayWidget::resizeGL(int width, int height){
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45.0f, (GLfloat)width/(GLfloat)height, 0.1f, 100.0f);
+    gluPerspective(45.0f, (GLfloat)width/(GLfloat)height, 0.1f, 1000.0f);
 
     updateGL();
 }

@@ -47,14 +47,11 @@ void Faces_circulator::update(DIRECTION dir) {
     const Face& actualFace = _mesh->_faces[currentFaceIndex];
 
     //Get index of the ref vertex in the actual face
-    unsigned int indexRefVertex = actualFace.getIndexOf(refVertex);
+    int indexRefVertex = actualFace.getIndexOf(refVertex);
 
     if (indexRefVertex == -1) {
-
-        //fprintf(stderr, "Error -1 refVertex=%d, actualFace=%d\n",refVertex, currentFaceIndex);
-        //BIG BUG
-        indexRefVertex = 0;
-
+        fprintf(stderr, "Error -1 refVertex=%d, actualFace=%d\n", indexRefVertex, currentFaceIndex);
+        //indexRefVertex = 0;
     }
 
     //Next face is the front face of indexRefVertex +- 1 (mod 3)
@@ -63,6 +60,8 @@ void Faces_circulator::update(DIRECTION dir) {
 }
 
 const Face& Faces_circulator::operator*() const {
+    //-1 if the refVertex has no front face, we return first element to stop loops...
+    if (currentFaceIndex == -1) return *_mesh->incident_faces_circulator(refVertex);
     return _mesh->_faces[currentFaceIndex];
 }
 
@@ -108,14 +107,14 @@ Vertices_circulator::Vertices_circulator(const Vertices_circulator& vc)
 void Vertices_circulator::update() {
     const Face& currentFace = *fit;
     //Next vertex is the local index of baseVertex in the current face + 1
-    VERTEX_INDEX indexOfBaseVertexInCurrFace = currentFace.getIndexOf(baseVertexIndex);
+    int indexOfBaseVertexInCurrFace = currentFace.getIndexOf(baseVertexIndex);
 
     if (indexOfBaseVertexInCurrFace == -1) {
         //We shouldn't get here, it mean that the mesh is not well constructed
-        printf("indexOfBaseVertexInCurrFace == -1, ERROR ! \n");
+        printf("indexOfBaseVertexInCurrFace == -1 \n");
     }
 
-    VERTEX_INDEX nextVertex = (indexOfBaseVertexInCurrFace + 1) % 3;
+    int nextVertex = (indexOfBaseVertexInCurrFace + 1) % 3;
     currentVertexIndex = currentFace.vertex(nextVertex);
 }
 

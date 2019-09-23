@@ -29,17 +29,20 @@ void LaplacianCalc::calculate(Mesh* mesh) {
 	bool firstLoop;
 
 	Vertices_circulator vcircFirst;
+
     for (Vertices_iterator vit = mesh->vertices_iterator_begin(); vit != mesh->vertices_iterator_end(); vit++) {
 		vi = *vit;
-        vcircFirst = mesh->vertices_circulator_begin(i); //TODO change with a vertex?
+        vcircFirst = mesh->vertices_circulator_begin(i);
 		sum = Vector(0.f,0.f,0.f);
         area = 0.f;
         firstLoop = true;
+    	unsigned int n=0; //To not infinite loop
         for (Vertices_circulator vcirc = vcircFirst--; vcirc != mesh->vertices_circulator_begin(i); vcirc++) {
             if (firstLoop) {
             	vcirc++; //We increment only once to pass the test of the for loop
 				firstLoop = false;
 			}
+			if (n++ > 15) break; //Avoid infinite loop if the mesh is not well constructed
 			vj = *vcirc;
 
 			vprev = *vcirc--; //Previous vertex

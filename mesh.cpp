@@ -17,8 +17,8 @@ Mesh::Mesh()  {
     //Create the laplacian calculator
     lcalc = new LaplacianCalc();
 
-    //createPyramid();
-    createTetrahedron();
+    createPyramid();
+    //createTetrahedron();
 
     //std::string filename = "./Documents/cours/m2/geoAlgo/mesh_modelisation/queen.off";
     //std::string filename = "./M2/maillage/Mesh_Computational_Geometry/queen.off";
@@ -34,7 +34,7 @@ Mesh::~Mesh() { delete lcalc; }
 void Mesh::createTetrahedron() {
     _vertices.clear();
     _faces.clear();
-    //resetVertexFaceIndex();
+    resetVertexFaceIndex();
 
     _vertices.push_back(Vertex(-0.5,-0.5,-0.5   , 3));
     _vertices.push_back(Vertex(0.5,-0.5,-0.5    , 0));
@@ -53,10 +53,9 @@ void Mesh::createTetrahedron() {
 }
 
 void Mesh::createPyramid() {
-    //TODO manual
     _vertices.clear();
     _faces.clear();
-    //resetVertexFaceIndex();
+    resetVertexFaceIndex();
 
     _vertices.push_back(Vertex(-0.5,0,-0.5   , 3));
     _vertices.push_back(Vertex(0.5,0,-0.5    , 0));
@@ -81,7 +80,7 @@ void Mesh::createPyramid() {
 void Mesh::createFromOFF(const std::string &filename) {
     _vertices.clear();
     _faces.clear();
-    //resetVertexFaceIndex();
+    resetVertexFaceIndex();
 
     load_off_file(filename);
 
@@ -413,23 +412,33 @@ void Mesh::drawMeshWireFrame() {
     Face f;
     for(unsigned i = 0; i < _faces.size(); i++) {
         f = _faces[i];
+        // glBegin(GL_LINE_STRIP);
+        //     glVertexDraw(_vertices[f.v1()]);
+        //     glVertexDraw(_vertices[f.v2()]);
+        // glEnd();
+        // glBegin(GL_LINE_STRIP);
+        //     glVertexDraw(_vertices[f.v2()]);
+        //     glVertexDraw(_vertices[f.v3()]);
+        // glEnd();
+        // glBegin(GL_LINE_STRIP);
+        //     glVertexDraw(_vertices[f.v3()]);
+        //     glVertexDraw(_vertices[f.v1()]);
+        // glEnd();
         glBegin(GL_LINE_STRIP);
-            glVertexDraw(_vertices[f.v1()]);
-            glVertexDraw(_vertices[f.v2()]);
+            glVertexIndexDraw(f.v1(),false);
+            glVertexIndexDraw(f.v2(),false);
         glEnd();
         glBegin(GL_LINE_STRIP);
-            glVertexDraw(_vertices[f.v2()]);
-            glVertexDraw(_vertices[f.v3()]);
+            glVertexIndexDraw(f.v2(),false);
+            glVertexIndexDraw(f.v3(),false);
         glEnd();
         glBegin(GL_LINE_STRIP);
-            glVertexDraw(_vertices[f.v3()]);
-            glVertexDraw(_vertices[f.v1()]);
+            glVertexIndexDraw(f.v3(),false);
+            glVertexIndexDraw(f.v1(),false);
         glEnd();
     }
 
-    //TODO with iterators
     drawSelectedPoints();
-    drawCurrentNeighborFace();
 }
 
 
