@@ -27,6 +27,7 @@ class Vertex {
 public:
     Vertex(): p(), incidentFace(-1) {}
     Vertex(float x_, float y_, float z_, FACE_INDEX if_): p(x_,y_,z_), incidentFace(if_) {}
+    Vertex(const Point& p_, FACE_INDEX if_) : p(p_), incidentFace(if_) {}
     const Point & getPoint() const { return p; }
 
     //Return incident face
