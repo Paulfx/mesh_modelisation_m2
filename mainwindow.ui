@@ -74,6 +74,13 @@
             </widget>
            </item>
            <item>
+            <widget class="QPushButton" name="pbCreateQueen">
+             <property name="text">
+              <string>Queen</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QPushButton" name="pbOpenFile">
              <property name="text">
               <string>Open OFF file</string>

@@ -20,6 +20,11 @@ Mesh::Mesh()  {
     //createPyramid();
     createTetrahedron();
 
+    Point np(0,0,-0.5);
+    split_face(np, 3);
+
+    fprintf(stderr, "After split_face, face nb %d, v0=%d, v1=%d, v2=%d\n", 3, _faces[3].v1(), _faces[3].v2(), _faces[3].v3());
+
     //std::string filename = "./Documents/cours/m2/geoAlgo/mesh_modelisation/queen.off";
     //std::string filename = "./M2/maillage/Mesh_Computational_Geometry/queen.off";
     //createFromOFF(filename);
@@ -182,6 +187,66 @@ int Mesh::load_off_file(const std::string& path_to_file) {
     return -1;
 }
 
+
+//Precondition : the face fi contains the newPoint
+void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
+    //Face& f = _faces[fi];
+
+    Vertex newVertex = Vertex(newPoint, fi);
+    VERTEX_INDEX newVertexIndex = _vertices.size();
+
+    //We add the vertex
+    _vertices.push_back(newVertex);
+
+    fprintf(stderr, "New index of vertex : %d\n", newVertexIndex);
+
+    FACE_INDEX indexF1 = _faces.size();
+    FACE_INDEX indexF2 = _faces.size() + 1;
+
+    Face f1(    _faces[fi].vertex(1), _faces[fi].vertex(2), newVertexIndex,
+                indexF2, fi, _faces[fi].getFrontFace(0));
+
+    _faces.push_back(f1);
+
+    Face f2(    _faces[fi].vertex(2), _faces[fi].vertex(0), newVertexIndex,
+                fi, indexF1, _faces[fi].getFrontFace(1));
+
+    _faces.push_back(f2);
+
+    //Modify incident faces
+
+    _vertices[_faces[fi].vertex(0)].setFi(indexF2);
+
+    _vertices[_faces[fi].vertex(1)].setFi(fi);
+
+    _vertices[_faces[fi].vertex(2)].setFi(indexF1);
+
+
+
+    //Modify neighbor faces..    
+    FACE_INDEX frontFace0 = _faces[fi].getFrontFace(0);
+    FACE_INDEX frontFace1 = _faces[fi].getFrontFace(1);
+
+    //Get local id
+    int localId = getIndexOfOpposite(frontFace0, _faces[fi].vertex(1), _faces[fi].vertex(2));
+    _faces[frontFace0].setOppositeFace(indexF1, localId);
+
+    localId = getIndexOfOpposite(frontFace1, _faces[fi].vertex(2), _faces[fi].vertex(0));
+    _faces[frontFace1].setOppositeFace(indexF2, localId);
+
+    //Modify input face
+    _faces[fi].setVertex(2, newVertexIndex);
+
+    fprintf(stderr, "Set vertex 2 of face %d, index : %d\n", fi, newVertexIndex);
+
+    _faces[fi].setOppositeFace(indexF1, 0);
+    _faces[fi].setOppositeFace(indexF2, 1);
+
+    //Useless
+    //f.setOppositeFace(f.getFrontFace(2), 2);
+
+}
+
 void Mesh::computeMaxValues() {
     // _maxX = 0, _maxY = 0, _maxZ = 0;
     // Point p;
@@ -252,11 +317,12 @@ void glVertexDraw(const Vertex & v) {
 }
 
 
-
-
 void Mesh::glVertexIndexDraw(const VERTEX_INDEX vi, bool isCurrentFace) {
     //The normal
     const Vector& normal = lcalc->getNormal(vi);
+    
+    RGB rgbColor;
+
     //The curvature
     if (isCurrentFace) //Use color white
         glColor3f(1,1,1);
@@ -266,6 +332,9 @@ void Mesh::glVertexIndexDraw(const VERTEX_INDEX vi, bool isCurrentFace) {
         //Convert curvature to rgb color
         HSVToRGB(curvature, 1, 1, r, g, b);
         glColor3d(r,g,b);
+        //Get the rgb color
+        //rgbColor = lcalc->getRgbColor(vi);
+        //glColor3d(rgbColor.r,rgbColor.g,rgbColor.b);
     }
     glNormal3f(normal.x, normal.y, normal.z);
     const Point& p = _vertices[vi].getPoint();

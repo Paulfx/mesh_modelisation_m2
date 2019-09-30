@@ -154,7 +154,7 @@ private:
     int load_off_file(const std::string& path_to_file);
 
     //Split face into 3 faces
-    void split_face(const Point& newPoint);
+    void split_face(const Point& newPoint, FACE_INDEX fi);
 
 public:
 

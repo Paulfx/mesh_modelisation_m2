@@ -39,6 +39,8 @@ private slots:
 
     void on_pbOpenFile_released();
 
+    void on_pbCreateQueen_released();
+
 private:
     Ui::MainWindow *ui;
 

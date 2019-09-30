@@ -50,7 +50,9 @@ void Faces_circulator::update(DIRECTION dir) {
     int indexRefVertex = actualFace.getIndexOf(refVertex);
 
     if (indexRefVertex == -1) {
-        fprintf(stderr, "Error -1 refVertex=%d, actualFace=%d\n", indexRefVertex, currentFaceIndex);
+        fprintf(stderr, "Error Faces_circulator indexrefVertex=-1, refVertex=%d, actualFace=%d\n", refVertex, currentFaceIndex);
+        
+        fprintf(stderr, "Face %d, v0=%d, v1=%d, v2=%d\n", currentFaceIndex, actualFace.v1(), actualFace.v2(), actualFace.v3());
         //indexRefVertex = 0;
     }
 
@@ -111,7 +113,7 @@ void Vertices_circulator::update() {
 
     if (indexOfBaseVertexInCurrFace == -1) {
         //We shouldn't get here, it mean that the mesh is not well constructed
-        printf("indexOfBaseVertexInCurrFace == -1 \n");
+        printf("indexOfBaseVertexInCurrFace == -1, currVertex=%d, baseVertex=%d\n", currentVertexIndex, baseVertexIndex);
     }
 
     int nextVertex = (indexOfBaseVertexInCurrFace + 1) % 3;
