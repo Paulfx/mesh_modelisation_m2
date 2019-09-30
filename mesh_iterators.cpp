@@ -47,7 +47,7 @@ void Faces_circulator::update(DIRECTION dir) {
     const Face& actualFace = _mesh->_faces[currentFaceIndex];
 
     //Get index of the ref vertex in the actual face
-    int indexRefVertex = actualFace.getIndexOf(refVertex);
+    int indexRefVertex = actualFace.getLocalIndexOf(refVertex);
 
     if (indexRefVertex == -1) {
         fprintf(stderr, "Error Faces_circulator indexrefVertex=-1, refVertex=%d, actualFace=%d\n", refVertex, currentFaceIndex);
@@ -109,7 +109,7 @@ Vertices_circulator::Vertices_circulator(const Vertices_circulator& vc)
 void Vertices_circulator::update() {
     const Face& currentFace = *fit;
     //Next vertex is the local index of baseVertex in the current face + 1
-    int indexOfBaseVertexInCurrFace = currentFace.getIndexOf(baseVertexIndex);
+    int indexOfBaseVertexInCurrFace = currentFace.getLocalIndexOf(baseVertexIndex);
 
     if (indexOfBaseVertexInCurrFace == -1) {
         //We shouldn't get here, it mean that the mesh is not well constructed

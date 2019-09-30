@@ -82,13 +82,26 @@ public:
     }
 
     //Return the local index of the vertex index vi
-    int getIndexOf(VERTEX_INDEX vi) const {
+    int getLocalIndexOf(VERTEX_INDEX vi) const {
         for (int i = 0; i < 3; ++i) {
             if (_v[i] == vi){
                 return i;
             }
         }
         return -1;
+    }
+
+    //Compute local id of an opposite face for a face (v1, v2 are global ids representing the edge)
+    int getLocalIndexOfOppositeFromVertexIndex(VERTEX_INDEX v1, VERTEX_INDEX v2) const {
+        //Precondition : v1 and v2 are in the face
+        int id1 = getLocalIndexOf(v1);
+        int id2 = getLocalIndexOf(v2);
+        //return (id1 + id2) - 1;
+        return getLocalIndexOfOppositeFromLocalIndex(id1,id2);
+    }
+
+    int getLocalIndexOfOppositeFromLocalIndex(int id1, int id2) const {
+        return (3 - (id1 + id2));
     }
 
     //Return the front face of the vertex number i in the face
@@ -98,7 +111,7 @@ public:
 
     //Return the front face of vertexIndex vi
     FACE_INDEX getFrontFaceOf(VERTEX_INDEX vi) const {
-        return _f[getIndexOf(vi)];
+        return _f[getLocalIndexOf(vi)];
     }
 
     //Set the opposite face of vertex (local index i)
@@ -145,8 +158,7 @@ private:
     //The calculator of the laplacian vectors
     LaplacianCalc* lcalc; 
 
-    //Compute local id of an opposite face for a face (v1, v2 are global ids representing the edge)
-    int getIndexOfOpposite(FACE_INDEX f_id, VERTEX_INDEX v1, VERTEX_INDEX v2);
+    //int getIndexOfOpposite(FACE_INDEX f_id, VERTEX_INDEX v1, VERTEX_INDEX v2);
 
     //Draw the vertex 'vi' and use hsv color for the curvature if isCurrentFace is false
     //Else use white color if the vertex vi is in the isCurrentFace
@@ -166,6 +178,9 @@ private:
 
     //Split face into 3 faces
     void split_face(const Point& newPoint, FACE_INDEX fi);
+
+    //Flip an edge shared between two triangles
+    void flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDEX v1, const VERTEX_INDEX v2);
 
 public:
 

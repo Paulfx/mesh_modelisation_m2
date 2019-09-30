@@ -153,20 +153,20 @@ int Mesh::load_off_file(const std::string& path_to_file) {
                     // Entry found for this edge (same edge order <v1,v2>), so...
 
                     //...set opposite for current face and also ...
-                    int index = getIndexOfOpposite(idCurrentFace, v1, v2);
+                    int index = _faces[idCurrentFace].getLocalIndexOfOppositeFromVertexIndex(v1, v2);
                     _faces[idCurrentFace].setOppositeFace(infoEdges[edge], index);
 
                     //...set opposite for opposite face (=current)
-                    index = getIndexOfOpposite(infoEdges[edge], v1, v2);
+                    index = _faces[infoEdges[edge]].getLocalIndexOfOppositeFromVertexIndex(v1, v2);
                     _faces[infoEdges[edge]].setOppositeFace(idCurrentFace, index);
 
                 } else if (infoEdges.find(edge2) != infoEdges.end()) {
 
                     //We do the same but according to diffrent edge direction (<v2,v1>) for the two faces
-                    int index = getIndexOfOpposite(idCurrentFace, v1, v2);
+                    int index = _faces[idCurrentFace].getLocalIndexOfOppositeFromVertexIndex(v1, v2);
                     _faces[idCurrentFace].setOppositeFace(infoEdges[edge2], index);
 
-                    index = getIndexOfOpposite(infoEdges[edge2], v1, v2);// edge is not in the same direction in this face (using edge2)
+                    index = _faces[infoEdges[edge2]].getLocalIndexOfOppositeFromVertexIndex(v1, v2);// edge is not in the same direction in this face (using edge2)
                     _faces[infoEdges[edge2]].setOppositeFace(idCurrentFace, index);
 
                 }
@@ -228,10 +228,10 @@ void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
     FACE_INDEX frontFace1 = _faces[fi].getFrontFace(1);
 
     //Get local id
-    int localId = getIndexOfOpposite(frontFace0, _faces[fi].vertex(1), _faces[fi].vertex(2));
+    int localId = _faces[frontFace0].getLocalIndexOfOppositeFromVertexIndex(_faces[fi].vertex(1), _faces[fi].vertex(2));
     _faces[frontFace0].setOppositeFace(indexF1, localId);
 
-    localId = getIndexOfOpposite(frontFace1, _faces[fi].vertex(2), _faces[fi].vertex(0));
+    localId = _faces[frontFace1].getLocalIndexOfOppositeFromVertexIndex(_faces[fi].vertex(2), _faces[fi].vertex(0));
     _faces[frontFace1].setOppositeFace(indexF2, localId);
 
     //Modify input face
@@ -246,6 +246,22 @@ void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
     //f.setOppositeFace(f.getFrontFace(2), 2);
 
 }
+
+void Mesh::flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDEX v1, const VERTEX_INDEX v2) {
+    //Precondition: v1, v2 are in faces f1 and f2 
+
+    // int f1_localIndex_v1 = _faces[f1].getLocalIndexOf(v1);
+    // int f1_localIndex_v2 = _faces[f1].getLocalIndexOf(v2);
+
+    // int f2_localIndex_v1 = _faces[f2].getLocalIndexOf(v1);
+    // int f2_localIndex_v2 = _faces[f2].getLocalIndexOf(v2);
+
+    // int f1_localIndex_opposite = getIndex OfOppositeFromLocalIndex(f1, v1, v2);
+
+
+
+}
+
 
 void Mesh::computeMaxValues() {
     // _maxX = 0, _maxY = 0, _maxZ = 0;
@@ -298,12 +314,12 @@ void Mesh::resetVertexFaceIndex() {
     currentNeighborFace = -1;
 }
 
-int Mesh::getIndexOfOpposite(FACE_INDEX f_id, VERTEX_INDEX v1, VERTEX_INDEX v2) {
-    int id1 = _faces[f_id].getIndexOf(v1);
-    int id2 = _faces[f_id].getIndexOf(v2);
-    //return (id1 + id2) - 1;
-    return (3 - (id1 + id2));
-}
+// int Mesh::getIndexOfO pposite(FACE_INDEX f_id, VERTEX_INDEX v1, VERTEX_INDEX v2) {
+//     int id1 = _faces[f_id].getLocalIndexOf(v1);
+//     int id2 = _faces[f_id].getLocalIndexOf(v2);
+//     //return (id1 + id2) - 1;
+//     return (3 - (id1 + id2));
+// }
 
 
 // The following functions could be displaced into a module OpenGLDisplayMesh that would include Mesh
