@@ -191,6 +191,8 @@ public:
     void createPyramid();
     void createFromOFF(const std::string& filename);
 
+    void testPredicates();
+
     //The number of vertices
     unsigned int numberOfVertices() { return _vertices.size(); }
     unsigned int numberOfFaces() { return _faces.size(); }
