@@ -76,7 +76,7 @@ Point convertTo2d(Point p) {
 // Predicates
 
 //work in 2d
-int pre_orientation(Point a,Point b, Point c) {
+int pred_orientation(Point a,Point b, Point c) {
     //switch to 2d
     Point a2d = convertTo2d(a);
     Point b2d = convertTo2d(b);
@@ -90,9 +90,9 @@ int pre_orientation(Point a,Point b, Point c) {
 }
 
 int pred_inTriangle(Point a, Point b, Point c, Point d) {
-    int o_dab = pre_orientation(d, a, b);
-    int o_dbc = pre_orientation(d, b, c);
-    int o_dca = pre_orientation(d, c, a);
+    int o_dab = pred_orientation(d, a, b);
+    int o_dbc = pred_orientation(d, b, c);
+    int o_dca = pred_orientation(d, c, a);
 
     if (o_dab == 0 || o_dbc == 0 || o_dca == 0) return 0;
     if (o_dab == o_dbc == o_dca == 1 ) return 1;

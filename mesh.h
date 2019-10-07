@@ -7,11 +7,10 @@
 #include <iostream>
 #include <fstream>
 
-#include "utils.h"
 #include "vec.h"
 #include "mesh_iterators.h" 
 #include "laplacianCalc.h"
-
+#include "utils.h"
 
 // ------------------------------------------------------------------------
 //                        VERTEX

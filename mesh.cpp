@@ -38,7 +38,7 @@ Mesh::Mesh()  {
     //std::string filename = "./M2/maillage/Mesh_Computational_Geometry/queen.off";
     //createFromOFF(filename);
 
-    glEnable(GL_LIGHTING);
+    //glEnable(GL_LIGHTING);
 }
 
 Mesh::~Mesh() { delete lcalc; }
@@ -49,10 +49,9 @@ void Mesh::testPredicates() {
     Point p3 = Point(1, 0, 0);
     Point p4 = Point(0.5, 0, 0); // align to b & c
 
-
-   // printf("test orientation (expected 1): ‰d \n", pred_orientation(p1,p2,p3));
-   // printf("test orientation (expected -1): ‰d \n", pred_orientation(p2,p1,p3));
-   // printf("test orientation (expected 0): ‰d \n", pred_orientation(p2,p4,p3));
+   printf("test orientation (expected 1): %d \n", pred_orientation(p1,p2,p3));
+   printf("test orientation (expected -1): %d \n", pred_orientation(p2,p1,p3));
+   printf("test orientation (expected 0): %d \n", pred_orientation(p2,p4,p3));
 
 }
 

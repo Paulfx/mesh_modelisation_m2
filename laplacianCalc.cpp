@@ -75,6 +75,7 @@ void LaplacianCalc::calculate(Mesh* mesh) {
 
     //Compute rgb colors
     fillRgbColors();
+
 }
 
 void LaplacianCalc::fillRgbColors() {
