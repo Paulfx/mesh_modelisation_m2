@@ -68,3 +68,35 @@ void HSVToRGB(double hue, double s, double v, double& r, double& g, double& b) {
 
     }
 }
+
+Point convertTo2d(Point p) {
+    return Point(p.x, p.y, 0);
+}
+
+// Predicates
+
+//work in 2d
+int pre_orientation(Point a,Point b, Point c) {
+    //switch to 2d
+    Point a2d = convertTo2d(a);
+    Point b2d = convertTo2d(b);
+    Point c2d = convertTo2d(c);
+    Vector ab (a2d, b2d);
+    Vector ac (a2d, c2d);
+
+    float result = dot(cross(ab, ac), vec3(0, 0, 1));
+
+    return result > 0 ? 1 : result < 0 ? -1 : 0;
+}
+
+int pred_inTriangle(Point a, Point b, Point c, Point d) {
+    int o_dab = pre_orientation(d, a, b);
+    int o_dbc = pre_orientation(d, b, c);
+    int o_dca = pre_orientation(d, c, a);
+
+    if (o_dab == 0 || o_dbc == 0 || o_dca == 0) return 0;
+    if (o_dab == o_dbc == o_dca == 1 ) return 1;
+    return -1;
+
+}
+

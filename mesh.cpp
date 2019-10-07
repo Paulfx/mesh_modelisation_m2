@@ -16,6 +16,10 @@ Vector Vertex::operator-(const Vertex &v) {
 // ------------------------------------------------------------------------
 
 Mesh::Mesh()  {
+
+    //testPredicates();
+
+
     //Create the laplacian calculator
     lcalc = new LaplacianCalc();
 
@@ -38,6 +42,19 @@ Mesh::Mesh()  {
 }
 
 Mesh::~Mesh() { delete lcalc; }
+
+void Mesh::testPredicates() {
+    Point p1 = Point(0.5, 1, 0);
+    Point p2 = Point(0, 0, 0);
+    Point p3 = Point(1, 0, 0);
+    Point p4 = Point(0.5, 0, 0); // align to b & c
+
+
+   // printf("test orientation (expected 1): ‰d \n", pred_orientation(p1,p2,p3));
+   // printf("test orientation (expected -1): ‰d \n", pred_orientation(p2,p1,p3));
+   // printf("test orientation (expected 0): ‰d \n", pred_orientation(p2,p4,p3));
+
+}
 
 void Mesh::createTetrahedron() {
     _vertices.clear();
