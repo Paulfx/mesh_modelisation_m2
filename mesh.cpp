@@ -315,11 +315,6 @@ void Mesh::flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDE
 
 //}
 
-void Mesh::flip_edge(const int f1, const int f2, const int v1, const int v2) {
-
-    //
-}
-
 void Mesh::computeMaxValues() {
     // _maxX = 0, _maxY = 0, _maxZ = 0;
     // Point p;
