@@ -17,8 +17,12 @@
 //                        VERTEX
 // ------------------------------------------------------------------------
 
-typedef int FACE_INDEX;
-typedef int VERTEX_INDEX;
+// typedef int FACE_INDEX;
+// typedef int VERTEX_INDEX;
+
+using FACE_INDEX = int;
+using VERTEX_INDEX = int;
+
 
 class Vertex {
     Point p;
@@ -181,6 +185,7 @@ private:
 
     //Flip an edge shared between two triangles
     void flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDEX v1, const VERTEX_INDEX v2);
+    void flip_edge(const int f1, const int f2, const int v1, const int v2);
 
 public:
 

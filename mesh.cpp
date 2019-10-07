@@ -1,5 +1,7 @@
 #include "mesh.h"
 
+//using VERTEX_INDEX = int;
+
 // ------------------------------------------------------------------------
 //                        VERTEX
 // ------------------------------------------------------------------------
@@ -22,6 +24,9 @@ Mesh::Mesh()  {
 
     Point np(0,0,-0.5);
     split_face(np, 3);
+
+    flip_edge(3, 1, 2, 0);
+
 
     fprintf(stderr, "After split_face, face nb %d, v0=%d, v1=%d, v2=%d\n", 3, _faces[3].v1(), _faces[3].v2(), _faces[3].v3());
 
@@ -250,18 +255,53 @@ void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
 void Mesh::flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDEX v1, const VERTEX_INDEX v2) {
     //Precondition: v1, v2 are in faces f1 and f2 
 
-    // int f1_localIndex_v1 = _faces[f1].getLocalIndexOf(v1);
-    // int f1_localIndex_v2 = _faces[f1].getLocalIndexOf(v2);
+    //Reference possible car pas de push_back = pas d'invalidation de la ref
+    Face& F1 = _faces[f1];
+    Face& F2 = _faces[f2];
 
-    // int f2_localIndex_v1 = _faces[f2].getLocalIndexOf(v1);
-    // int f2_localIndex_v2 = _faces[f2].getLocalIndexOf(v2);
+    int f1_localIndex_v1 = F1.getLocalIndexOf(v1);
+    int f1_localIndex_v2 = F1.getLocalIndexOf(v2);
 
-    // int f1_localIndex_opposite = getIndex OfOppositeFromLocalIndex(f1, v1, v2);
+    int f2_localIndex_v1 = F2.getLocalIndexOf(v1);
+    int f2_localIndex_v2 = F2.getLocalIndexOf(v2);
 
+    int f1_localIndex_opposite = F1.getLocalIndexOfOppositeFromLocalIndex(f1_localIndex_v1, f1_localIndex_v2);
+    int f2_localIndex_opposite = F2.getLocalIndexOfOppositeFromLocalIndex(f2_localIndex_v1, f2_localIndex_v2);
 
+    FACE_INDEX if1 = F1.getFrontFace(f1_localIndex_v2);
+    FACE_INDEX if2 = F2.getFrontFace(f2_localIndex_v1);
+
+    F1.setOppositeFace(if2, f1_localIndex_opposite);
+    F1.setOppositeFace(f2, f1_localIndex_v2);
+
+    F1.setVertex(f1_localIndex_v1, F2.vertex(f2_localIndex_opposite));
+
+    F2.setOppositeFace(if1, f2_localIndex_opposite);
+    F2.setOppositeFace(f1, f2_localIndex_v1);
+
+    F2.setVertex(f2_localIndex_v2, F1.vertex(f1_localIndex_opposite));
+
+    _faces[if1].setOppositeFace(f2, (_faces[if1].getLocalIndexOf(v1) + 2) % 3);
+    _faces[if2].setOppositeFace(f1, (_faces[if2].getLocalIndexOf(v2) + 1) % 3);
 
 }
 
+//void Mesh::flip_edge(const FACE_INDEX f1, int localIndexF1) {
+
+
+//    //Split edge in front of localIndexF1
+
+
+
+
+
+
+//}
+
+void Mesh::flip_edge(const int f1, const int f2, const int v1, const int v2) {
+
+    //
+}
 
 void Mesh::computeMaxValues() {
     // _maxX = 0, _maxY = 0, _maxZ = 0;
