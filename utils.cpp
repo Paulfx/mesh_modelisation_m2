@@ -73,6 +73,13 @@ Point convertTo2d(Point p) {
     return Point(p.x, p.y, 0);
 }
 
+float tan_from_angle(Point p1, Point p2, Point p3){
+    int sign = pred_orientation(p2,p3,p1);
+    Vector bc (p2, p3);
+    Vector ba (p2, p1);
+    return sign * length((cross(bc, ba)) / dot(bc, ba));
+}
+
 // Predicates
 
 //work in 2d
@@ -97,6 +104,21 @@ int pred_inTriangle(Point a, Point b, Point c, Point d) {
     if (o_dab == 0 || o_dbc == 0 || o_dca == 0) return 0;
     if (o_dab == o_dbc == o_dca == 1 ) return 1;
     return -1;
-
 }
 
+Point compute_circumscribedCercle(Point a, Point b, Point c) {
+    float tanA = tan_from_angle(c, a, b);
+    float tanB = tan_from_angle(a, b, c);
+    float tanC = tan_from_angle(b, c, a);
+    return Point(tanB + tanC, tanC + tanA, tanA + tanB);
+}
+
+int pred_inCercle(Point a, Point b, Point c, Point d) {
+   // Point center = compute_circumscribedCercle(a, b, c);
+   //
+   // float r = length(center - a);
+   // float length(center - d);
+   //
+
+
+}
