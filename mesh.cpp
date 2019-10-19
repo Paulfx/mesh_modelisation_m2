@@ -58,6 +58,12 @@ void Mesh::testPredicates() {
    printf("test in tirangle (expected 0): %d \n", pred_inTriangle(p1,p2,p3,p4));
    printf("test in tirangle (expected 1): %d \n", pred_inTriangle(p1,p2,p3,p5));
    printf("test in tirangle (expected -1): %d \n", pred_inTriangle(p1,p2,p3,p6));
+
+   printf("test in circle (expected 1): %d \n", pred_inCercle(p1,p2,p3,p5));
+   printf("test in circle (expected 1): %d \n", pred_inCercle(p1,p2,p3,p4));
+   printf("test in circle (expected -1): %d \n", pred_inCercle(p1,p2,p3,p6));
+
+
 }
 
 void Mesh::createTetrahedron() {

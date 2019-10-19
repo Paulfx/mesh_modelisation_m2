@@ -113,12 +113,19 @@ Point compute_circumscribedCercle(Point a, Point b, Point c) {
     return Point(tanB + tanC, tanC + tanA, tanA + tanB);
 }
 
-int pred_inCercle(Point a, Point b, Point c, Point d) {
-   // Point center = compute_circumscribedCercle(a, b, c);
-   //
-   // float r = length(center - a);
-   // float length(center - d);
-   //
+int pred_inCercle(Point p, Point q, Point r, Point s) {
+    float pqx = q.x - p.x;
+    float pqy = q.y - p.y;
+    float prx = r.x - p.x;
+    float pry = r.y - p.y;
+    float psx = s.x - p.x;
+    float psy = s.y - p.y;
 
+    Vector pq = Vector(pqx, pqy, pqx * pqx + pqy * pqy);
+    Vector pr = Vector(prx, pry, prx * prx + pry * pry);
+    Vector ps = Vector(psx, psy, psx * psx + psy * psy);
 
+    float result = -dot(cross(pq, pr), ps);
+
+    return result > 0 ? 1 : result < 0 ? -1 : 0;
 }
