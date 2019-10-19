@@ -77,14 +77,28 @@ float tan_from_angle(Point p1, Point p2, Point p3){
     int sign = pred_orientation(p2,p3,p1);
     Vector bc (p2, p3);
     Vector ba (p2, p1);
+    float tmp = length((cross(bc, ba)) / dot(bc, ba));
+    //printf("tmp cercle center = %f, \n", tmp);
     return sign * length((cross(bc, ba)) / dot(bc, ba));
 }
 
 Point computeCenterOfCircumscribedCercle(Point a, Point b, Point c) {
+    //sum tans need to be 1 (baricentric coordinates)
     float tanA = tan_from_angle(c, a, b);
     float tanB = tan_from_angle(a, b, c);
     float tanC = tan_from_angle(b, c, a);
-    return Point(tanB + tanC, tanC + tanA, tanA + tanB);
+
+    float h1 = 1 / (tanB + tanC);//du bricolage....
+    float h2 = 1 / (tanC + tanA);
+    float h3 = 1 / (tanA + tanB);
+
+    //convert baricentric to cartesian
+    float cx = h1 * a.x + h2 * b.x + h3 * c.x;
+    float cy = h1 * a.y + h2 * b.y + h3 * c.y;
+    float cz = h1 * a.z + h2 * b.z + h3 * c.z;
+
+
+    return Point(cx, cy, cz);
 }
 
 // Predicates
