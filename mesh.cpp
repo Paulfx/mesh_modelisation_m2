@@ -17,7 +17,7 @@ Vector Vertex::operator-(const Vertex &v) {
 
 Mesh::Mesh()  {
 
-    testPredicates();
+    //testPredicates();
 
 
     //Create the laplacian calculator
@@ -66,7 +66,7 @@ void Mesh::testPredicates() {
 
 
     Point c = computeCenterOfCircumscribedCercle(p1,p2,p3);
-    printf("center= (0.5,0.5,0): %f, %f, %f \n", c.x, c.y, c.z );
+    printf("center approx = (0.5,0.5,0): %f, %f, %f \n", c.x, c.y, c.z );
 
 
 }
@@ -520,69 +520,59 @@ void Mesh::drawMeshWireFrame() {
 }
 
 void Mesh::drawVoronoiDiagram() {
-
-   // std::cout << "-----------------------" << std::endl ;
-
-    Faces_circulator fcric = Faces_circulator(this, 0);
+    int i = 0;
     glColor3d(0,1,0); //Green
     glBegin(GL_LINE_LOOP);
+    for (Vertices_iterator vi = vertices_iterator_begin(); vi != vertices_iterator_end(); vi++) {
+        Faces_circulator fcBegin = incident_faces_circulator(i);
+        Faces_circulator fc;
+        int fIndex;
+        for (fc = fcBegin, fc++; fc != fcBegin; fc++) {
+            fIndex = fc.currentFaceIndex;
+            Point a = _vertices[_faces[fIndex].v1()].getPoint();
+            Point b = _vertices[_faces[fIndex].v2()].getPoint();
+            Point c = _vertices[_faces[fIndex].v3()].getPoint();
 
-    int firstFace = fcric.currentFaceIndex;
-    int fIndex = firstFace;
+            Point center = computeCenterOfCircumscribedCercle(a, b, c);
+            glVertexDraw(center);
 
-    //while (firstFace != fIndex) {
-        //std::cout << "face number = " <<  << std::endl;
+        }
+        i++;
 
-       // std::cout << "fIndex = " << fIndex << std::endl;
-       //// std::cout << "fIndex = " << fIndex << std::endl;
-       Point a = _vertices[_faces[fIndex].v1()].getPoint();
-       Point b = _vertices[_faces[fIndex].v2()].getPoint();
-       Point c = _vertices[_faces[fIndex].v3()].getPoint();
-
-
-
-       Point center = computeCenterOfCircumscribedCercle(a, b, c);
-       glVertexDraw(center);
-
-       fcric++;
-      // std::cout << "for points: " << a << b << c << std::endl;
-       // std::cout << "center: " << center << std::endl;
-
-        ////////
-
-        fIndex = fcric.currentFaceIndex;
-        std::cout << "fIndex = " << fIndex << std::endl;
-        a = _vertices[_faces[fIndex].v1()].getPoint();
-        b = _vertices[_faces[fIndex].v2()].getPoint();
-        c = _vertices[_faces[fIndex].v3()].getPoint();
-
-        center = computeCenterOfCircumscribedCercle(a, b, c);
-        glVertexDraw(center);
-
-        fcric++;
-       // std::cout << "for points: " << a << b << c << std::endl;
-       //  std::cout << "center: " << center << std::endl;
-        ////////
-
-        fIndex = fcric.currentFaceIndex;
-      //  std::cout << "fIndex = " << fIndex << std::endl;
-        a = _vertices[_faces[fIndex].v1()].getPoint();
-        b = _vertices[_faces[fIndex].v2()].getPoint();
-        c = _vertices[_faces[fIndex].v3()].getPoint();
-
-        center = computeCenterOfCircumscribedCercle(a, b, c);
-        glVertexDraw(center);
-       // std::cout << "for points: " << a << b << c << std::endl;
-       //  std::cout << "center: " << center << std::endl;
-
-
-
-
-   // }
+    }
 
     glEnd();
 
 
+    /* v0
+    glColor3d(0,1,0); //Green
+    glBegin(GL_LINE_LOOP);
+    Faces_circulator fcric;
+    int firstFace;
+    int fIndex;
+    for (int i = 0; i < _faces.size(); i++) {
+
+        fcric = Faces_circulator(this, i);
+
+        do {
+           firstFace = fcric.currentFaceIndex;
+           fIndex = firstFace;
+           Point a = _vertices[_faces[fIndex].v1()].getPoint();
+           Point b = _vertices[_faces[fIndex].v2()].getPoint();
+           Point c = _vertices[_faces[fIndex].v3()].getPoint();
+
+           Point center = computeCenterOfCircumscribedCercle(a, b, c);
+           glVertexDraw(center);
+
+           fcric++;
+
+        }
+        while(firstFace != fIndex);
+
+    }
+    glEnd();
+
+*/
 
 }
 

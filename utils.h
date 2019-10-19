@@ -9,6 +9,7 @@ void HSVToRGB(double hue, double s, double v, double& r, double& g, double& b);
 Point convertTo2d(Point p);
 //compute tan of angle form by points p1,p2,p3,
 float tan_from_angle(Point p1, Point p2, Point p3);
+Vector computeBarycentric(Point p1, Point p2, Point p3);
 
 //Used to display voronoi
 Point computeCenterOfCircumscribedCercle(Point a, Point b, Point c);

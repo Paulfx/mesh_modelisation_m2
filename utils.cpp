@@ -77,25 +77,38 @@ float tan_from_angle(Point p1, Point p2, Point p3){
     int sign = pred_orientation(p2,p3,p1);
     Vector bc (p2, p3);
     Vector ba (p2, p1);
-    float tmp = length((cross(bc, ba)) / dot(bc, ba));
-    //printf("tmp cercle center = %f, \n", tmp);
     return sign * length((cross(bc, ba)) / dot(bc, ba));
+}
+
+//Wikipadia version
+Vector computeBarycentric(Point p1, Point p2, Point p3){
+    Vector cb = p2 - p3;
+    Vector ba = p1 - p2;
+    Vector ca = p1 - p3;
+    Vector ab = p2 - p1;
+
+    float x = 2 * length2(cross(ba, cb));
+
+    float a = length2(cb) * dot(ba, ca) / x;
+    float b = length2(ca) * dot(ab, cb) / x;
+    float c = length2(ba) * dot(ca, cb) / x;
+
+    return Vector(a, b, c);
 }
 
 Point computeCenterOfCircumscribedCercle(Point a, Point b, Point c) {
     //sum tans need to be 1 (baricentric coordinates)
-    float tanA = tan_from_angle(c, a, b);
-    float tanB = tan_from_angle(a, b, c);
-    float tanC = tan_from_angle(b, c, a);
+   //float tanA = tan_from_angle(c, a, b);
+   // float tanB = tan_from_angle(a, b, c);
+   // float tanC = tan_from_angle(b, c, a);
 
-    float h1 = 1 / (tanB + tanC);//du bricolage....
-    float h2 = 1 / (tanC + tanA);
-    float h3 = 1 / (tanA + tanB);
+    Vector h = computeBarycentric(a, b, c);
+
 
     //convert baricentric to cartesian
-    float cx = h1 * a.x + h2 * b.x + h3 * c.x;
-    float cy = h1 * a.y + h2 * b.y + h3 * c.y;
-    float cz = h1 * a.z + h2 * b.z + h3 * c.z;
+    float cx = h.x * a.x + h.y * b.x + h.z * c.x;
+    float cy = h.x * a.y + h.y * b.y + h.z * c.y;
+    float cz = h.x * a.z + h.y * b.z + h.z * c.z;
 
 
     return Point(cx, cy, cz);
