@@ -16,6 +16,8 @@ public:
     void resizeGL(int width, int height);
 
     void setWireframe();
+    void setVoronoi();
+
     bool wf() { return wireframe; }
 
     unsigned int vertexNb() { return _mesh.numberOfVertices(); }
@@ -49,6 +51,8 @@ private:
     float _angleX, _angleY; // Rotation
 
     bool wireframe = true;
+
+    bool voronoi = false;
 
     QPoint _lastPosMouse; // To keep the last position of the mouse
 

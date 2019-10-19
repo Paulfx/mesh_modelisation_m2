@@ -11,7 +11,7 @@ Point convertTo2d(Point p);
 float tan_from_angle(Point p1, Point p2, Point p3);
 
 //Used to display voronoi
-Point compute_circumscribedCercle(Point a, Point b, Point c);
+Point computeCenterOfCircumscribedCercle(Point a, Point b, Point c);
 //Test if d is in circumscribed circle define by a, b and c
 //int pred_inCercle(Point a, Point b, Point c, Point d);
 

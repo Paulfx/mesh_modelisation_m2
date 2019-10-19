@@ -171,7 +171,6 @@ private:
     void drawSelectedPoints();
     void drawCurrentNeighborFace();
 
-
     double _maxX, _maxY, _maxZ;
     //Compute the max X, max Y of points of the mesh (used to know the frustrum and eye position)
     void computeMaxValues();
@@ -220,6 +219,8 @@ public:
     void drawMesh();
     //Draw the mesh with wireframe
     void drawMeshWireFrame();
+
+    void drawVoronoiDiagram();
 
     //Iterators
     Vertices_iterator vertices_iterator_begin() { 

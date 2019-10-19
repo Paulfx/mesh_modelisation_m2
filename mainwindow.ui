@@ -259,6 +259,13 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_6">
            <item>
+            <widget class="QPushButton" name="pushButton">
+             <property name="text">
+              <string>Voronoï diagram</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QPushButton" name="pbWireframe">
              <property name="text">
               <string>Wireframe     ON</string>

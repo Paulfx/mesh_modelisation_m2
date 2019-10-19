@@ -125,3 +125,8 @@ void MainWindow::on_pbCreateQueen_released()
     ui->widget->createFromOFF("./M2/maillage/Mesh_Computational_Geometry/queen.off");
     updateTextInfos();
 }
+
+void MainWindow::on_pushButton_released()
+{
+    ui->widget->setVoronoi();
+}

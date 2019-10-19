@@ -50,6 +50,8 @@ void GLDisplayWidget::paintGL(){
     // example with a tetraedre
     if (wireframe) _mesh.drawMeshWireFrame(); 
     else _mesh.drawMesh();
+
+    if (voronoi) _mesh.drawVoronoiDiagram();
 }
 
 
@@ -97,6 +99,12 @@ void GLDisplayWidget::testIterators() {
 void GLDisplayWidget::setWireframe() {
     wireframe = !wireframe;
 }
+
+void GLDisplayWidget::setVoronoi() {
+    voronoi = !voronoi;
+}
+
+
 
 // - - - - - - - - - - - - Mouse Management  - - - - - - - - - - - - - - - -
 // When you click, the position of your mouse is saved

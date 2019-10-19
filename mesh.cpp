@@ -17,7 +17,7 @@ Vector Vertex::operator-(const Vertex &v) {
 
 Mesh::Mesh()  {
 
-    testPredicates();
+    //testPredicates();
 
 
     //Create the laplacian calculator
@@ -26,19 +26,20 @@ Mesh::Mesh()  {
     //createPyramid();
     createTetrahedron();
 
-    Point np(0,0,-0.5);
-    split_face(np, 3);
+    //Point np(0,0,-0.5);
+    //split_face(np, 3);
 
-    flip_edge(3, 1, 2, 0);
+    //flip_edge(3, 1, 2, 0);
 
 
-    fprintf(stderr, "After split_face, face nb %d, v0=%d, v1=%d, v2=%d\n", 3, _faces[3].v1(), _faces[3].v2(), _faces[3].v3());
+    //fprintf(stderr, "After split_face, face nb %d, v0=%d, v1=%d, v2=%d\n", 3, _faces[3].v1(), _faces[3].v2(), _faces[3].v3());
 
     //std::string filename = "./Documents/cours/m2/geoAlgo/mesh_modelisation/queen.off";
     //std::string filename = "./M2/maillage/Mesh_Computational_Geometry/queen.off";
     //createFromOFF(filename);
 
     //glEnable(GL_LIGHTING);
+
 }
 
 Mesh::~Mesh() { delete lcalc; }
@@ -512,6 +513,63 @@ void Mesh::drawMeshWireFrame() {
     }
 
     drawSelectedPoints();
+}
+
+void Mesh::drawVoronoiDiagram() {
+    Faces_circulator fcric = Faces_circulator(this, 0);
+    glColor3d(0,1,0); //Green
+    glBegin(GL_LINE_LOOP);
+
+    int firstFace = fcric.currentFaceIndex;
+    int fIndex = firstFace;
+
+    //while (firstFace != fIndex) {
+        //std::cout << "face number = " <<  << std::endl;
+
+       // std::cout << "fIndex = " << fIndex << std::endl;
+       //// std::cout << "fIndex = " << fIndex << std::endl;
+       Point a = _vertices[_faces[fIndex].v1()].getPoint();
+       Point b = _vertices[_faces[fIndex].v2()].getPoint();
+       Point c = _vertices[_faces[fIndex].v3()].getPoint();
+
+       Point center = computeCenterOfCircumscribedCercle(a, b, c);
+       glVertexDraw(center);
+
+       fcric++;
+       //
+       // ////////
+       //
+       // fIndex = fcric.currentFaceIndex;
+       // std::cout << "fIndex = " << fIndex << std::endl;
+       // a = _vertices[_faces[fIndex].v1()].getPoint();
+       // b = _vertices[_faces[fIndex].v2()].getPoint();
+       // c = _vertices[_faces[fIndex].v3()].getPoint();
+       //
+       // center = computeCenterOfCircumscribedCercle(a, b, c);
+       // glVertexDraw(center);
+       //
+       // fcric++;
+       //
+       // ////////
+       //
+       // fIndex = fcric.currentFaceIndex;
+       // std::cout << "fIndex = " << fIndex << std::endl;
+       // a = _vertices[_faces[fIndex].v1()].getPoint();
+       // b = _vertices[_faces[fIndex].v2()].getPoint();
+       // c = _vertices[_faces[fIndex].v3()].getPoint();
+       //
+       // center = computeCenterOfCircumscribedCercle(a, b, c);
+       // glVertexDraw(center);
+
+
+
+
+   // }
+
+    glEnd();
+
+
+
 }
 
 
