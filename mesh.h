@@ -117,6 +117,24 @@ public:
         return _f[getLocalIndexOf(vi)];
     }
 
+    bool haveInfiniteFaceInFront() const {
+        for (int i = 0; i < 3; ++i) {
+            if (_f[i] == -1){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    int getLocalIdVertexOppositeTofinite() const {
+        for (int i = 0; i < 3; ++i) {
+            if (_f[i] == -1){
+                return i;
+            }
+        }
+        return -1;
+    }
+
     //Set the opposite face of vertex (local index i)
     void setOppositeFace(FACE_INDEX fi, unsigned int i) {
         _f[i] = fi;
@@ -180,6 +198,8 @@ private:
 
     //Split face into 3 faces
     void split_face(const Point& newPoint, FACE_INDEX fi);
+
+    void flipToInfinite(std::vector<FACE_INDEX> idsExtHull,Point p);
 
     //Flip an edge shared between two triangles
     void flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDEX v1, const VERTEX_INDEX v2);

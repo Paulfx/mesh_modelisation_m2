@@ -284,6 +284,31 @@ void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
 
 }
 
+void Mesh::flipToInfinite(std::vector<FACE_INDEX> idsExtHull, Point p) {
+
+    _vertices.push_back(Vertex(p.x, p.y, p.z, idsExtHull[0]));
+
+    //For all face who need a connection with the new point p, we create a new face (oriented couter-clockwise)
+    for (int i = 0; i < idsExtHull.size(); i++) {
+        //we determine global ids of the two vertices used in creation of the new face
+        int idVertexOpposite = _faces[idsExtHull[i]].getLocalIdVertexOppositeTofinite();
+        int idLocalV1 = (idVertexOpposite + 1) % 3;
+        int idLocalV2 = (idVertexOpposite + 2) % 3;
+        VERTEX_INDEX v1 = _faces[idsExtHull[i]].vertex(idLocalV1);
+        VERTEX_INDEX v2 = _faces[idsExtHull[i]].vertex(idLocalV2);
+
+        //creation of a couter-clockwise oriented face
+
+        if (pred_orientation(_vertices[v1].getPoint(), _vertices[v2].getPoint(), p) == 1 ) {
+            _faces.push_back(Face(v1, v2, _vertices.size() - 1, -1, -1, idsExtHull[i]));
+        } else if (pred_orientation(p ,_vertices[v2].getPoint(), _vertices[v1].getPoint()) == 1) {
+            _faces.push_back(Face(_vertices.size() - 1, v2, v1, idsExtHull[i], -1, -1));
+        }
+    }
+
+
+}
+
 void Mesh::flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDEX v1, const VERTEX_INDEX v2) {
     //Precondition: v1, v2 are in faces f1 and f2 
 
@@ -332,18 +357,22 @@ void Mesh::flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDE
 
 //Insertion
 void Mesh::naiveInsertion(const Point p) {
+    std::vector<FACE_INDEX> idsExtHull;
     for (int i = 0; i < _faces.size(); i++) {
-
         int isInTriangle = pred_inTriangle(_vertices[_faces[i].v1()].getPoint(), _vertices[_faces[i].v2()].getPoint(), _vertices[_faces[i].v3()].getPoint(), p);
         if (isInTriangle >= 0) {
             split_face(p, i);
             break;
         }
-
+        //need to be change, we must only manage boundary edges visible by p
+        if (_faces[i].haveInfiniteFaceInFront()) {
+            idsExtHull.push_back(i);
+        }
     }
-    //todo manage infinite
+    flipToInfinite(idsExtHull, p);
 }
 
+//For now it's basicaly an insertion + flip...
 void Mesh::delaunayInsertion(const Point p) {
     for (int i = 0; i < _faces.size(); i++) {
 
