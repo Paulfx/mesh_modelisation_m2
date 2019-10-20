@@ -243,7 +243,8 @@ void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
     Face f1(    _faces[fi].vertex(1), _faces[fi].vertex(2), newVertexIndex,
                 indexF2, fi, _faces[fi].getFrontFace(0));
 
-    _faces.push_back(f1);
+    _
+    faces.push_back(f1);
 
     Face f2(    _faces[fi].vertex(2), _faces[fi].vertex(0), newVertexIndex,
                 fi, indexF1, _faces[fi].getFrontFace(1));
@@ -285,7 +286,7 @@ void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
 }
 
 void Mesh::flipToInfinite(std::vector<FACE_INDEX> idsExtHull, Point p) {
-
+    assert(idsExtHull.size() > 0);
     _vertices.push_back(Vertex(p.x, p.y, p.z, idsExtHull[0]));
 
     //For all face who need a connection with the new point p, we create a new face (oriented couter-clockwise)
@@ -361,14 +362,16 @@ void Mesh::naiveInsertion(const Point p) {
     for (int i = 0; i < _faces.size(); i++) {
         int isInTriangle = pred_inTriangle(_vertices[_faces[i].v1()].getPoint(), _vertices[_faces[i].v2()].getPoint(), _vertices[_faces[i].v3()].getPoint(), p);
         if (isInTriangle >= 0) {
-            split_face(p, i);
-            break;
+            split_face(p, i); //Split face add the new point in the triangle
+            return; //No need to continue
         }
         //need to be change, we must only manage boundary edges visible by p
         if (_faces[i].haveInfiniteFaceInFront()) {
             idsExtHull.push_back(i);
         }
     }
+    //idsExtHull is not empty
+    //Slip to infinite add the new point
     flipToInfinite(idsExtHull, p);
 }
 
