@@ -80,7 +80,7 @@ float tan_from_angle(Point p1, Point p2, Point p3){
     return sign * length((cross(bc, ba)) / dot(bc, ba));
 }
 
-//Wikipadia version
+//alternate version
 Vector computeBarycentric(Point p1, Point p2, Point p3){
     Vector cb = p2 - p3;
     Vector ba = p1 - p2;

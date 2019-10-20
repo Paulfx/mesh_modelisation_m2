@@ -330,6 +330,45 @@ void Mesh::flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDE
 
 //}
 
+//Insertion
+void Mesh::naiveInsertion(const Point p) {
+    for (int i = 0; i < _faces.size(); i++) {
+
+        int isInTriangle = pred_inTriangle(_vertices[_faces[i].v1()].getPoint(), _vertices[_faces[i].v2()].getPoint(), _vertices[_faces[i].v3()].getPoint(), p);
+        if (isInTriangle >= 0) {
+            split_face(p, i);
+            break;
+        }
+
+    }
+    //todo manage infinite
+}
+
+void Mesh::delaunayInsertion(const Point p) {
+    for (int i = 0; i < _faces.size(); i++) {
+
+        int isInTriangle = pred_inTriangle(_vertices[_faces[i].v1()].getPoint(), _vertices[_faces[i].v2()].getPoint(), _vertices[_faces[i].v3()].getPoint(), p);
+        if (isInTriangle >= 0) {
+            split_face(p, i);
+
+            //flip edges
+            int localVertexIndex = _faces[i].getLocalIndexOf(_vertices.size() - 1);
+            flip_edge(i, _faces[i].getFrontFace(localVertexIndex), _faces[i].vertex((localVertexIndex + 1) % 3), _faces[i].vertex((localVertexIndex + 2) % 3));
+
+            FACE_INDEX nf = _faces.size() - 2;
+            localVertexIndex = _faces[nf].getLocalIndexOf(_vertices.size() - 1);
+            flip_edge(nf, _faces[nf].getFrontFace(localVertexIndex), _faces[nf].vertex((localVertexIndex + 1) % 3), _faces[nf].vertex((localVertexIndex + 2) % 3));
+
+            nf = _faces.size() - 1;
+            localVertexIndex = _faces[nf].getLocalIndexOf(_vertices.size() - 1);
+            flip_edge(nf, _faces[nf].getFrontFace(localVertexIndex), _faces[nf].vertex((localVertexIndex + 1) % 3), _faces[nf].vertex((localVertexIndex + 2) % 3));
+            break;
+        }
+
+    }
+
+}
+
 void Mesh::computeMaxValues() {
     // _maxX = 0, _maxY = 0, _maxZ = 0;
     // Point p;

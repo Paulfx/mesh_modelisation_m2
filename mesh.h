@@ -239,6 +239,10 @@ public:
         return Vertices_circulator(this, vi);
     }
 
+    //Insertion
+    void naiveInsertion(const Point p);
+    void delaunayInsertion(const Point p);
+
 };
 
 
