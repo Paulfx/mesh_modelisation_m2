@@ -32,13 +32,14 @@ public:
     int currentVertex() { return _mesh.currVertex(); }
     void resetVertexFaceIndex() { _mesh.resetVertexFaceIndex(); }
     void createPyramid() { _mesh.createPyramid(); }
+    void create2DSquare() {_mesh.create2DSquare(); }
     void createTetrahedron() { _mesh.createTetrahedron(); }
     void createFromOFF(const std::string& filename) { _mesh.createFromOFF(filename); }
     void testIterators();
 
     void splitFaceMiddle(int faceIndex) { _mesh.splitFaceMiddle(faceIndex); }
-    void addNaivePoint(int x, int y, int z) { _mesh.naiveInsertion(Point(x,y,z)); }
-    void addDelaunayPoint(int x, int y, int z) { _mesh.delaunayInsertion(Point(x,y,z)); }
+    void addNaivePoint(double x, double y, double z) { _mesh.naiveInsertion(Point(x,y,z)); }
+    void addDelaunayPoint(double x, double y, double z) { _mesh.delaunayInsertion(Point(x,y,z)); }
 
 
 protected:

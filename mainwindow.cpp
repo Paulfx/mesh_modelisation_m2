@@ -107,6 +107,11 @@ void MainWindow::on_pbTetrahedron_released()
     updateTextInfos();
 }
 
+void MainWindow::on_pb2DSquare_released()
+{
+    ui->widget->create2DSquare();
+}
+
 void MainWindow::on_pbOpenFile_released()
 {
     std::string fileName = QFileDialog::getOpenFileName(this,
@@ -140,26 +145,25 @@ void MainWindow::on_pbSplitFaceMiddle_released()
 
 void MainWindow::on_pbAddPoint_released()
 {
-    int x = ui->lineEditX->text().toInt();
-    int y = ui->lineEditY->text().toInt();
-    int z = ui->lineEditZ->text().toInt();
 
-    ui->lineEditX->setText("");
-    ui->lineEditY->setText("");
-    ui->lineEditZ->setText("");
+    double x = ui->doubleX->value();
+    double y = ui->doubleY->value();
+    double z = ui->doubleZ->value();
+    ui->doubleX->setValue(0);
+    ui->doubleY->setValue(0);
+    ui->doubleZ->setValue(0);
 
     ui->widget->addNaivePoint(x,y,z);
 }
 
 void MainWindow::on_pbDelaunayAdd_released()
 {
-    int x = ui->lineEditX->text().toInt();
-    int y = ui->lineEditY->text().toInt();
-    int z = ui->lineEditZ->text().toInt();
-
-    ui->lineEditX->setText("");
-    ui->lineEditY->setText("");
-    ui->lineEditZ->setText("");
+    double x = ui->doubleX->value();
+    double y = ui->doubleY->value();
+    double z = ui->doubleZ->value();
+    ui->doubleX->setValue(0);
+    ui->doubleY->setValue(0);
+    ui->doubleZ->setValue(0);
 
     ui->widget->addDelaunayPoint(x,y,z);
 

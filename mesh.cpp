@@ -92,6 +92,25 @@ void Mesh::createTetrahedron() {
     //computeMaxValues();
 }
 
+void Mesh::create2DSquare() {
+
+    _vertices.clear();
+    _faces.clear();
+    resetVertexFaceIndex();
+
+    _vertices.push_back(Vertex(-0.5,-0.5,0     , 0));
+    _vertices.push_back(Vertex(0.5,-0.5,0     , 0));
+    _vertices.push_back(Vertex(0.5,0.5,0     , 1));
+    _vertices.push_back(Vertex(-0.5,0.5,0     , 1));
+
+    _faces.push_back(Face(0,1,2, -1,1,-1));
+    _faces.push_back(Face(0,2,3, -1,-1,0));
+
+    //Calculate laplacian
+    lcalc->calculate(this);
+
+}
+
 void Mesh::createPyramid() {
     _vertices.clear();
     _faces.clear();
@@ -398,10 +417,13 @@ void Mesh::naiveInsertion(const Point p) {
             split_face(p, i); //Split face add the new point in the triangle
             return; //No need to continue
         }
-        if (_faces[i].haveInfiniteFaceInFront()) {
-            idsExtHull.push_back(i);
-            //The test of visibility of the face from p is done in flipToInfinite
-        }
+        
+                    idsExtHull.push_back(i);
+
+        // if (_faces[i].haveInfiniteFaceInFront()) {
+        //     idsExtHull.push_back(i);
+        //     //The test of visibility of the face from p is done in flipToInfinite
+        // }
     }
     //idsExtHull is not empty
     //Slip to infinite add the new point

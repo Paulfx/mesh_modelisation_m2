@@ -49,6 +49,8 @@ private slots:
 
     void on_pbDelaunayAdd_released();
 
+    void on_pb2DSquare_released();
+
 private:
     Ui::MainWindow *ui;
 

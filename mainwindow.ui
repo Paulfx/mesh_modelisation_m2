@@ -35,7 +35,6 @@
         <height>100</height>
        </size>
       </property>
-      <zorder>horizontalLayoutWidget_4</zorder>
      </widget>
     </item>
     <item>
@@ -60,6 +59,13 @@
            <string>Mesh creation..</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QPushButton" name="pb2DSquare">
+             <property name="text">
+              <string>2D Square</string>
+             </property>
+            </widget>
+           </item>
            <item>
             <widget class="QPushButton" name="pbPyramid">
              <property name="text">
@@ -343,34 +349,13 @@
                     <item>
                      <layout class="QVBoxLayout" name="verticalLayout_14">
                       <item>
-                       <widget class="QLineEdit" name="lineEditX">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                       </widget>
+                       <widget class="QDoubleSpinBox" name="doubleX"/>
                       </item>
                       <item>
-                       <widget class="QLineEdit" name="lineEditY">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                       </widget>
+                       <widget class="QDoubleSpinBox" name="doubleY"/>
                       </item>
                       <item>
-                       <widget class="QLineEdit" name="lineEditZ">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                       </widget>
+                       <widget class="QDoubleSpinBox" name="doubleZ"/>
                       </item>
                      </layout>
                     </item>

@@ -220,6 +220,7 @@ public:
     Mesh();
     ~Mesh(); //Erase the laplacian calculator
     void createTetrahedron();
+    void create2DSquare();
     void createPyramid();
     void createFromOFF(const std::string& filename);
 
