@@ -43,6 +43,12 @@ private slots:
 
     void on_pushButton_released();
 
+    void on_pbSplitFaceMiddle_released();
+
+    void on_pbAddPoint_released();
+
+    void on_pbDelaunayAdd_released();
+
 private:
     Ui::MainWindow *ui;
 

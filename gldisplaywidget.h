@@ -36,6 +36,10 @@ public:
     void createFromOFF(const std::string& filename) { _mesh.createFromOFF(filename); }
     void testIterators();
 
+    void splitFaceMiddle(int faceIndex) { _mesh.splitFaceMiddle(faceIndex); }
+    void addNaivePoint(int x, int y, int z) { _mesh.naiveInsertion(Point(x,y,z)); }
+    void addDelaunayPoint(int x, int y, int z) { _mesh.delaunayInsertion(Point(x,y,z)); }
+
 
 protected:
     // Mouse Management

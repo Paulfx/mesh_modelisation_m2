@@ -242,6 +242,8 @@ public:
     //Put indexes of currentStartVertex, currentNeighbors to -1 (disable display)
     void resetVertexFaceIndex();
 
+    void splitFaceMiddle(int faceIndex);
+
 //Draw functions
 
     //Draw the mesh with colors on faces

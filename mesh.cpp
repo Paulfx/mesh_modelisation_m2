@@ -680,4 +680,15 @@ void Mesh::drawVoronoiDiagram() {
 
 }
 
+void Mesh::splitFaceMiddle(int faceIndex) {
+
+    if (faceIndex < 0 || faceIndex > _faces.size())
+        return;
+
+    Face &f = _faces[faceIndex];
+    Point middle = (_vertices[f.v1()].getPoint() + _vertices[f.v2()].getPoint() + _vertices[f.v3()].getPoint()) / 3.f;
+
+    split_face(middle, faceIndex);
+
+}
 

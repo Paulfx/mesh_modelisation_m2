@@ -24,10 +24,10 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::updateTextInfos() {
-    QString t = "Nb vertex : " + QString::number(ui->widget->vertexNb());
+    QString t = "Number of vertices : " + QString::number(ui->widget->vertexNb());
     ui->labelVertexNb->setText(t);
 
-    QString tFace = "Nb face : " + QString::number(ui->widget->faceNb());
+    QString tFace = "Number of faces : " + QString::number(ui->widget->faceNb());
     ui->labelFaceNb->setText(tFace);
 }
 
@@ -129,4 +129,38 @@ void MainWindow::on_pbCreateQueen_released()
 void MainWindow::on_pushButton_released()
 {
     ui->widget->setVoronoi();
+}
+
+void MainWindow::on_pbSplitFaceMiddle_released()
+{
+    int index = ui->lineEditFaceIndexSplit->text().toInt();
+    ui->lineEditFaceIndexSplit->setText("");
+    ui->widget->splitFaceMiddle(index);
+}
+
+void MainWindow::on_pbAddPoint_released()
+{
+    int x = ui->lineEditX->text().toInt();
+    int y = ui->lineEditY->text().toInt();
+    int z = ui->lineEditZ->text().toInt();
+
+    ui->lineEditX->setText("");
+    ui->lineEditY->setText("");
+    ui->lineEditZ->setText("");
+
+    ui->widget->addNaivePoint(x,y,z);
+}
+
+void MainWindow::on_pbDelaunayAdd_released()
+{
+    int x = ui->lineEditX->text().toInt();
+    int y = ui->lineEditY->text().toInt();
+    int z = ui->lineEditZ->text().toInt();
+
+    ui->lineEditX->setText("");
+    ui->lineEditY->setText("");
+    ui->lineEditZ->setText("");
+
+    ui->widget->addDelaunayPoint(x,y,z);
+
 }
