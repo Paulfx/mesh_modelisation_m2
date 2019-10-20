@@ -287,6 +287,7 @@ void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
 
 void Mesh::flipToInfinite(std::vector<FACE_INDEX> idsExtHull, Point p) {
     assert(idsExtHull.size() > 0);
+    unsigned int newVertexIndex = _vertices.size();
     _vertices.push_back(Vertex(p.x, p.y, p.z, idsExtHull[0]));
 
     //For all face who need a connection with the new point p, we create a new face (oriented couter-clockwise)
@@ -298,13 +299,31 @@ void Mesh::flipToInfinite(std::vector<FACE_INDEX> idsExtHull, Point p) {
         VERTEX_INDEX v1 = _faces[idsExtHull[i]].vertex(idLocalV1);
         VERTEX_INDEX v2 = _faces[idsExtHull[i]].vertex(idLocalV2);
 
+
+        if (pred_orientation(p, _vertices[v1].getPoint(), _vertices[v2].getPoint()) > 0) {
+            //counter clockwise = we create a face
+
+            //modify opposite face of actual face
+            FACE_INDEX newFaceIndex = _faces.size();
+            _faces[idsExtHull[i]].setOppositeFace(newFaceIndex, idVertexOpposite);
+
+            //Attention, c'es tpas -1 forcément la face opposée.... ça peut être une face qu'on vient de créer....
+            //Je pense que c'est un problème de laisser -1
+            //Peut etre on peut connnaitre l'indice car on connait noptre sens de deplacement (anti horaire...)
+            _faces.push_back(Face(newVertexIndex, v1, v2, idsExtHull[i], -1, -1));
+
+
+
+        }
+        //Else it's not a convex hull, no creation of faces
+
         //creation of a couter-clockwise oriented face
 
-        if (pred_orientation(_vertices[v1].getPoint(), _vertices[v2].getPoint(), p) == 1 ) {
-            _faces.push_back(Face(v1, v2, _vertices.size() - 1, -1, -1, idsExtHull[i]));
-        } else if (pred_orientation(p ,_vertices[v2].getPoint(), _vertices[v1].getPoint()) == 1) {
-            _faces.push_back(Face(_vertices.size() - 1, v2, v1, idsExtHull[i], -1, -1));
-        }
+        // if (pred_orientation(_vertices[v1].getPoint(), _vertices[v2].getPoint(), p) == 1 ) {
+        //     _faces.push_back(Face(v1, v2, _vertices.size() - 1, -1, -1, idsExtHull[i]));
+        // } else if (pred_orientation(p ,_vertices[v2].getPoint(), _vertices[v1].getPoint()) == 1) {
+        //     _faces.push_back(Face(_vertices.size() - 1, v2, v1, idsExtHull[i], -1, -1));
+        // }
     }
 
 
