@@ -243,8 +243,7 @@ void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
     Face f1(    _faces[fi].vertex(1), _faces[fi].vertex(2), newVertexIndex,
                 indexF2, fi, _faces[fi].getFrontFace(0));
 
-    _
-    faces.push_back(f1);
+    _faces.push_back(f1);
 
     Face f2(    _faces[fi].vertex(2), _faces[fi].vertex(0), newVertexIndex,
                 fi, indexF1, _faces[fi].getFrontFace(1));
@@ -435,7 +434,7 @@ void Mesh::delaunayInsertion(const Point p) {
 
 }
 
-void Mesh::computeMaxValues() {
+//void Mesh::computeMaxValues() {
     // _maxX = 0, _maxY = 0, _maxZ = 0;
     // Point p;
     // for(unsigned i = 0; i<_vertices.size(); ++i) {
@@ -446,7 +445,7 @@ void Mesh::computeMaxValues() {
     // }
 
     // printf("Max : %d, %d, %d\n", _maxX, _maxY, _maxZ);
-}
+//}
 
 void Mesh::setVertexStart(int vs) {
     if (vs < 0 || vs >= (int) _vertices.size()) return;
