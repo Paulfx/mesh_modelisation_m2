@@ -647,37 +647,6 @@ void Mesh::drawVoronoiDiagram() {
 
     glEnd();
 
-
-    /* v0
-    glColor3d(0,1,0); //Green
-    glBegin(GL_LINE_LOOP);
-    Faces_circulator fcric;
-    int firstFace;
-    int fIndex;
-    for (int i = 0; i < _faces.size(); i++) {
-
-        fcric = Faces_circulator(this, i);
-
-        do {
-           firstFace = fcric.currentFaceIndex;
-           fIndex = firstFace;
-           Point a = _vertices[_faces[fIndex].v1()].getPoint();
-           Point b = _vertices[_faces[fIndex].v2()].getPoint();
-           Point c = _vertices[_faces[fIndex].v3()].getPoint();
-
-           Point center = computeCenterOfCircumscribedCercle(a, b, c);
-           glVertexDraw(center);
-
-           fcric++;
-
-        }
-        while(firstFace != fIndex);
-
-    }
-    glEnd();
-
-*/
-
 }
 
 
