@@ -285,10 +285,14 @@ void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
 
 }
 
-void Mesh::flipToInfinite(std::vector<FACE_INDEX> idsExtHull, Point p) {
+void Mesh::addPointAndFlipToInfinite(std::vector<FACE_INDEX> idsExtHull, Point p) {
     assert(idsExtHull.size() > 0);
     unsigned int newVertexIndex = _vertices.size();
-    _vertices.push_back(Vertex(p.x, p.y, p.z, idsExtHull[0]));
+    //Incident face of the new point is one of the new faces that will be created
+    //And we are sure that at least one face will be created
+    _vertices.push_back(Vertex(p.x, p.y, p.z, _faces.size()));
+
+    int idOldV2 = -1;
 
     //For all face who need a connection with the new point p, we create a new face (oriented couter-clockwise)
     for (int i = 0; i < idsExtHull.size(); i++) {
@@ -300,7 +304,7 @@ void Mesh::flipToInfinite(std::vector<FACE_INDEX> idsExtHull, Point p) {
         VERTEX_INDEX v2 = _faces[idsExtHull[i]].vertex(idLocalV2);
 
 
-        if (pred_orientation(p, _vertices[v1].getPoint(), _vertices[v2].getPoint()) > 0) {
+        if (pred_orientation(p, _vertices[v2].getPoint(), _vertices[v1].getPoint()) > 0) {
             //counter clockwise = we create a face
 
             //modify opposite face of actual face
@@ -310,7 +314,12 @@ void Mesh::flipToInfinite(std::vector<FACE_INDEX> idsExtHull, Point p) {
             //Attention, c'es tpas -1 forcément la face opposée.... ça peut être une face qu'on vient de créer....
             //Je pense que c'est un problème de laisser -1
             //Peut etre on peut connnaitre l'indice car on connait noptre sens de deplacement (anti horaire...)
-            _faces.push_back(Face(newVertexIndex, v1, v2, idsExtHull[i], -1, -1));
+            _faces.push_back(Face(newVertexIndex, v2, v1, idsExtHull[i], -1, -1));
+
+            //Le v2 de la face d'avant doit avoir comme face opposée la nouvelle face..
+            if (idOldV2 != -1) {
+                _faces[idsExtHull[i-1]].setOppositeFace(newFaceIndex, idOldV2);
+            }
 
 
 
@@ -384,14 +393,14 @@ void Mesh::naiveInsertion(const Point p) {
             split_face(p, i); //Split face add the new point in the triangle
             return; //No need to continue
         }
-        //need to be change, we must only manage boundary edges visible by p
         if (_faces[i].haveInfiniteFaceInFront()) {
             idsExtHull.push_back(i);
+            //The test of visibility of the face from p is done in flipToInfinite
         }
     }
     //idsExtHull is not empty
     //Slip to infinite add the new point
-    flipToInfinite(idsExtHull, p);
+    addPointAndFlipToInfinite(idsExtHull, p);
 }
 
 //For now it's basicaly an insertion + flip...
