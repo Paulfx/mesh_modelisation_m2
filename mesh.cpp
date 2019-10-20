@@ -316,15 +316,21 @@ void Mesh::addPointAndFlipToInfinite(std::vector<FACE_INDEX> idsExtHull, Point p
             //Peut etre on peut connnaitre l'indice car on connait noptre sens de deplacement (anti horaire...)
             _faces.push_back(Face(newVertexIndex, v2, v1, idsExtHull[i], -1, -1));
 
+
+
             //Le v2 de la face d'avant doit avoir comme face opposée la nouvelle face..
             if (idOldV2 != -1) {
                 _faces[idsExtHull[i-1]].setOppositeFace(newFaceIndex, idOldV2);
             }
 
-
+            idOldV2 = idLocalV2;
 
         }
         //Else it's not a convex hull, no creation of faces
+
+        //Should we put idOldV2 to -1 ??
+
+        
 
         //creation of a couter-clockwise oriented face
 
