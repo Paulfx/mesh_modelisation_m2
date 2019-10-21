@@ -630,19 +630,18 @@ void Mesh::initVoronoiDiagram() {
             int fIndex;
             std::vector<Point> localPoint;
             for (fc = fcBegin, fc++; fc != fcBegin; fc++) {
-                if (fc.currentFaceIndex != -1 && fc.currentFaceIndex != -1) {
-                    fIndex = fc.currentFaceIndex;
-                    Point a = _vertices[_faces[fIndex].v1()].getPoint();
-                    Point b = _vertices[_faces[fIndex].v2()].getPoint();
-                    Point c = _vertices[_faces[fIndex].v3()].getPoint();
 
-                    Point center = computeCenterOfCircumscribedCercle(a, b, c);
-                    localPoint.push_back(center);
-
-                } else {
+                if (fc.currentFaceIndex == -1 || fc.refVertex == -1) {
                     printf("break voronoi\n");
                     break;
                 }
+                fIndex = fc.currentFaceIndex;
+                Point a = _vertices[_faces[fIndex].v1()].getPoint();
+                Point b = _vertices[_faces[fIndex].v2()].getPoint();
+                Point c = _vertices[_faces[fIndex].v3()].getPoint();
+
+                Point center = computeCenterOfCircumscribedCercle(a, b, c);
+                localPoint.push_back(center);
             }
             voronoi_points.push_back(localPoint);
         }
