@@ -232,7 +232,6 @@ void Mesh::resetShape() {
 //Precondition : the face fi contains the newPoint
 void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
     printf("Split face %d\n", fi);
-    std::cout << "p= " << newPoint << std::endl;
 
     Vertex newVertex = Vertex(newPoint, fi);
     VERTEX_INDEX newVertexIndex = _vertices.size();
