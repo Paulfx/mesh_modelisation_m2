@@ -22,23 +22,11 @@ Mesh::Mesh()  {
     //createPyramid();
     createTetrahedron();
 
-    Point np(0,0,-0.5);
-    split_face(np, 3);
+    //Point np(0,0,-0.5);
+    //split_face(np, 3);
 
-    flip_edge(3, 1, 2, 0);
+    //flip_edge(3, 1, 2, 0);
 
-
-    lcalc->calculate(this);
-
-    //fprintf(stderr, "After split_face, face nb %d, v0=%d, v1=%d, v2=%d\n", 3, _faces[3].v1(), _faces[3].v2(), _faces[3].v3());
-
-    //std::string filename = "./Documents/cours/m2/geoAlgo/mesh_modelisation/queen.off";
-    //std::string filename = "./M2/maillage/Mesh_Computational_Geometry/queen.off";
-    //createFromOFF(filename);
-
-    //glEnable(GL_LIGHTING);
-
-    testPredicates();
 }
 
 Mesh::~Mesh() { delete lcalc; }
@@ -48,10 +36,25 @@ void Mesh::testPredicates() {
     Point p2 = Point(0, 0, 0);
     Point p3 = Point(1, 0, 0);
     Point p4 = Point(0.5, 0, 0); // align to b & c
+    Point p5 = Point(0.5,0.5,0);
+    Point p6 = Point(-1,0.5,0);
 
    printf("test orientation (expected 1): %d \n", pred_orientation(p1,p2,p3));
    printf("test orientation (expected -1): %d \n", pred_orientation(p2,p1,p3));
    printf("test orientation (expected 0): %d \n", pred_orientation(p2,p4,p3));
+
+   printf("test in tirangle (expected 0): %d \n", pred_inTriangle(p1,p2,p3,p4));
+   printf("test in tirangle (expected 1): %d \n", pred_inTriangle(p1,p2,p3,p5));
+   printf("test in tirangle (expected -1): %d \n", pred_inTriangle(p1,p2,p3,p6));
+
+   printf("test in circle (expected 1): %d \n", pred_inCercle(p1,p2,p3,p5));
+   printf("test in circle (expected 1): %d \n", pred_inCercle(p1,p2,p3,p4));
+   printf("test in circle (expected -1): %d \n", pred_inCercle(p1,p2,p3,p6));
+
+
+    Point c = computeCenterOfCircumscribedCercle(p1,p2,p3);
+    printf("center approx = (0.5,0.5,0): %f, %f, %f \n", c.x, c.y, c.z );
+
 
 }
 
@@ -74,6 +77,25 @@ void Mesh::createTetrahedron() {
     lcalc->calculate(this);
     //Compute max X and Y of the mesh
     //computeMaxValues();
+}
+
+void Mesh::create2DSquare() {
+
+    _vertices.clear();
+    _faces.clear();
+    resetVertexFaceIndex();
+
+    _vertices.push_back(Vertex(-0.5,-0.5,0     , 0));
+    _vertices.push_back(Vertex(0.5,-0.5,0     , 0));
+    _vertices.push_back(Vertex(0.5,0.5,0     , 1));
+    _vertices.push_back(Vertex(-0.5,0.5,0     , 1));
+
+    _faces.push_back(Face(0,1,2, -1,1,-1));
+    _faces.push_back(Face(0,2,3, -1,-1,0));
+
+    //Calculate laplacian
+    lcalc->calculate(this);
+
 }
 
 void Mesh::createPyramid() {
@@ -268,6 +290,65 @@ void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
 
 }
 
+void Mesh::addPointAndFlipToInfinite(std::vector<FACE_INDEX> idsExtHull, Point p) {
+    assert(idsExtHull.size() > 0);
+    unsigned int newVertexIndex = _vertices.size();
+    //Incident face of the new point is one of the new faces that will be created
+    //And we are sure that at least one face will be created
+    _vertices.push_back(Vertex(p.x, p.y, p.z, _faces.size()));
+
+    int idOldV2 = -1;
+
+    //For all face who need a connection with the new point p, we create a new face (oriented couter-clockwise)
+    for (int i = 0; i < idsExtHull.size(); i++) {
+        //we determine global ids of the two vertices used in creation of the new face
+        int idVertexOpposite = _faces[idsExtHull[i]].getLocalIdVertexOppositeTofinite();
+        int idLocalV1 = (idVertexOpposite + 1) % 3;
+        int idLocalV2 = (idVertexOpposite + 2) % 3;
+        VERTEX_INDEX v1 = _faces[idsExtHull[i]].vertex(idLocalV1);
+        VERTEX_INDEX v2 = _faces[idsExtHull[i]].vertex(idLocalV2);
+
+
+        if (pred_orientation(p, _vertices[v2].getPoint(), _vertices[v1].getPoint()) > 0) {
+            //counter clockwise = we create a face
+
+            //modify opposite face of actual face
+            FACE_INDEX newFaceIndex = _faces.size();
+            _faces[idsExtHull[i]].setOppositeFace(newFaceIndex, idVertexOpposite);
+
+            //Attention, c'es tpas -1 forcément la face opposée.... ça peut être une face qu'on vient de créer....
+            //Je pense que c'est un problème de laisser -1
+            //Peut etre on peut connnaitre l'indice car on connait noptre sens de deplacement (anti horaire...)
+            _faces.push_back(Face(newVertexIndex, v2, v1, idsExtHull[i], -1, -1));
+
+
+
+            //Le v2 de la face d'avant doit avoir comme face opposée la nouvelle face..
+            if (idOldV2 != -1) {
+                _faces[idsExtHull[i-1]].setOppositeFace(newFaceIndex, idOldV2);
+            }
+
+            idOldV2 = idLocalV2;
+
+        }
+        //Else it's not a convex hull, no creation of faces
+
+        //Should we put idOldV2 to -1 ??
+
+        
+
+        //creation of a couter-clockwise oriented face
+
+        // if (pred_orientation(_vertices[v1].getPoint(), _vertices[v2].getPoint(), p) == 1 ) {
+        //     _faces.push_back(Face(v1, v2, _vertices.size() - 1, -1, -1, idsExtHull[i]));
+        // } else if (pred_orientation(p ,_vertices[v2].getPoint(), _vertices[v1].getPoint()) == 1) {
+        //     _faces.push_back(Face(_vertices.size() - 1, v2, v1, idsExtHull[i], -1, -1));
+        // }
+    }
+
+
+}
+
 void Mesh::flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDEX v1, const VERTEX_INDEX v2) {
     //Precondition: v1, v2 are in faces f1 and f2 
 
@@ -314,7 +395,55 @@ void Mesh::flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDE
 
 //}
 
-void Mesh::computeMaxValues() {
+//Insertion
+void Mesh::naiveInsertion(const Point p) {
+    std::vector<FACE_INDEX> idsExtHull;
+    for (int i = 0; i < _faces.size(); i++) {
+        int isInTriangle = pred_inTriangle(_vertices[_faces[i].v1()].getPoint(), _vertices[_faces[i].v2()].getPoint(), _vertices[_faces[i].v3()].getPoint(), p);
+        if (isInTriangle >= 0) {
+            split_face(p, i); //Split face add the new point in the triangle
+            return; //No need to continue
+        }
+        
+                    idsExtHull.push_back(i);
+
+        // if (_faces[i].haveInfiniteFaceInFront()) {
+        //     idsExtHull.push_back(i);
+        //     //The test of visibility of the face from p is done in flipToInfinite
+        // }
+    }
+    //idsExtHull is not empty
+    //Slip to infinite add the new point
+    addPointAndFlipToInfinite(idsExtHull, p);
+}
+
+//For now it's basicaly an insertion + flip...
+void Mesh::delaunayInsertion(const Point p) {
+    for (int i = 0; i < _faces.size(); i++) {
+
+        int isInTriangle = pred_inTriangle(_vertices[_faces[i].v1()].getPoint(), _vertices[_faces[i].v2()].getPoint(), _vertices[_faces[i].v3()].getPoint(), p);
+        if (isInTriangle >= 0) {
+            split_face(p, i);
+
+            //flip edges
+            int localVertexIndex = _faces[i].getLocalIndexOf(_vertices.size() - 1);
+            flip_edge(i, _faces[i].getFrontFace(localVertexIndex), _faces[i].vertex((localVertexIndex + 1) % 3), _faces[i].vertex((localVertexIndex + 2) % 3));
+
+            FACE_INDEX nf = _faces.size() - 2;
+            localVertexIndex = _faces[nf].getLocalIndexOf(_vertices.size() - 1);
+            flip_edge(nf, _faces[nf].getFrontFace(localVertexIndex), _faces[nf].vertex((localVertexIndex + 1) % 3), _faces[nf].vertex((localVertexIndex + 2) % 3));
+
+            nf = _faces.size() - 1;
+            localVertexIndex = _faces[nf].getLocalIndexOf(_vertices.size() - 1);
+            flip_edge(nf, _faces[nf].getFrontFace(localVertexIndex), _faces[nf].vertex((localVertexIndex + 1) % 3), _faces[nf].vertex((localVertexIndex + 2) % 3));
+            break;
+        }
+
+    }
+
+}
+
+//void Mesh::computeMaxValues() {
     // _maxX = 0, _maxY = 0, _maxZ = 0;
     // Point p;
     // for(unsigned i = 0; i<_vertices.size(); ++i) {
@@ -325,7 +454,7 @@ void Mesh::computeMaxValues() {
     // }
 
     // printf("Max : %d, %d, %d\n", _maxX, _maxY, _maxZ);
-}
+//}
 
 void Mesh::setVertexStart(int vs) {
     if (vs < 0 || vs >= (int) _vertices.size()) return;
@@ -499,4 +628,41 @@ void Mesh::drawMeshWireFrame() {
     drawSelectedPoints();
 }
 
+void Mesh::drawVoronoiDiagram() {
+    int i = 0;
+    glColor3d(0,1,0); //Green
+    glBegin(GL_LINE_LOOP);
+    for (Vertices_iterator vi = vertices_iterator_begin(); vi != vertices_iterator_end(); vi++) {
+        Faces_circulator fcBegin = incident_faces_circulator(i);
+        Faces_circulator fc;
+        int fIndex;
+        for (fc = fcBegin, fc++; fc != fcBegin; fc++) {
+            fIndex = fc.currentFaceIndex;
+            Point a = _vertices[_faces[fIndex].v1()].getPoint();
+            Point b = _vertices[_faces[fIndex].v2()].getPoint();
+            Point c = _vertices[_faces[fIndex].v3()].getPoint();
+
+            Point center = computeCenterOfCircumscribedCercle(a, b, c);
+            glVertexDraw(center);
+
+        }
+        i++;
+
+    }
+
+    glEnd();
+
+}
+
+void Mesh::splitFaceMiddle(int faceIndex) {
+
+    if (faceIndex < 0 || faceIndex > _faces.size())
+        return;
+
+    Face &f = _faces[faceIndex];
+    Point middle = (_vertices[f.v1()].getPoint() + _vertices[f.v2()].getPoint() + _vertices[f.v3()].getPoint()) / 3.f;
+
+    split_face(middle, faceIndex);
+
+}
 

@@ -13,6 +13,8 @@
 #include "laplacianCalc.h"
 #include "utils.h"
 
+#include <cassert>
+
 // ------------------------------------------------------------------------
 //                        VERTEX
 // ------------------------------------------------------------------------
@@ -22,7 +24,6 @@
 
 using FACE_INDEX = int;
 using VERTEX_INDEX = int;
-
 
 class Vertex {
     Point p;
@@ -118,6 +119,24 @@ public:
         return _f[getLocalIndexOf(vi)];
     }
 
+    bool haveInfiniteFaceInFront() const {
+        for (int i = 0; i < 3; ++i) {
+            if (_f[i] == -1){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    int getLocalIdVertexOppositeTofinite() const {
+        for (int i = 0; i < 3; ++i) {
+            if (_f[i] == -1){
+                return i;
+            }
+        }
+        return -1;
+    }
+
     //Set the opposite face of vertex (local index i)
     void setOppositeFace(FACE_INDEX fi, unsigned int i) {
         _f[i] = fi;
@@ -141,71 +160,81 @@ class Mesh {
     friend class Vertices_circulator;
 
 private:
-    //Vertices
+    //The vertices
     std::vector<Vertex> _vertices;
-    //Faces
+    //The faces
     std::vector<Face> _faces;
 
-    //Iterators
+    //The calculator of the laplacian vectors
+    LaplacianCalc* lcalc; 
+
+    //Iterators to track a current vertex and face
     Faces_circulator fcirc;
     Vertices_circulator vcirc;
 
-    //Infos for the drawing of currentFace, currentVertex..
-    VERTEX_INDEX currentStartVertexIndex = -1;//The starting vertex (chose by the user)
-    FACE_INDEX currentNeighborFace = -1;
-    VERTEX_INDEX currentNeighborVertex = -1; //Neighboring vertices of start vertex
+    VERTEX_INDEX currentStartVertexIndex = -1;  //The starting vertex (chose by the user)
+    FACE_INDEX currentNeighborFace = -1;        //Neighboring faces of start vertex
+    VERTEX_INDEX currentNeighborVertex = -1;    //Neighboring vertices of start vertex
 
     //Used to show a point with a varying point size for selected vertices
     float pointSize = 1.0f;
     float decreaseFactorPointSize = 0.01;
 
-    //The calculator of the laplacian vectors
-    LaplacianCalc* lcalc; 
 
-    //int getIndexOfOpposite(FACE_INDEX f_id, VERTEX_INDEX v1, VERTEX_INDEX v2);
+//Drawing functions
 
     //Draw the vertex 'vi' and use hsv color for the curvature if isCurrentFace is false
     //Else use white color if the vertex vi is in the isCurrentFace
     void glVertexIndexDraw(const VERTEX_INDEX vi, bool isCurrentFace);
     //Draw the face with curvature colors if isCurrentFace is false, else use white color
     void glFaceDraw(const Face & f, bool isCurrentFace);
+    //Draw startVertex and currentNeigborVertex as point with breathing size
     void drawSelectedPoints();
+    //Draw the current neigbor face in white
     void drawCurrentNeighborFace();
 
-
-    double _maxX, _maxY, _maxZ;
-    //Compute the max X, max Y of points of the mesh (used to know the frustrum and eye position)
-    void computeMaxValues();
+    // //If the mesh is too large, try to adapt frustrum...
+    // double _maxX, _maxY, _maxZ;
+    // //Compute the max X, max Y of points of the mesh (used to know the frustrum and eye position)
+    // void computeMaxValues();
 
     //Load data from an .off file
     int load_off_file(const std::string& path_to_file);
 
-    //Split face into 3 faces
+    //Add the point newPoint contained in the face fi by splitting fi into 3 new faces
+    //Pre condition : the face fi contains the point newPoint
     void split_face(const Point& newPoint, FACE_INDEX fi);
+    //Add a point outside the convex hull and create all the necessary faces
+    //Precondition: idsExtHull is not empty, and contains all the faces which
+    //contain a point linked to the implicit infinite point
+    void addPointAndFlipToInfinite(std::vector<FACE_INDEX> idsExtHull,Point p);
 
     //Flip an edge shared between two triangles
     void flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDEX v1, const VERTEX_INDEX v2);
+    
+    //Split edge in front of localIndexF1
+    //void Mesh::flip_edge(const FACE_INDEX f1, int localIndexF1) {
 
 public:
 
+//Construction
+
     Mesh();
     ~Mesh(); //Erase the laplacian calculator
-
     void createTetrahedron();
+    void create2DSquare();
     void createPyramid();
     void createFromOFF(const std::string& filename);
 
     void testPredicates();
 
-    //The number of vertices
+//Accessors/mutators used by the window to interact with the mesh
+
     unsigned int numberOfVertices() { return _vertices.size(); }
     unsigned int numberOfFaces() { return _faces.size(); }
     FACE_INDEX currFace() { return currentNeighborFace; }
     VERTEX_INDEX currStartVertex() { return currentStartVertexIndex; }
     VERTEX_INDEX currVertex() { return currentNeighborVertex; }
-    double maxX() { return _maxX; }
-    double maxY() { return _maxY; }
-    double maxZ() { return _maxZ; }
 
     //Set the index of the vertex to iterate over its neighbors
     void setVertexStart(int vs);
@@ -213,15 +242,29 @@ public:
     void nextFace(int);
     //Next neighboring vertex of currentStartVertex
     void nextVertex(int);
-    //Put indexes of currentStartVertex, currentNeighbors to -1
+    //Put indexes of currentStartVertex, currentNeighbors to -1 (disable display)
     void resetVertexFaceIndex();
+
+    void splitFaceMiddle(int faceIndex);
+
+//Draw functions
 
     //Draw the mesh with colors on faces
     void drawMesh();
     //Draw the mesh with wireframe
     void drawMeshWireFrame();
+    //Draw the voronoi cells
+    void drawVoronoiDiagram();
 
-    //Iterators
+//Insertion
+
+    //Naive insertion of a point in the convexHull (only a split face), or outside the convex hull
+    //(use of addPointAndFlipToInfinite)
+    void naiveInsertion(const Point p);
+    void delaunayInsertion(const Point p);
+
+//Iterators
+
     Vertices_iterator vertices_iterator_begin() { 
         return Vertices_iterator(this, 0); 
     }

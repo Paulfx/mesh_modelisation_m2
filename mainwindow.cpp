@@ -24,10 +24,10 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::updateTextInfos() {
-    QString t = "Nb vertex : " + QString::number(ui->widget->vertexNb());
+    QString t = "Number of vertices : " + QString::number(ui->widget->vertexNb());
     ui->labelVertexNb->setText(t);
 
-    QString tFace = "Nb face : " + QString::number(ui->widget->faceNb());
+    QString tFace = "Number of faces : " + QString::number(ui->widget->faceNb());
     ui->labelFaceNb->setText(tFace);
 }
 
@@ -107,6 +107,11 @@ void MainWindow::on_pbTetrahedron_released()
     updateTextInfos();
 }
 
+void MainWindow::on_pb2DSquare_released()
+{
+    ui->widget->create2DSquare();
+}
+
 void MainWindow::on_pbOpenFile_released()
 {
     std::string fileName = QFileDialog::getOpenFileName(this,
@@ -125,4 +130,42 @@ void MainWindow::on_pbCreateQueen_released()
     //ui->widget->createFromOFF("./M2/maillage/Mesh_Computational_Geometry/OFF_files/queen.off");
     ui->widget->createFromOFF("./M2/maillage/Mesh_Computational_Geometry/OFF_files/mushroom.off");
     updateTextInfos();
+}
+
+void MainWindow::on_pushButton_released()
+{
+    ui->widget->setVoronoi();
+}
+
+void MainWindow::on_pbSplitFaceMiddle_released()
+{
+    int index = ui->lineEditFaceIndexSplit->text().toInt();
+    ui->lineEditFaceIndexSplit->setText("");
+    ui->widget->splitFaceMiddle(index);
+}
+
+void MainWindow::on_pbAddPoint_released()
+{
+
+    double x = ui->doubleX->value();
+    double y = ui->doubleY->value();
+    double z = ui->doubleZ->value();
+    ui->doubleX->setValue(0);
+    ui->doubleY->setValue(0);
+    ui->doubleZ->setValue(0);
+
+    ui->widget->addNaivePoint(x,y,z);
+}
+
+void MainWindow::on_pbDelaunayAdd_released()
+{
+    double x = ui->doubleX->value();
+    double y = ui->doubleY->value();
+    double z = ui->doubleZ->value();
+    ui->doubleX->setValue(0);
+    ui->doubleY->setValue(0);
+    ui->doubleZ->setValue(0);
+
+    ui->widget->addDelaunayPoint(x,y,z);
+
 }

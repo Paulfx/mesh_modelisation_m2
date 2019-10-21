@@ -16,6 +16,8 @@ public:
     void resizeGL(int width, int height);
 
     void setWireframe();
+    void setVoronoi();
+
     bool wf() { return wireframe; }
 
     unsigned int vertexNb() { return _mesh.numberOfVertices(); }
@@ -30,9 +32,14 @@ public:
     int currentVertex() { return _mesh.currVertex(); }
     void resetVertexFaceIndex() { _mesh.resetVertexFaceIndex(); }
     void createPyramid() { _mesh.createPyramid(); }
+    void create2DSquare() {_mesh.create2DSquare(); }
     void createTetrahedron() { _mesh.createTetrahedron(); }
     void createFromOFF(const std::string& filename) { _mesh.createFromOFF(filename); }
     void testIterators();
+
+    void splitFaceMiddle(int faceIndex) { _mesh.splitFaceMiddle(faceIndex); }
+    void addNaivePoint(double x, double y, double z) { _mesh.naiveInsertion(Point(x,y,z)); }
+    void addDelaunayPoint(double x, double y, double z) { _mesh.delaunayInsertion(Point(x,y,z)); }
 
 
 protected:
@@ -49,6 +56,8 @@ private:
     float _angleX, _angleY; // Rotation
 
     bool wireframe = true;
+
+    bool voronoi = false;
 
     QPoint _lastPosMouse; // To keep the last position of the mouse
 
