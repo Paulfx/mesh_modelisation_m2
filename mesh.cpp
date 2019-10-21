@@ -231,7 +231,7 @@ void Mesh::resetShape() {
 
 //Precondition : the face fi contains the newPoint
 void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
-    //Face& f = _faces[fi];
+    printf("Split face %d\n", fi);
 
     Vertex newVertex = Vertex(newPoint, fi);
     VERTEX_INDEX newVertexIndex = _vertices.size();
@@ -290,6 +290,49 @@ void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
 
 }
 
+
+void Mesh::flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDEX v1, const VERTEX_INDEX v2) {
+    //Precondition: v1, v2 are in faces f1 and f2 
+
+    //Reference possible car pas de push_back = pas d'invalidation de la ref
+    Face& F1 = _faces[f1];
+    Face& F2 = _faces[f2];
+
+    int f1_localIndex_v1 = F1.getLocalIndexOf(v1);
+    int f1_localIndex_v2 = F1.getLocalIndexOf(v2);
+
+    int f2_localIndex_v1 = F2.getLocalIndexOf(v1);
+    int f2_localIndex_v2 = F2.getLocalIndexOf(v2);
+
+    int f1_localIndex_opposite = F1.getLocalIndexOfOppositeFromLocalIndex(f1_localIndex_v1, f1_localIndex_v2);
+    int f2_localIndex_opposite = F2.getLocalIndexOfOppositeFromLocalIndex(f2_localIndex_v1, f2_localIndex_v2);
+
+    FACE_INDEX if1 = F1.getFrontFace(f1_localIndex_v2);
+    FACE_INDEX if2 = F2.getFrontFace(f2_localIndex_v1);
+
+    F1.setOppositeFace(if2, f1_localIndex_opposite);
+    F1.setOppositeFace(f2, f1_localIndex_v2);
+
+    F1.setVertex(f1_localIndex_v1, F2.vertex(f2_localIndex_opposite));
+
+    F2.setOppositeFace(if1, f2_localIndex_opposite);
+    F2.setOppositeFace(f1, f2_localIndex_v1);
+
+    F2.setVertex(f2_localIndex_v2, F1.vertex(f1_localIndex_opposite));
+
+    _faces[if1].setOppositeFace(f2, (_faces[if1].getLocalIndexOf(v1) + 2) % 3);
+    _faces[if2].setOppositeFace(f1, (_faces[if2].getLocalIndexOf(v2) + 1) % 3);
+
+    voronoiIsInit = false;
+}
+
+//void Mesh::flip_edge(const FACE_INDEX f1, int localIndexF1) {
+
+
+//    //Split edge in front of localIndexF1
+
+//}
+
 void Mesh::addPointAndFlipToInfinite(std::vector<FACE_INDEX> idsExtHull, Point p) {
     assert(idsExtHull.size() > 0);
     unsigned int newVertexIndex = _vertices.size();
@@ -340,64 +383,17 @@ void Mesh::addPointAndFlipToInfinite(std::vector<FACE_INDEX> idsExtHull, Point p
 
                 //Should we put idOldV2 to -1 ??
             }
-
-
-
         }
-
-
     }
-
 }
 
-void Mesh::flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDEX v1, const VERTEX_INDEX v2) {
-    //Precondition: v1, v2 are in faces f1 and f2 
-
-    //Reference possible car pas de push_back = pas d'invalidation de la ref
-    Face& F1 = _faces[f1];
-    Face& F2 = _faces[f2];
-
-    int f1_localIndex_v1 = F1.getLocalIndexOf(v1);
-    int f1_localIndex_v2 = F1.getLocalIndexOf(v2);
-
-    int f2_localIndex_v1 = F2.getLocalIndexOf(v1);
-    int f2_localIndex_v2 = F2.getLocalIndexOf(v2);
-
-    int f1_localIndex_opposite = F1.getLocalIndexOfOppositeFromLocalIndex(f1_localIndex_v1, f1_localIndex_v2);
-    int f2_localIndex_opposite = F2.getLocalIndexOfOppositeFromLocalIndex(f2_localIndex_v1, f2_localIndex_v2);
-
-    FACE_INDEX if1 = F1.getFrontFace(f1_localIndex_v2);
-    FACE_INDEX if2 = F2.getFrontFace(f2_localIndex_v1);
-
-    F1.setOppositeFace(if2, f1_localIndex_opposite);
-    F1.setOppositeFace(f2, f1_localIndex_v2);
-
-    F1.setVertex(f1_localIndex_v1, F2.vertex(f2_localIndex_opposite));
-
-    F2.setOppositeFace(if1, f2_localIndex_opposite);
-    F2.setOppositeFace(f1, f2_localIndex_v1);
-
-    F2.setVertex(f2_localIndex_v2, F1.vertex(f1_localIndex_opposite));
-
-    _faces[if1].setOppositeFace(f2, (_faces[if1].getLocalIndexOf(v1) + 2) % 3);
-    _faces[if2].setOppositeFace(f1, (_faces[if2].getLocalIndexOf(v2) + 1) % 3);
-
-    voronoiIsInit = false;
-}
-
-//void Mesh::flip_edge(const FACE_INDEX f1, int localIndexF1) {
-
-
-//    //Split edge in front of localIndexF1
-
-//}
 
 //Insertion
 void Mesh::naiveInsertion(const Point p) {
     std::vector<FACE_INDEX> idsExtHull;
     for (unsigned i = 0; i < _faces.size(); i++) {
         int isInTriangle = pred_inTriangle(_vertices[_faces[i].v1()].getPoint(), _vertices[_faces[i].v2()].getPoint(), _vertices[_faces[i].v3()].getPoint(), p);
-        if (isInTriangle >= 0) {
+        if (isInTriangle == 1) {
             split_face(p, i); //Split face add the new point in the triangle
             return; //No need to continue
         }
@@ -410,7 +406,7 @@ void Mesh::naiveInsertion(const Point p) {
         }
     }
     //idsExtHull is not empty
-    //Slip to infinite add the new point
+    //Add the new point outside the convex hull
     addPointAndFlipToInfinite(idsExtHull, p);
 
     lcalc->calculate(this);

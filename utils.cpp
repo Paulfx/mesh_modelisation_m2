@@ -136,7 +136,7 @@ int pred_inTriangle(Point a, Point b, Point c, Point d) {
     int o_dca = pred_orientation(d, c, a);
 
     if (o_dab == 0 || o_dbc == 0 || o_dca == 0) return 0;
-    if (o_dab == o_dbc == o_dca == 1 ) return 1;
+    if (o_dab == 1 && o_dbc == 1 && o_dca == 1 ) return 1;
     return -1;
 }
 
