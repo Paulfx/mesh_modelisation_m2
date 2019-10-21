@@ -54,7 +54,6 @@ void Faces_circulator::update(DIRECTION dir) {
 
     if (indexRefVertex == -1) {
         fprintf(stderr, "Error Faces_circulator indexrefVertex=-1, refVertex=%d, actualFace=%d\n", refVertex, currentFaceIndex);
-        
         fprintf(stderr, "Face %d, v0=%d, v1=%d, v2=%d\n", currentFaceIndex, actualFace.v1(), actualFace.v2(), actualFace.v3());
         //indexRefVertex = 0;
     }

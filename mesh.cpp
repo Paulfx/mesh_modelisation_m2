@@ -239,8 +239,6 @@ void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
     //We add the vertex
     _vertices.push_back(newVertex);
 
-    fprintf(stderr, "New index of vertex : %d\n", newVertexIndex);
-
     FACE_INDEX indexF1 = _faces.size();
     FACE_INDEX indexF2 = _faces.size() + 1;
 
@@ -263,7 +261,6 @@ void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
     _vertices[_faces[fi].vertex(2)].setFi(indexF1);
 
 
-
     //Modify neighbor faces..    
     FACE_INDEX frontFace0 = _faces[fi].getFrontFace(0);
     FACE_INDEX frontFace1 = _faces[fi].getFrontFace(1);
@@ -278,8 +275,6 @@ void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
     //Modify input face
     _faces[fi].setVertex(2, newVertexIndex);
 
-    fprintf(stderr, "Set vertex 2 of face %d, index : %d\n", fi, newVertexIndex);
-
     _faces[fi].setOppositeFace(indexF1, 0);
     _faces[fi].setOppositeFace(indexF2, 1);
 
@@ -287,7 +282,6 @@ void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
     //f.setOppositeFace(f.getFrontFace(2), 2);
 
     voronoiIsInit = false;
-
 }
 
 
@@ -339,19 +333,14 @@ void Mesh::addPointAndFlipToInfinite(std::vector<FACE_INDEX> idsExtHull, Point p
     //Incident face of the new point is one of the new faces that will be created
     //And we are sure that at least one face will be created
     _vertices.push_back(Vertex(p.x, p.y, p.z, _faces.size()));
-
     voronoiIsInit = false;
 
-
-    int idOldV2 = -1;
+    int idOldNewFace = -1;
 
     //For all face who need a connection with the new point p, we create a new face (oriented couter-clockwise)
     for (unsigned i = 0; i < idsExtHull.size(); i++) {
-        //we determine global ids of the two vertices used in creation of the new face
-
+        //We need to flip all infinite edge ( if frontFace == -1)
         for (unsigned j=0; j<3; ++j) {
-
-            //We need to flip all infinite edge (== if frontFace == -1)
             if (_faces[idsExtHull[i]].getFrontFace(j) == -1) {
 
                 int idVertexOpposite = j;
@@ -360,28 +349,22 @@ void Mesh::addPointAndFlipToInfinite(std::vector<FACE_INDEX> idsExtHull, Point p
                 VERTEX_INDEX v1 = _faces[idsExtHull[i]].vertex(idLocalV1);
                 VERTEX_INDEX v2 = _faces[idsExtHull[i]].vertex(idLocalV2);
 
-
                 if (pred_orientation(p, _vertices[v2].getPoint(), _vertices[v1].getPoint()) > 0) {
-                    //counter clockwise = we create a face
-
-                    //modify opposite face of actual face
+                    //counter clockwise (the edge is visible from the point) = we create a face
                     FACE_INDEX newFaceIndex = _faces.size();
+                    //modify opposite face of actual face
                     _faces[idsExtHull[i]].setOppositeFace(newFaceIndex, idVertexOpposite);
 
-                    _faces.push_back(Face(newVertexIndex, v2, v1, idsExtHull[i], -1, -1));
+                    //Create the new face. The actual v2 has for opposite face the previous newFace (if it's not
+                    //the first face) else -1, stored in idOldNewFace
+                    _faces.push_back(Face(newVertexIndex, v2, v1, idsExtHull[i], idOldNewFace, -1));
 
+                    //The v2 (index 2) of the old face has for opposite face the newFace
+                    if (idOldNewFace != -1)
+                        _faces[idOldNewFace].setOppositeFace(newFaceIndex, 2);
 
-                    //Le v2 de la face d'avant doit avoir comme face opposée la nouvelle face.. Surement un problème ici
-                    if (idOldV2 != -1) {
-                        //_faces[idsExtHull[i-1]].setOppositeFace(newFaceIndex, idOldV2);
-                    }
-
-                    idOldV2 = idLocalV2;
-
+                    idOldNewFace = newFaceIndex;
                 }
-                //Else it's not a convex hull, no creation of faces
-
-                //Should we put idOldV2 to -1 ??
             }
         }
     }
@@ -398,11 +381,9 @@ void Mesh::naiveInsertion(const Point p) {
             return; //No need to continue
         }
         
-                    //idsExtHull.push_back(i);
-
+        //We store the face at the edge of the convex hull (ie. faces that have a link to the infinite face)
         if (_faces[i].haveInfiniteFaceInFront()) {
             idsExtHull.push_back(i);
-            //The test of visibility of the face from p is done in flipToInfinite
         }
     }
     //idsExtHull is not empty
@@ -448,7 +429,6 @@ void Mesh::delaunayInsertion(const Point p) {
 
 
 /*
-
             split_face(p, i);
 
             //flip edges
