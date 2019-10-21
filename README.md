@@ -67,7 +67,7 @@ In order to stay in Delaunay triangulation after a split (insertion of new point
 
 Only in 2D: It is possible to add a new point in the convex hull, or outside naively or with delaunay
 
-The voronoï diagram is computed thanks to the duality between voronoï and Delaunay. To display points we approximate the center of the circumscribed cercle of the triangle.
+The voronoï diagram is computed thanks to the duality between voronoï and Delaunay. To display points we approximate the center of the circumscribed cercle of the triangle. Points of voronoï are compute only is the mesh has changed, not in drawing loop.
 
 ##### Files *mesh_iterators.cpp/.h*
 
@@ -93,4 +93,4 @@ We implement all predicates asked, with no approximation:
 * pred_inTriangle()
 * pred_inCercle()
 
-Also there is the possibility for an approximation of center of a circumscribed circle in order to display voronoï diagram.
+Also there is a function to approximate the center of a circumscribed circle in order to display voronoï diagram. This calcultion is made thanks to barycentric coordinates (alpha, beta, gamma).
