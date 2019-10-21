@@ -407,10 +407,6 @@ void Mesh::delaunayInsertion(const Point p) {
 
 
 
-
-
-
-
             split_face(p, i);
 
             //flip edges
@@ -439,19 +435,6 @@ void Mesh::delaunayInsertion(const Point p) {
     }
 
 }
-
-//void Mesh::computeMaxValues() {
-    // _maxX = 0, _maxY = 0, _maxZ = 0;
-    // Point p;
-    // for(unsigned i = 0; i<_vertices.size(); ++i) {
-    //     p = _vertices[i].getPoint();
-    //     if (p.x > _maxX) _maxX = p.x; 
-    //     if (p.y > _maxY) _maxY = p.y; 
-    //     if (p.z > _maxZ) _maxZ = p.z; 
-    // }
-
-    // printf("Max : %d, %d, %d\n", _maxX, _maxY, _maxZ);
-//}
 
 void Mesh::setVertexStart(int vs) {
     if (vs < 0 || vs >= (int) _vertices.size()) return;

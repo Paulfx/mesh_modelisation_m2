@@ -96,6 +96,8 @@ public:
         return -1;
     }
 
+    //Get the global index of the next (dir==FORWARD), or the previous (dir==BACKWARD)
+    //vertex from the global index vi
     VERTEX_INDEX getNextOrPreviousGlobal(VERTEX_INDEX vi, DIRECTION dir) const {
         return vertex((getLocalIndexOf(vi) + dir) % 3);
     }
@@ -105,7 +107,6 @@ public:
         //Precondition : v1 and v2 are in the face
         int id1 = getLocalIndexOf(v1);
         int id2 = getLocalIndexOf(v2);
-        //return (id1 + id2) - 1;
         return getLocalIndexOfOppositeFromLocalIndex(id1,id2);
     }
 
@@ -123,6 +124,7 @@ public:
         return _f[getLocalIndexOf(vi)];
     }
 
+    //Return true if one of the vertex has an opposite face of -1 (infinite face)
     bool haveInfiniteFaceInFront() const {
         for (int i = 0; i < 3; ++i) {
             if (_f[i] == -1){
