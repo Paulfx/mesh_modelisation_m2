@@ -412,7 +412,16 @@ void Mesh::naiveInsertion(const Point p) {
     lcalc->calculate(this);
 }
 
-//For now it's basicaly an insertion + flip...
+
+void Mesh::search_conflict(const Face &f, std::vector<FACE_INDEX> &local_c, Point p) {
+
+    if (pred_inCercle(_vertices[f.v1()].getPoint(), _vertices[f.v2()].getPoint(), _vertices[f.v3()].getPoint(), p) >= 0) {
+        //local_c.push_back(f.)
+    }
+
+}
+
+
 void Mesh::delaunayInsertion(const Point p) {
     for (unsigned i = 0; i < _faces.size(); i++) {
 
@@ -421,6 +430,25 @@ void Mesh::delaunayInsertion(const Point p) {
                                             _vertices[_faces[i].v3()].getPoint(), 
                                             p);
         if (isInTriangle >= 0) {
+
+            Face faceToDestroy = _faces[i];
+
+            std::vector<FACE_INDEX> conflict_face;
+            for (int j = 0; j < 3; j++) {
+                Faces_circulator fcBegin = incident_faces_circulator(faceToDestroy.vertex(j));
+                Faces_circulator fc;
+
+                for (fc = fcBegin, fc++; search_conflict(*fc, conflict_face, p), fc != fcBegin; fc++) {
+
+                    ;
+
+                }
+
+            }
+
+
+/*
+
             split_face(p, i);
 
             //flip edges
@@ -444,6 +472,8 @@ void Mesh::delaunayInsertion(const Point p) {
                         _faces[nf].vertex((localVertexIndex + 1) % 3), 
                         _faces[nf].vertex((localVertexIndex + 2) % 3));
             break;
+
+            */
         }
 
     }
