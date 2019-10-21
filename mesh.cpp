@@ -614,33 +614,46 @@ void Mesh::drawMeshWireFrame() {
 }
 
 
+Point Mesh::computeCenterFace(const Face &f) {
+    //fIndex = fc.currentFaceIndex;
+    Point a = _vertices[f.v1()].getPoint();
+    Point b = _vertices[f.v2()].getPoint();
+    Point c = _vertices[f.v3()].getPoint();
+
+    Point center = computeCenterOfCircumscribedCercle(a, b, c);
+
+    return center;
+}
+
 void Mesh::initVoronoiDiagram() {
     //std::vector<std::vector<Point>> voronoiPoint;
 
     voronoi_points = std::vector<std::vector<Point>>();
     int i = 0;
     for (Vertices_iterator vi = vertices_iterator_begin(); vi != vertices_iterator_end(); vi++) {
-        if (vi.getIndex() != -1) {
-            Faces_circulator fcBegin = incident_faces_circulator(i);
-            Faces_circulator fc;
-            int fIndex;
-            std::vector<Point> localPoint;
-            for (fc = fcBegin, fc++; fc != fcBegin; fc++) {
+        Faces_circulator fcBegin = incident_faces_circulator(i);
+        Faces_circulator fc;
+        
+        std::vector<Point> localPoint;
+        for (fc = fcBegin, fc++; localPoint.push_back(computeCenterFace(*fc)), fc != fcBegin; fc++) {
 
-                if (fc.currentFaceIndex == -1 || fc.refVertex == -1) {
-                    printf("break voronoi\n");
-                    break;
-                }
-                fIndex = fc.currentFaceIndex;
-                Point a = _vertices[_faces[fIndex].v1()].getPoint();
-                Point b = _vertices[_faces[fIndex].v2()].getPoint();
-                Point c = _vertices[_faces[fIndex].v3()].getPoint();
+            ;
 
-                Point center = computeCenterOfCircumscribedCercle(a, b, c);
-                localPoint.push_back(center);
-            }
-            voronoi_points.push_back(localPoint);
+            // printf("Face\n");
+
+            // if (fc.currentFaceIndex == -1 || fc.refVertex == -1) {
+            //     printf("break voronoi\n");
+            //     break;
+            // }
+            // //fIndex = fc.currentFaceIndex;
+            // Point a = _vertices[(*fc).v1()].getPoint();
+            // Point b = _vertices[(*fc).v2()].getPoint();
+            // Point c = _vertices[(*fc).v3()].getPoint();
+
+            // Point center = computeCenterOfCircumscribedCercle(a, b, c);
+            // localPoint.push_back(center);
         }
+        voronoi_points.push_back(localPoint);
         i++;
     }
     voronoiIsInit = true;

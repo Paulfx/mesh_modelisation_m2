@@ -224,6 +224,8 @@ private:
 
     void resetShape();
 
+
+    Point computeCenterFace(const Face &f);
     //pre-compute voronoi points
     void initVoronoiDiagram();
 

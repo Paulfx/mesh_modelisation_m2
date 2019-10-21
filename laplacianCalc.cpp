@@ -82,7 +82,7 @@ void LaplacianCalc::calculate(Mesh* mesh) {
 void LaplacianCalc::fillRgbColors() {
 	double r,g,b;
 	float curvature;
-	for (int i = 0; i < curvatures.size(); ++i) {
+	for (unsigned i = 0; i < curvatures.size(); ++i) {
 		curvature = getCurvatureMapped(i, 0.f, 360.f);
 		//Convert curvature to rgb color
    		HSVToRGB(curvature, 1, 1, r, g, b);
