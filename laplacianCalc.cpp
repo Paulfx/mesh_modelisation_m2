@@ -15,6 +15,7 @@ float LaplacianCalc::triangleArea(const Vector& v1, const Vector& v2) {
 void LaplacianCalc::calculate(Mesh* mesh) {
     laplacian.clear();
 	curvatures.clear();
+	rgbColors.clear();
     
     int i = 0; //Get from vit? TODO
 

@@ -5,6 +5,7 @@
 #include "mesh.h"
 #include "vec.h"
 #include <algorithm>
+#include <iostream>
 
 typedef struct RGB {
     double r;

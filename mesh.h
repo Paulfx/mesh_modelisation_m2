@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <string>
 
 #include "vec.h"
 #include "mesh_iterators.h" 
@@ -93,6 +94,10 @@ public:
             }
         }
         return -1;
+    }
+
+    VERTEX_INDEX getNextOrPreviousGlobal(VERTEX_INDEX vi, DIRECTION dir) const {
+        return vertex((getLocalIndexOf(vi) + dir) % 3);
     }
 
     //Compute local id of an opposite face for a face (v1, v2 are global ids representing the edge)
@@ -213,6 +218,7 @@ private:
 
     //Flip an edge shared between two triangles
     void flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDEX v1, const VERTEX_INDEX v2);
+
     //Split edge in front of localIndexF1
     //void Mesh::flip_edge(const FACE_INDEX f1, int localIndexF1) {
 

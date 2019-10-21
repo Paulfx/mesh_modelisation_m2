@@ -16,10 +16,6 @@ Vector Vertex::operator-(const Vertex &v) {
 // ------------------------------------------------------------------------
 
 Mesh::Mesh()  {
-
-    //testPredicates();
-
-
     //Create the laplacian calculator
     lcalc = new LaplacianCalc();
 
@@ -30,15 +26,6 @@ Mesh::Mesh()  {
     //split_face(np, 3);
 
     //flip_edge(3, 1, 2, 0);
-
-
-    //fprintf(stderr, "After split_face, face nb %d, v0=%d, v1=%d, v2=%d\n", 3, _faces[3].v1(), _faces[3].v2(), _faces[3].v3());
-
-    //std::string filename = "./Documents/cours/m2/geoAlgo/mesh_modelisation/queen.off";
-    //std::string filename = "./M2/maillage/Mesh_Computational_Geometry/queen.off";
-    //createFromOFF(filename);
-
-    //glEnable(GL_LIGHTING);
 
 }
 
@@ -231,7 +218,7 @@ int Mesh::load_off_file(const std::string& path_to_file) {
         myfile.close();
         return 0;
     }
-    else std::cout << "Unable to open file";
+    else std::cout << "Unable to open file" << std::endl;
     return -1;
 }
 
@@ -489,7 +476,7 @@ void Mesh::setVertexStart(int vs) {
 void Mesh::nextFace(int s) {
     if (currentStartVertexIndex < 0 ||
         currentStartVertexIndex >= (int)_vertices.size()) return;
-    printf("Next face : %d\n", s);
+    //printf("Next face : %d\n", s);
     if (s < 0) fcirc--;
     else fcirc++;
     currentNeighborFace = fcirc.currentFaceIndex;
@@ -508,13 +495,6 @@ void Mesh::resetVertexFaceIndex() {
     currentNeighborVertex = -1;
     currentNeighborFace = -1;
 }
-
-// int Mesh::getIndexOfO pposite(FACE_INDEX f_id, VERTEX_INDEX v1, VERTEX_INDEX v2) {
-//     int id1 = _faces[f_id].getLocalIndexOf(v1);
-//     int id2 = _faces[f_id].getLocalIndexOf(v2);
-//     //return (id1 + id2) - 1;
-//     return (3 - (id1 + id2));
-// }
 
 
 // The following functions could be displaced into a module OpenGLDisplayMesh that would include Mesh
@@ -538,14 +518,16 @@ void Mesh::glVertexIndexDraw(const VERTEX_INDEX vi, bool isCurrentFace) {
     if (isCurrentFace) //Use color white
         glColor3f(1,1,1);
     else {
-        float curvature = lcalc->getCurvatureMapped(vi,0.f,360.f);
-        double r,g,b;
+        //float curvature = lcalc->getCurvatureMapped(vi,0.f,360.f);
+        //double r,g,b;
         //Convert curvature to rgb color
-        HSVToRGB(curvature, 1, 1, r, g, b);
-        glColor3d(r,g,b);
+        //HSVToRGB(curvature, 1, 1, r, g, b);
+        //glColor3d(r,g,b);
+
         //Get the rgb color
-        //rgbColor = lcalc->getRgbColor(vi);
-        //glColor3d(rgbColor.r,rgbColor.g,rgbColor.b);
+        rgbColor = lcalc->getRgbColor(vi);
+        glColor3d(rgbColor.r,rgbColor.g,rgbColor.b);
+
     }
     glNormal3f(normal.x, normal.y, normal.z);
     const Point& p = _vertices[vi].getPoint();
@@ -554,8 +536,10 @@ void Mesh::glVertexIndexDraw(const VERTEX_INDEX vi, bool isCurrentFace) {
 }
 
 void Mesh::glFaceDraw(const Face & f, bool isCurrentFace) {
+    
     glBegin(GL_TRIANGLES);
-
+    //glBegin(GL_TRIANGLE_STRIP);
+    //glBegin(GL_TRIANGLE_FAN);
 
     //glColor3d()
     // glVertexDraw(_vertices[f.v1()]);
@@ -575,7 +559,6 @@ void Mesh::drawMesh() {
     for(unsigned i = 0; i < _faces.size(); i++) {
         glFaceDraw(_faces[i], i == currentNeighborFace);
     }
-
     drawSelectedPoints();
     //drawCurrentNeighborFace();
 }
@@ -618,18 +601,6 @@ void Mesh::drawMeshWireFrame() {
     Face f;
     for(unsigned i = 0; i < _faces.size(); i++) {
         f = _faces[i];
-        // glBegin(GL_LINE_STRIP);
-        //     glVertexDraw(_vertices[f.v1()]);
-        //     glVertexDraw(_vertices[f.v2()]);
-        // glEnd();
-        // glBegin(GL_LINE_STRIP);
-        //     glVertexDraw(_vertices[f.v2()]);
-        //     glVertexDraw(_vertices[f.v3()]);
-        // glEnd();
-        // glBegin(GL_LINE_STRIP);
-        //     glVertexDraw(_vertices[f.v3()]);
-        //     glVertexDraw(_vertices[f.v1()]);
-        // glEnd();
         glBegin(GL_LINE_STRIP);
             glVertexIndexDraw(f.v1(),false);
             glVertexIndexDraw(f.v2(),false);
