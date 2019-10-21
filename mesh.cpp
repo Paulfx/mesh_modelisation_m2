@@ -297,56 +297,56 @@ void Mesh::addPointAndFlipToInfinite(std::vector<FACE_INDEX> idsExtHull, Point p
     //And we are sure that at least one face will be created
     _vertices.push_back(Vertex(p.x, p.y, p.z, _faces.size()));
 
+    voronoiIsInit = false;
+
+
     int idOldV2 = -1;
 
     //For all face who need a connection with the new point p, we create a new face (oriented couter-clockwise)
-    for (int i = 0; i < idsExtHull.size(); i++) {
+    for (unsigned i = 0; i < idsExtHull.size(); i++) {
         //we determine global ids of the two vertices used in creation of the new face
-        int idVertexOpposite = _faces[idsExtHull[i]].getLocalIdVertexOppositeTofinite();
-        int idLocalV1 = (idVertexOpposite + 1) % 3;
-        int idLocalV2 = (idVertexOpposite + 2) % 3;
-        VERTEX_INDEX v1 = _faces[idsExtHull[i]].vertex(idLocalV1);
-        VERTEX_INDEX v2 = _faces[idsExtHull[i]].vertex(idLocalV2);
+
+        for (unsigned j=0; j<3; ++j) {
+
+            //We need to flip all infinite edge (== if frontFace == -1)
+            if (_faces[idsExtHull[i]].getFrontFace(j) == -1) {
+
+                int idVertexOpposite = j;
+                int idLocalV1 = (idVertexOpposite + 1) % 3;
+                int idLocalV2 = (idVertexOpposite + 2) % 3;
+                VERTEX_INDEX v1 = _faces[idsExtHull[i]].vertex(idLocalV1);
+                VERTEX_INDEX v2 = _faces[idsExtHull[i]].vertex(idLocalV2);
 
 
-        if (pred_orientation(p, _vertices[v2].getPoint(), _vertices[v1].getPoint()) > 0) {
-            //counter clockwise = we create a face
+                if (pred_orientation(p, _vertices[v2].getPoint(), _vertices[v1].getPoint()) > 0) {
+                    //counter clockwise = we create a face
 
-            //modify opposite face of actual face
-            FACE_INDEX newFaceIndex = _faces.size();
-            _faces[idsExtHull[i]].setOppositeFace(newFaceIndex, idVertexOpposite);
+                    //modify opposite face of actual face
+                    FACE_INDEX newFaceIndex = _faces.size();
+                    _faces[idsExtHull[i]].setOppositeFace(newFaceIndex, idVertexOpposite);
 
-            //Attention, c'es tpas -1 forcément la face opposée.... ça peut être une face qu'on vient de créer....
-            //Je pense que c'est un problème de laisser -1
-            //Peut etre on peut connnaitre l'indice car on connait noptre sens de deplacement (anti horaire...)
-            _faces.push_back(Face(newVertexIndex, v2, v1, idsExtHull[i], -1, -1));
+                    _faces.push_back(Face(newVertexIndex, v2, v1, idsExtHull[i], -1, -1));
 
 
+                    //Le v2 de la face d'avant doit avoir comme face opposée la nouvelle face.. Surement un problème ici
+                    if (idOldV2 != -1) {
+                        _faces[idsExtHull[i-1]].setOppositeFace(newFaceIndex, idOldV2);
+                    }
 
-            //Le v2 de la face d'avant doit avoir comme face opposée la nouvelle face..
-            if (idOldV2 != -1) {
-                _faces[idsExtHull[i-1]].setOppositeFace(newFaceIndex, idOldV2);
+                    idOldV2 = idLocalV2;
+
+                }
+                //Else it's not a convex hull, no creation of faces
+
+                //Should we put idOldV2 to -1 ??
             }
 
-            idOldV2 = idLocalV2;
+
 
         }
-        voronoiIsInit = false;
-        //Else it's not a convex hull, no creation of faces
 
-        //Should we put idOldV2 to -1 ??
 
-        
-
-        //creation of a couter-clockwise oriented face
-
-        // if (pred_orientation(_vertices[v1].getPoint(), _vertices[v2].getPoint(), p) == 1 ) {
-        //     _faces.push_back(Face(v1, v2, _vertices.size() - 1, -1, -1, idsExtHull[i]));
-        // } else if (pred_orientation(p ,_vertices[v2].getPoint(), _vertices[v1].getPoint()) == 1) {
-        //     _faces.push_back(Face(_vertices.size() - 1, v2, v1, idsExtHull[i], -1, -1));
-        // }
     }
-
 
 }
 
@@ -390,17 +390,12 @@ void Mesh::flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDE
 
 //    //Split edge in front of localIndexF1
 
-
-
-
-
-
 //}
 
 //Insertion
 void Mesh::naiveInsertion(const Point p) {
     std::vector<FACE_INDEX> idsExtHull;
-    for (int i = 0; i < _faces.size(); i++) {
+    for (unsigned i = 0; i < _faces.size(); i++) {
         int isInTriangle = pred_inTriangle(_vertices[_faces[i].v1()].getPoint(), _vertices[_faces[i].v2()].getPoint(), _vertices[_faces[i].v3()].getPoint(), p);
         if (isInTriangle >= 0) {
             split_face(p, i); //Split face add the new point in the triangle
@@ -421,7 +416,7 @@ void Mesh::naiveInsertion(const Point p) {
 
 //For now it's basicaly an insertion + flip...
 void Mesh::delaunayInsertion(const Point p) {
-    for (int i = 0; i < _faces.size(); i++) {
+    for (unsigned i = 0; i < _faces.size(); i++) {
 
         int isInTriangle = pred_inTriangle(_vertices[_faces[i].v1()].getPoint(), _vertices[_faces[i].v2()].getPoint(), _vertices[_faces[i].v3()].getPoint(), p);
         if (isInTriangle >= 0) {
@@ -557,7 +552,7 @@ void Mesh::glFaceDraw(const Face & f, bool isCurrentFace) {
 
 void Mesh::drawMesh() {
     for(unsigned i = 0; i < _faces.size(); i++) {
-        glFaceDraw(_faces[i], i == currentNeighborFace);
+        glFaceDraw(_faces[i], (int)i == currentNeighborFace);
     }
     drawSelectedPoints();
     //drawCurrentNeighborFace();
@@ -619,32 +614,46 @@ void Mesh::drawMeshWireFrame() {
 }
 
 
+Point Mesh::computeCenterFace(const Face &f) {
+    //fIndex = fc.currentFaceIndex;
+    Point a = _vertices[f.v1()].getPoint();
+    Point b = _vertices[f.v2()].getPoint();
+    Point c = _vertices[f.v3()].getPoint();
+
+    Point center = computeCenterOfCircumscribedCercle(a, b, c);
+
+    return center;
+}
+
 void Mesh::initVoronoiDiagram() {
     //std::vector<std::vector<Point>> voronoiPoint;
+
     voronoi_points = std::vector<std::vector<Point>>();
     int i = 0;
     for (Vertices_iterator vi = vertices_iterator_begin(); vi != vertices_iterator_end(); vi++) {
-        if (vi.getIndex() != -1) {
-            Faces_circulator fcBegin = incident_faces_circulator(i);
-            Faces_circulator fc;
-            int fIndex;
-            std::vector<Point> localPoint;
-            for (fc = fcBegin, fc++; fc != fcBegin; fc++) {
+        Faces_circulator fcBegin = incident_faces_circulator(i);
+        Faces_circulator fc;
+        
+        std::vector<Point> localPoint;
+        for (fc = fcBegin, fc++; localPoint.push_back(computeCenterFace(*fc)), fc != fcBegin; fc++) {
 
-                if (fc.currentFaceIndex == -1 || fc.refVertex == -1) {
-                    printf("break voronoi\n");
-                    break;
-                }
-                fIndex = fc.currentFaceIndex;
-                Point a = _vertices[_faces[fIndex].v1()].getPoint();
-                Point b = _vertices[_faces[fIndex].v2()].getPoint();
-                Point c = _vertices[_faces[fIndex].v3()].getPoint();
+            ;
 
-                Point center = computeCenterOfCircumscribedCercle(a, b, c);
-                localPoint.push_back(center);
-            }
-            voronoi_points.push_back(localPoint);
+            // printf("Face\n");
+
+            // if (fc.currentFaceIndex == -1 || fc.refVertex == -1) {
+            //     printf("break voronoi\n");
+            //     break;
+            // }
+            // //fIndex = fc.currentFaceIndex;
+            // Point a = _vertices[(*fc).v1()].getPoint();
+            // Point b = _vertices[(*fc).v2()].getPoint();
+            // Point c = _vertices[(*fc).v3()].getPoint();
+
+            // Point center = computeCenterOfCircumscribedCercle(a, b, c);
+            // localPoint.push_back(center);
         }
+        voronoi_points.push_back(localPoint);
         i++;
     }
     voronoiIsInit = true;
@@ -657,9 +666,9 @@ void Mesh::drawVoronoiDiagram() {
         initVoronoiDiagram();
     }
 
-    for (int i = 0; i < voronoi_points.size(); ++i) {
+    for (unsigned i = 0; i < voronoi_points.size(); ++i) {
         glBegin(GL_LINE_STRIP);
-        for (int j = 0; j < voronoi_points[i].size(); ++j) {
+        for (unsigned j = 0; j < voronoi_points[i].size(); ++j) {
             glVertexDraw(voronoi_points[i][j]);
         }
         glEnd();
@@ -669,7 +678,7 @@ void Mesh::drawVoronoiDiagram() {
 
 void Mesh::splitFaceMiddle(int faceIndex) {
 
-    if (faceIndex < 0 || faceIndex > _faces.size())
+    if (faceIndex < 0 || faceIndex > (int)_faces.size())
         return;
 
     Face &f = _faces[faceIndex];

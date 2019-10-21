@@ -36,10 +36,6 @@ public :
                             const Vertices_iterator&);
     friend bool operator ==(const Vertices_iterator&,
                             const Vertices_iterator&);
-
-    VERTEX_INDEX getIndex() {
-        return _index;
-    }
 };
 
 // ------------------------------------------------------------------------
