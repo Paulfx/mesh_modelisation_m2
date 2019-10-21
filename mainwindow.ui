@@ -349,13 +349,25 @@
                     <item>
                      <layout class="QVBoxLayout" name="verticalLayout_14">
                       <item>
-                       <widget class="QDoubleSpinBox" name="doubleX"/>
+                       <widget class="QDoubleSpinBox" name="doubleX">
+                        <property name="minimum">
+                         <double>-99.989999999999995</double>
+                        </property>
+                       </widget>
                       </item>
                       <item>
-                       <widget class="QDoubleSpinBox" name="doubleY"/>
+                       <widget class="QDoubleSpinBox" name="doubleY">
+                        <property name="minimum">
+                         <double>-99.989999999999995</double>
+                        </property>
+                       </widget>
                       </item>
                       <item>
-                       <widget class="QDoubleSpinBox" name="doubleZ"/>
+                       <widget class="QDoubleSpinBox" name="doubleZ">
+                        <property name="minimum">
+                         <double>-99.989999999999995</double>
+                        </property>
+                       </widget>
                       </item>
                      </layout>
                     </item>
