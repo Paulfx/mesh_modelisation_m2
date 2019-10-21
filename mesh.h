@@ -179,6 +179,9 @@ private:
     float pointSize = 1.0f;
     float decreaseFactorPointSize = 0.01;
 
+    std::vector<std::vector<Point>> voronoi_points;
+    bool voronoiIsInit = false;
+
 
 //Drawing functions
 
@@ -212,6 +215,11 @@ private:
     void flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDEX v1, const VERTEX_INDEX v2);
     //Split edge in front of localIndexF1
     //void Mesh::flip_edge(const FACE_INDEX f1, int localIndexF1) {
+
+    void resetShape();
+
+    //pre-compute voronoi points
+    void initVoronoiDiagram();
 
 public:
 
@@ -251,6 +259,7 @@ public:
     void drawMesh();
     //Draw the mesh with wireframe
     void drawMeshWireFrame();
+
     //Draw the voronoi cells
     void drawVoronoiDiagram();
 

@@ -72,9 +72,7 @@ void Mesh::testPredicates() {
 }
 
 void Mesh::createTetrahedron() {
-    _vertices.clear();
-    _faces.clear();
-    resetVertexFaceIndex();
+    resetShape();
 
     _vertices.push_back(Vertex(-0.5,-0.5,-0.5   , 3));
     _vertices.push_back(Vertex(0.5,-0.5,-0.5    , 0));
@@ -94,9 +92,7 @@ void Mesh::createTetrahedron() {
 
 void Mesh::create2DSquare() {
 
-    _vertices.clear();
-    _faces.clear();
-    resetVertexFaceIndex();
+    resetShape();
 
     _vertices.push_back(Vertex(-0.5,-0.5,0     , 0));
     _vertices.push_back(Vertex(0.5,-0.5,0     , 0));
@@ -112,9 +108,7 @@ void Mesh::create2DSquare() {
 }
 
 void Mesh::createPyramid() {
-    _vertices.clear();
-    _faces.clear();
-    resetVertexFaceIndex();
+    resetShape();
 
     _vertices.push_back(Vertex(-0.5,0,-0.5   , 3));
     _vertices.push_back(Vertex(0.5,0,-0.5    , 0));
@@ -137,9 +131,7 @@ void Mesh::createPyramid() {
 }
 
 void Mesh::createFromOFF(const std::string &filename) {
-    _vertices.clear();
-    _faces.clear();
-    resetVertexFaceIndex();
+    resetShape();
 
     load_off_file(filename);
 
@@ -243,6 +235,12 @@ int Mesh::load_off_file(const std::string& path_to_file) {
     return -1;
 }
 
+void Mesh::resetShape() {
+    _vertices.clear();
+    _faces.clear();
+    resetVertexFaceIndex();
+    voronoiIsInit = false;
+}
 
 //Precondition : the face fi contains the newPoint
 void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
@@ -301,6 +299,8 @@ void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
     //Useless
     //f.setOppositeFace(f.getFrontFace(2), 2);
 
+    voronoiIsInit = false;
+
 }
 
 void Mesh::addPointAndFlipToInfinite(std::vector<FACE_INDEX> idsExtHull, Point p) {
@@ -344,6 +344,7 @@ void Mesh::addPointAndFlipToInfinite(std::vector<FACE_INDEX> idsExtHull, Point p
             idOldV2 = idLocalV2;
 
         }
+        voronoiIsInit = false;
         //Else it's not a convex hull, no creation of faces
 
         //Should we put idOldV2 to -1 ??
@@ -394,6 +395,7 @@ void Mesh::flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDE
     _faces[if1].setOppositeFace(f2, (_faces[if1].getLocalIndexOf(v1) + 2) % 3);
     _faces[if2].setOppositeFace(f1, (_faces[if2].getLocalIndexOf(v2) + 1) % 3);
 
+    voronoiIsInit = false;
 }
 
 //void Mesh::flip_edge(const FACE_INDEX f1, int localIndexF1) {
@@ -645,29 +647,53 @@ void Mesh::drawMeshWireFrame() {
     drawSelectedPoints();
 }
 
-void Mesh::drawVoronoiDiagram() {
+
+void Mesh::initVoronoiDiagram() {
+    //std::vector<std::vector<Point>> voronoiPoint;
+    voronoi_points = std::vector<std::vector<Point>>();
     int i = 0;
-    glColor3d(0,1,0); //Green
-    glBegin(GL_LINE_LOOP);
     for (Vertices_iterator vi = vertices_iterator_begin(); vi != vertices_iterator_end(); vi++) {
-        Faces_circulator fcBegin = incident_faces_circulator(i);
-        Faces_circulator fc;
-        int fIndex;
-        for (fc = fcBegin, fc++; fc != fcBegin; fc++) {
-            fIndex = fc.currentFaceIndex;
-            Point a = _vertices[_faces[fIndex].v1()].getPoint();
-            Point b = _vertices[_faces[fIndex].v2()].getPoint();
-            Point c = _vertices[_faces[fIndex].v3()].getPoint();
+        if (vi.getIndex() != -1) {
+            Faces_circulator fcBegin = incident_faces_circulator(i);
+            Faces_circulator fc;
+            int fIndex;
+            std::vector<Point> localPoint;
+            for (fc = fcBegin, fc++; fc != fcBegin; fc++) {
+                if (fc.currentFaceIndex != -1 && fc.currentFaceIndex != -1) {
+                    fIndex = fc.currentFaceIndex;
+                    Point a = _vertices[_faces[fIndex].v1()].getPoint();
+                    Point b = _vertices[_faces[fIndex].v2()].getPoint();
+                    Point c = _vertices[_faces[fIndex].v3()].getPoint();
 
-            Point center = computeCenterOfCircumscribedCercle(a, b, c);
-            glVertexDraw(center);
+                    Point center = computeCenterOfCircumscribedCercle(a, b, c);
+                    localPoint.push_back(center);
 
+                } else {
+                    printf("break voronoi\n");
+                    break;
+                }
+            }
+            voronoi_points.push_back(localPoint);
         }
         i++;
+    }
+    voronoiIsInit = true;
+}
 
+void Mesh::drawVoronoiDiagram() {
+    glColor3d(0,1,0); //Green
+
+    if (!voronoiIsInit) {
+        initVoronoiDiagram();
     }
 
-    glEnd();
+    for (int i = 0; i < voronoi_points.size(); ++i) {
+        glBegin(GL_LINE_STRIP);
+        for (int j = 0; j < voronoi_points[i].size(); ++j) {
+            glVertexDraw(voronoi_points[i][j]);
+        }
+        glEnd();
+    }
 
 }
 
