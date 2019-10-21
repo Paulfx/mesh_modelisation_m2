@@ -36,7 +36,7 @@ The insertion is possible only in case of 2D triangulations (you can use the squ
 
 ##### At the right side
 
-Thanks to voronoï diagram button, it is possible to display the voronoï diagram of the mesh. Work well on finite face like queen.off or tetrahedron.
+Thanks to voronoï diagram button, it is possible to display the voronoï diagram of the mesh. Work well on queen.off.
 
 You can reset vertex index (ie. put the reference index to -1), as well as currentFace and currentVertex. It is useful to not have the currentFace, currentVertex and referenceVertex shown on the mesh.
 
@@ -63,11 +63,12 @@ During mesh loading, we use a map structure to set front faces of vertices. In o
 
 Also, it's possible to split face in order to insert a point in the middle of the triangle. This split manage all adjacencies updates, incrementally.
 
-In order to stay in Delaunay triangulation after a split (insertion of new point), we also provide a flip function for update the edges.
+In order to stay in Delaunay triangulation after a split (insertion of new point), we also provide a flip function for update the edges. A lot of code was writen but a bug remains. So it is not functional. 
 
-Only in 2D: It is possible to add a new point in the convex hull, or outside naively or with delaunay
+Only in 2D: It is possible to add a new point in the convex hull, or outside naively. (delaunay WIP)
 
-The voronoï diagram is computed thanks to the duality between voronoï and Delaunay. To display points we approximate the center of the circumscribed cercle of the triangle. Points of voronoï are compute only is the mesh has changed, not in drawing loop.
+The voronoï diagram is computed thanks to the duality between voronoï and Delaunay. To display points we approximate the center of the circumscribed cercle of the triangle. Points of voronoï are compute only is the mesh has changed, not in drawing loop. 
+As delaunay doesn't works yet, the best way to see a voronoi diagram is with queen.off
 
 ##### Files *mesh_iterators.cpp/.h*
 

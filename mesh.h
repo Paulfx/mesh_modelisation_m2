@@ -186,6 +186,7 @@ private:
     float pointSize = 1.0f;
     float decreaseFactorPointSize = 0.01;
 
+    //Store the center of voronoi cells
     std::vector<std::vector<Point>> voronoi_points;
     bool voronoiIsInit = false;
 
@@ -210,6 +211,9 @@ private:
     //Load data from an .off file
     int load_off_file(const std::string& path_to_file);
 
+    //test function
+    void testPredicates();
+
     //Add the point newPoint contained in the face fi by splitting fi into 3 new faces
     //Pre condition : the face fi contains the point newPoint
     void split_face(const Point& newPoint, FACE_INDEX fi);
@@ -224,11 +228,15 @@ private:
     //Split edge in front of localIndexF1
     //void Mesh::flip_edge(const FACE_INDEX f1, int localIndexF1) {
 
+    //Clear assignments in order to use a different mesh
     void resetShape();
 
-    void search_conflict(const Faces_circulator &f, std::vector<FACE_INDEX> &local_c, Point p);
+    //resolve loacal conflict by fliping edges in order to have Delaunay triangulation
+    void resolved_conflict(const Faces_circulator &f, FACE_INDEX faceToResolve, Point p);
 
+    //Used in voronoi diagram
     Point computeCenterFace(const Face &f);
+
     //pre-compute voronoi points
     void initVoronoiDiagram();
 
@@ -242,8 +250,6 @@ public:
     void create2DSquare();
     void createPyramid();
     void createFromOFF(const std::string& filename);
-
-    void testPredicates();
 
 //Accessors/mutators used by the window to interact with the mesh
 
@@ -279,6 +285,8 @@ public:
     //Naive insertion of a point in the convexHull (only a split face), or outside the convex hull
     //(use of addPointAndFlipToInfinite)
     void naiveInsertion(const Point p);
+
+    //NOT WORKING
     void delaunayInsertion(const Point p);
 
 //Iterators

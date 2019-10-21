@@ -385,7 +385,7 @@
                 <item>
                  <widget class="QPushButton" name="pbDelaunayAdd">
                   <property name="text">
-                   <string>Add the point with delaunay</string>
+                   <string>Add the point with delaunay (WIP)</string>
                   </property>
                  </widget>
                 </item>

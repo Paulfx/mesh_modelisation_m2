@@ -232,6 +232,7 @@ void Mesh::resetShape() {
 //Precondition : the face fi contains the newPoint
 void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
     printf("Split face %d\n", fi);
+    std::cout << "p= " << newPoint << std::endl;
 
     Vertex newVertex = Vertex(newPoint, fi);
     VERTEX_INDEX newVertexIndex = _vertices.size();
@@ -393,18 +394,20 @@ void Mesh::naiveInsertion(const Point p) {
     lcalc->calculate(this);
 }
 
-
-void Mesh::search_conflict(const Faces_circulator &f, std::vector<FACE_INDEX> &local_c, Point p) {
-
-    if (pred_inCercle(_vertices[(*f).v1()].getPoint(), _vertices[(*f).v2()].getPoint(), _vertices[(*f).v3()].getPoint(), p) >= 0) {
-        local_c.push_back(f.currentFaceIndex);
+void Mesh::resolved_conflict(const Faces_circulator &f, FACE_INDEX faceToResolve, Point p) {
+    //don't test pred_inCercle for faceToResolve
+    if (f.currentFaceIndex != faceToResolve) {
+        //If p is in cercle, so we need to flip
+        if (pred_inCercle(_vertices[(*f).v1()].getPoint(), _vertices[(*f).v2()].getPoint(), _vertices[(*f).v3()].getPoint(), p) >= 0) {
+            //always flip with these vertices (consequence of the implementation of split_face)
+            flip_edge(f.currentFaceIndex, faceToResolve, _faces[faceToResolve].v1(), _faces[faceToResolve].v2());
+        }
     }
-
 }
 
 
 void Mesh::delaunayInsertion(const Point p) {
-    for (unsigned i = 0; i < _faces.size(); i++) {
+    for (unsigned int i = 0; i < _faces.size(); i++) {
 
         int isInTriangle = pred_inTriangle( _vertices[_faces[i].v1()].getPoint(), 
                                             _vertices[_faces[i].v2()].getPoint(), 
@@ -412,50 +415,24 @@ void Mesh::delaunayInsertion(const Point p) {
                                             p);
         if (isInTriangle >= 0) {
 
-            Face &faceToDestroy = _faces[i];
-
-            std::vector<FACE_INDEX> conflict_face;
-
-            for (int j = 0; j < 3; j++) {
-                Faces_circulator fcBegin = incident_faces_circulator(faceToDestroy.vertex(j));
-                Faces_circulator fc;
-
-                for (fc = fcBegin, fc++; search_conflict(*fc, conflict_face, p), fc != fcBegin; fc++) {
-                    ;
-
-                    
-                    
-                }
-
-            }
-
-
-/*
             split_face(p, i);
 
-            //flip edges
-            int localVertexIndex = _faces[i].getLocalIndexOf(_vertices.size() - 1);
-            flip_edge(  i, 
-                        _faces[i].getFrontFace(localVertexIndex), 
-                        _faces[i].vertex((localVertexIndex + 1) % 3), 
-                        _faces[i].vertex((localVertexIndex + 2) % 3));
+            //we splited the face, but we need a circulator around 3 vertices of old face (so 2 of the modified and one of a new face)
+            //Circulators iterate on faces who possible are in conflict with the new face
 
-            FACE_INDEX nf = _faces.size() - 2;
-            localVertexIndex = _faces[nf].getLocalIndexOf(_vertices.size() - 1);
-            flip_edge(  nf, 
-                        _faces[nf].getFrontFace(localVertexIndex), 
-                        _faces[nf].vertex((localVertexIndex + 1) % 3), 
-                        _faces[nf].vertex((localVertexIndex + 2) % 3));
+            for (int j = 0; j < 2; j++) {
+                Faces_circulator fcBegin = incident_faces_circulator(_faces[i].vertex(j));
+                Faces_circulator fc;
+                for (fc = fcBegin, fc++; resolved_conflict(fc, i , p), fc != fcBegin; fc++) {
+                    ;     
+                }
+            }
 
-            nf = _faces.size() - 1;
-            localVertexIndex = _faces[nf].getLocalIndexOf(_vertices.size() - 1);
-            flip_edge(  nf, 
-                        _faces[nf].getFrontFace(localVertexIndex), 
-                        _faces[nf].vertex((localVertexIndex + 1) % 3), 
-                        _faces[nf].vertex((localVertexIndex + 2) % 3));
-            break;
-
-            */
+            Faces_circulator fcBegin = incident_faces_circulator(_faces[_faces.size() - 1].vertex(0));
+            Faces_circulator fc;
+            for (fc = fcBegin, fc++; resolved_conflict(fc, i , p), fc != fcBegin; fc++) {
+                ;
+            }
         }
 
     }
