@@ -10,9 +10,9 @@ The mesh is displayed in a GL_Display_Widget. The mesh is colorized depending on
 
 ##### At the left side
 
-Infos about the mesh and buttons to create a pyramid, a tetrahedron or open a OFF file.
+Infos about the mesh and buttons to create it (e.i: pyramid, tetrahedron or open a OFF file).
 
-##### At the middle
+##### At the middle-L
 
 Iterators on the mesh.
 You can chose the index of one vertex (ex. 0 for A) to be the reference vertex. This vertex is shown with a white dot with a little animation.
@@ -21,7 +21,18 @@ The buttons nextFace, prevFace allows you to visualize the neighbooring faces. T
 
 The buttons nextVertex, prevVertex iterates over the neighbooring vertices. The current vertex has a pink color.
 
+##### At the middle-R
+
+Modification of the mesh.
+You can split the mesh, by an insertion of point at the middle of Face Index (default face=0). Creation of two new faces and modification of one.
+
+Given coordinates of a point, it is also possible to insert naïvely this point in the mesh. Or to perform this insertion with a Delaunay triangulation. 
+
+The insertion is possible only in case of 2D triangulations.
+
 ##### At the right side
+
+Thanks to voronoï diagram button, it is possible to display the voronoï diagram of the mesh. Work well on finite face like queen.off or tetrahedron.
 
 You can reset vertex index (ie. put the reference index to -1), as well as currentFace and currentVertex. It is useful to not have the currentFace, currentVertex and referenceVertex shown on the mesh.
 
@@ -45,6 +56,12 @@ The face contains 3 vertices, and holds an array that store the front face of it
 The mesh contains informations about all faces and vertices. It's created from an '.off' file stored in the root directory of this project but it is possible to load it from a custom path.
 During mesh loading, we use a map structure to set front faces of vertices. In order to add these informations we search shared edges. If no front face of a vertex was found, then we use an unexisting value as id of face (is value represente a fictitious vertex).
 
+Also, it's possible to split face in order to insert a point in the middle of the triangle. This spilt manage all adjacencies updates, incrementally.
+
+In order to stay in Delaunay triangulation after a split (insertion of new point), we also provide a flip function for update the edges.
+
+The voronoï diagram is compute thanks to the duality between voronoï and Delaunay. To display points we approximate the center of the circumscribed cercle of the triangle.
+
 ##### Files *mesh_iterators.cpp/.h*
 
 Define 3 iterators for the mesh.
@@ -58,3 +75,13 @@ Finally a circulator on neighboring vertices of a vertex (**VerticesCirculator**
 ##### Files *laplacianCalc.cpp/.h*
 
 Define a class that calculate the laplacian vector for each vertex of an input mesh. Contain functions to get the resulting curvature (mapped between values, or not) and the resulting normal for each vertex.
+
+##### Files *Utils.cpp/.h*
+
+The Utils class provide a lot of usefull functions, like predicates.
+We implement all predicates asked, with no approximation:
+* pred_orientation();
+* pred_inTriangle()
+* pred_inCercle()
+
+Also there is the possibility for an approxiamation of center of a circumscribed circle in order to display voronoï diagram.

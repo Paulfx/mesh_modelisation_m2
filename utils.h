@@ -21,7 +21,6 @@ Point computeCenterOfCircumscribedCercle(Point a, Point b, Point c);
 //aligned for the arithmetic used to encode the coordinates.
 int pred_orientation(Point p1, Point p2, Point p3);
 
-
 //Given a 2D triangle, write the geometric predicate returning a positive value if an input
 //point is located inside a triangle, negative if it is located outside or 0 if it is located on the boundary.
 int pred_inTriangle(Point a, Point b, Point c, Point d);
