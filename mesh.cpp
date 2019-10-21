@@ -330,7 +330,7 @@ void Mesh::addPointAndFlipToInfinite(std::vector<FACE_INDEX> idsExtHull, Point p
 
                     //Le v2 de la face d'avant doit avoir comme face opposée la nouvelle face.. Surement un problème ici
                     if (idOldV2 != -1) {
-                        _faces[idsExtHull[i-1]].setOppositeFace(newFaceIndex, idOldV2);
+                        //_faces[idsExtHull[i-1]].setOppositeFace(newFaceIndex, idOldV2);
                     }
 
                     idOldV2 = idLocalV2;
@@ -402,37 +402,51 @@ void Mesh::naiveInsertion(const Point p) {
             return; //No need to continue
         }
         
-                    idsExtHull.push_back(i);
+                    //idsExtHull.push_back(i);
 
-        // if (_faces[i].haveInfiniteFaceInFront()) {
-        //     idsExtHull.push_back(i);
-        //     //The test of visibility of the face from p is done in flipToInfinite
-        // }
+        if (_faces[i].haveInfiniteFaceInFront()) {
+            idsExtHull.push_back(i);
+            //The test of visibility of the face from p is done in flipToInfinite
+        }
     }
     //idsExtHull is not empty
     //Slip to infinite add the new point
     addPointAndFlipToInfinite(idsExtHull, p);
+
+    lcalc->calculate(this);
 }
 
 //For now it's basicaly an insertion + flip...
 void Mesh::delaunayInsertion(const Point p) {
     for (unsigned i = 0; i < _faces.size(); i++) {
 
-        int isInTriangle = pred_inTriangle(_vertices[_faces[i].v1()].getPoint(), _vertices[_faces[i].v2()].getPoint(), _vertices[_faces[i].v3()].getPoint(), p);
+        int isInTriangle = pred_inTriangle( _vertices[_faces[i].v1()].getPoint(), 
+                                            _vertices[_faces[i].v2()].getPoint(), 
+                                            _vertices[_faces[i].v3()].getPoint(), 
+                                            p);
         if (isInTriangle >= 0) {
             split_face(p, i);
 
             //flip edges
             int localVertexIndex = _faces[i].getLocalIndexOf(_vertices.size() - 1);
-            flip_edge(i, _faces[i].getFrontFace(localVertexIndex), _faces[i].vertex((localVertexIndex + 1) % 3), _faces[i].vertex((localVertexIndex + 2) % 3));
+            flip_edge(  i, 
+                        _faces[i].getFrontFace(localVertexIndex), 
+                        _faces[i].vertex((localVertexIndex + 1) % 3), 
+                        _faces[i].vertex((localVertexIndex + 2) % 3));
 
             FACE_INDEX nf = _faces.size() - 2;
             localVertexIndex = _faces[nf].getLocalIndexOf(_vertices.size() - 1);
-            flip_edge(nf, _faces[nf].getFrontFace(localVertexIndex), _faces[nf].vertex((localVertexIndex + 1) % 3), _faces[nf].vertex((localVertexIndex + 2) % 3));
+            flip_edge(  nf, 
+                        _faces[nf].getFrontFace(localVertexIndex), 
+                        _faces[nf].vertex((localVertexIndex + 1) % 3), 
+                        _faces[nf].vertex((localVertexIndex + 2) % 3));
 
             nf = _faces.size() - 1;
             localVertexIndex = _faces[nf].getLocalIndexOf(_vertices.size() - 1);
-            flip_edge(nf, _faces[nf].getFrontFace(localVertexIndex), _faces[nf].vertex((localVertexIndex + 1) % 3), _faces[nf].vertex((localVertexIndex + 2) % 3));
+            flip_edge(  nf, 
+                        _faces[nf].getFrontFace(localVertexIndex), 
+                        _faces[nf].vertex((localVertexIndex + 1) % 3), 
+                        _faces[nf].vertex((localVertexIndex + 2) % 3));
             break;
         }
 
@@ -639,8 +653,7 @@ void Mesh::initVoronoiDiagram() {
 
             ;
 
-            // printf("Face\n");
-
+            //This code is in the computeCenterFace function (in order to not skip the first face
             // if (fc.currentFaceIndex == -1 || fc.refVertex == -1) {
             //     printf("break voronoi\n");
             //     break;
@@ -687,4 +700,3 @@ void Mesh::splitFaceMiddle(int faceIndex) {
     split_face(middle, faceIndex);
 
 }
-

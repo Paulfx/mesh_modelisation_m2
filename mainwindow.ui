@@ -314,7 +314,7 @@
              <item>
               <widget class="QGroupBox" name="groupBox_7">
                <property name="title">
-                <string>Add a point by coordinates</string>
+                <string>Add a point by coordinates (2D)</string>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_12">
                 <item>
@@ -418,12 +418,21 @@
              <property name="text">
               <string>Voronoï diagram</string>
              </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item>
             <widget class="QPushButton" name="pbWireframe">
              <property name="text">
-              <string>Wireframe     ON</string>
+              <string>Wireframe</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
              </property>
             </widget>
            </item>

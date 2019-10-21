@@ -71,9 +71,6 @@ void MainWindow::on_pbResetV_F_released()
 void MainWindow::on_pbWireframe_released()
 {
     ui->widget->setWireframe();
-    QString text = "Wireframe    ON";
-    if (!ui->widget->wf()) text = "Wireframe    OFF";
-    ui->pbWireframe->setText(text);
 }
 
 void MainWindow::on_lineEditStartVertex_returnPressed()
