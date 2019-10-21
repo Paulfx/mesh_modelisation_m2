@@ -63,7 +63,7 @@ void Faces_circulator::update(DIRECTION dir) {
 
 const Face& Faces_circulator::operator*() const {
     //-1 if the refVertex has no front face, we return first element to stop loops...
-    if (currentFaceIndex == -1) return *_mesh->incident_faces_circulator(refVertex);
+        if (currentFaceIndex == -1) return *_mesh->incident_faces_circulator(refVertex);
     return _mesh->_faces[currentFaceIndex];
 }
 

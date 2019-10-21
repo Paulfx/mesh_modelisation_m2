@@ -122,6 +122,7 @@ void MainWindow::on_pbOpenFile_released()
 
 void MainWindow::on_pbCreateQueen_released()
 {
-    ui->widget->createFromOFF("./M2/maillage/Mesh_Computational_Geometry/queen.off");
+    //ui->widget->createFromOFF("./M2/maillage/Mesh_Computational_Geometry/OFF_files/queen.off");
+    ui->widget->createFromOFF("./M2/maillage/Mesh_Computational_Geometry/OFF_files/mushroom.off");
     updateTextInfos();
 }
