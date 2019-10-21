@@ -226,6 +226,7 @@ private:
 
     void resetShape();
 
+    void search_conflict(const Face &f, std::vector<FACE_INDEX> &local_c, Point p);
 
     Point computeCenterFace(const Face &f);
     //pre-compute voronoi points
