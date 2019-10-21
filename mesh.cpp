@@ -599,18 +599,6 @@ void Mesh::drawMeshWireFrame() {
     Face f;
     for(unsigned i = 0; i < _faces.size(); i++) {
         f = _faces[i];
-        // glBegin(GL_LINE_STRIP);
-        //     glVertexDraw(_vertices[f.v1()]);
-        //     glVertexDraw(_vertices[f.v2()]);
-        // glEnd();
-        // glBegin(GL_LINE_STRIP);
-        //     glVertexDraw(_vertices[f.v2()]);
-        //     glVertexDraw(_vertices[f.v3()]);
-        // glEnd();
-        // glBegin(GL_LINE_STRIP);
-        //     glVertexDraw(_vertices[f.v3()]);
-        //     glVertexDraw(_vertices[f.v1()]);
-        // glEnd();
         glBegin(GL_LINE_STRIP);
             glVertexIndexDraw(f.v1(),false);
             glVertexIndexDraw(f.v2(),false);

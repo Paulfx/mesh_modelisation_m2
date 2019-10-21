@@ -46,15 +46,15 @@ public :
 //                        FACES_CIRCULATOR
 // ------------------------------------------------------------------------
 
+enum DIRECTION
+{
+    BACKWARD = 2, // -1 + 3
+    FORWARD  = 1
+};
+
 class Faces_circulator {
     friend class Mesh;
     friend class Vertices_circulator;
-
-    enum DIRECTION
-    {
-        BACKWARD = 2, // -1 + 3
-        FORWARD  = 1
-    };
 
 private:
     Mesh* _mesh;
@@ -108,7 +108,7 @@ private:
 
     Vertices_circulator(Mesh* mesh, VERTEX_INDEX base);
 
-    void update();
+    void update(DIRECTION dir);
 
 public:
 

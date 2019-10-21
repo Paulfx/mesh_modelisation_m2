@@ -44,6 +44,9 @@ Faces_circulator::Faces_circulator(const Faces_circulator& fc)
 
 void Faces_circulator::update(DIRECTION dir) {
     //Actual face
+
+    //printf("Actual face : %d\n", currentFaceIndex);
+
     const Face& actualFace = _mesh->_faces[currentFaceIndex];
 
     //Get index of the ref vertex in the actual face
@@ -57,8 +60,19 @@ void Faces_circulator::update(DIRECTION dir) {
     }
 
     //Next face is the front face of indexRefVertex +- 1 (mod 3)
-    VERTEX_INDEX nextVertex = (indexRefVertex + dir) % 3;
-    currentFaceIndex = actualFace.getFrontFace(nextVertex);
+    
+    //We don't look for infinite front face
+    VERTEX_INDEX nextVertex = indexRefVertex;
+    FACE_INDEX frontFace;
+    for (int i=0; i<2; ++i) {
+        nextVertex = (nextVertex + dir) % 3;
+        frontFace = actualFace.getFrontFace(nextVertex);
+        if (frontFace != -1) {
+            currentFaceIndex = frontFace;
+            return;        
+        }
+    }
+    
 }
 
 const Face& Faces_circulator::operator*() const {
@@ -99,25 +113,46 @@ bool operator ==(   const Faces_circulator& fc1,
 
 Vertices_circulator::Vertices_circulator(Mesh* mesh, VERTEX_INDEX base) : _mesh(mesh), baseVertexIndex(base), fit(mesh, base) {
     //First vertex
-    update();
+
+    currentVertexIndex = (*fit).getNextOrPreviousGlobal(base, FORWARD);
+
+    //update();
 }
 
 Vertices_circulator::Vertices_circulator(const Vertices_circulator& vc)
 : _mesh(vc._mesh), baseVertexIndex(vc.baseVertexIndex), fit(vc.fit), currentVertexIndex(vc.currentVertexIndex) {}
 
 
-void Vertices_circulator::update() {
-    const Face& currentFace = *fit;
-    //Next vertex is the local index of baseVertex in the current face + 1
-    int indexOfBaseVertexInCurrFace = currentFace.getLocalIndexOf(baseVertexIndex);
+// void Vertices_circulator::update() {
+//     const Face& currentFace = *fit;
+//     //Next vertex is the local index of baseVertex in the current face + 1
+//     int indexOfBaseVertexInCurrFace = currentFace.getLocalIndexOf(baseVertexIndex);
 
-    if (indexOfBaseVertexInCurrFace == -1) {
-        //We shouldn't get here, it mean that the mesh is not well constructed
-        printf("indexOfBaseVertexInCurrFace == -1, currVertex=%d, baseVertex=%d\n", currentVertexIndex, baseVertexIndex);
+//     if (indexOfBaseVertexInCurrFace == -1) {
+//         //We shouldn't get here, it mean that the mesh is not well constructed
+//         printf("indexOfBaseVertexInCurrFace == -1, currVertex=%d, baseVertex=%d\n", currentVertexIndex, baseVertexIndex);
+//     }
+
+//     int nextVertex = (indexOfBaseVertexInCurrFace + 1) % 3;
+//     currentVertexIndex = currentFace.vertex(nextVertex);
+// }
+
+void Vertices_circulator::update(DIRECTION dir) {
+
+    const Face& currentFace = *fit;
+
+    //We iterate over the 2 vertices of the face before changing face
+
+    if (currentFace.getLocalIndexOf(currentVertexIndex) == -1) {
+        currentVertexIndex = currentFace.getNextOrPreviousGlobal(baseVertexIndex, dir);
+    }
+    else {
+        currentVertexIndex = currentFace.getNextOrPreviousGlobal(currentVertexIndex, dir);
+        if (currentVertexIndex == baseVertexIndex)
+            //Case when no neighboring faces to not select itself as neighbor
+            currentVertexIndex = currentFace.getNextOrPreviousGlobal(currentVertexIndex, dir);
     }
 
-    int nextVertex = (indexOfBaseVertexInCurrFace + 1) % 3;
-    currentVertexIndex = currentFace.vertex(nextVertex);
 }
 
 const Vertex& Vertices_circulator::operator*() const {
@@ -125,23 +160,27 @@ const Vertex& Vertices_circulator::operator*() const {
 }
 
 Vertices_circulator& Vertices_circulator::operator++() {
-    //We go to the next face
-    fit++;
-    update();
+    //We go to the next face only if we iterate over all the neighbor vertices of a face
+    
+    if ((*fit).getNextOrPreviousGlobal(currentVertexIndex, FORWARD) == baseVertexIndex)
+        fit++;
+    update(FORWARD);
     return *this;
 }
 
 Vertices_circulator& Vertices_circulator::operator--(int) {
     //We go to the previous face
-    fit--;
-    update();
+    if ((*fit).getNextOrPreviousGlobal(currentVertexIndex, BACKWARD) == baseVertexIndex)
+        fit--;
+    update(BACKWARD);
     return *this;
 }
 
 Vertices_circulator Vertices_circulator::operator++(int) {
     Vertices_circulator tmp(*this);
-    fit++;
-    update();
+    if ((*fit).getNextOrPreviousGlobal(currentVertexIndex, FORWARD) == baseVertexIndex)
+        fit++;
+    update(FORWARD);
     return tmp;
 }
 
