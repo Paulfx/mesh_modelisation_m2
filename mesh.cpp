@@ -394,10 +394,10 @@ void Mesh::naiveInsertion(const Point p) {
 }
 
 
-void Mesh::search_conflict(const Face &f, std::vector<FACE_INDEX> &local_c, Point p) {
+void Mesh::search_conflict(const Faces_circulator &f, std::vector<FACE_INDEX> &local_c, Point p) {
 
-    if (pred_inCercle(_vertices[f.v1()].getPoint(), _vertices[f.v2()].getPoint(), _vertices[f.v3()].getPoint(), p) >= 0) {
-        //local_c.push_back(f.)
+    if (pred_inCercle(_vertices[(*f).v1()].getPoint(), _vertices[(*f).v2()].getPoint(), _vertices[(*f).v3()].getPoint(), p) >= 0) {
+        local_c.push_back(f.currentFaceIndex);
     }
 
 }
@@ -412,9 +412,10 @@ void Mesh::delaunayInsertion(const Point p) {
                                             p);
         if (isInTriangle >= 0) {
 
-            Face faceToDestroy = _faces[i];
+            Face &faceToDestroy = _faces[i];
 
             std::vector<FACE_INDEX> conflict_face;
+
             for (int j = 0; j < 3; j++) {
                 Faces_circulator fcBegin = incident_faces_circulator(faceToDestroy.vertex(j));
                 Faces_circulator fc;
@@ -422,6 +423,8 @@ void Mesh::delaunayInsertion(const Point p) {
                 for (fc = fcBegin, fc++; search_conflict(*fc, conflict_face, p), fc != fcBegin; fc++) {
                     ;
 
+                    
+                    
                 }
 
             }
