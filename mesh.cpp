@@ -667,7 +667,7 @@ void Mesh::drawVoronoiDiagram() {
     }
 
     for (unsigned i = 0; i < voronoi_points.size(); ++i) {
-        glBegin(GL_LINE_STRIP);
+        glBegin(GL_LINE_LOOP);
         for (unsigned j = 0; j < voronoi_points[i].size(); ++j) {
             glVertexDraw(voronoi_points[i][j]);
         }
