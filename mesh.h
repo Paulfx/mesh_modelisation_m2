@@ -240,6 +240,9 @@ private:
     //pre-compute voronoi points
     void initVoronoiDiagram();
 
+    //reduce the mesh to n vertices
+    void edges_collapse(int n);
+
 public:
 
 //Construction

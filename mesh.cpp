@@ -671,3 +671,50 @@ void Mesh::splitFaceMiddle(int faceIndex) {
     split_face(middle, faceIndex);
 
 }
+
+void Mesh::edges_collapse(int n) {
+    //Iterative collapse of the smallest edge of a surface
+    //sort edges length
+    //selection of the two vertices of sortest edge
+    //merge this two in only one vertex (median point of the edge)
+    //don't update face_tab (maybe just at the end) but after edge suppression, update distance values of all the edges of merged vertices
+
+    //edge can be an id of face with the id of the opposite face (=> opposite edge)
+
+    /*Witch data structure used ?
+     * use priority queue, map, but need to write a comparaison function
+    * vector<std::pair<std::pair<VERTEX_INDEX, VERTEX_INDEX>, float>>, float>  sort ok but find...
+    */
+    //std::map<std::pair<VERTEX_INDEX, VERTEX_INDEX>, float> distances; //map between an edge an this length
+    //std::vector<std::pair<std::pair<VERTEX_INDEX, VERTEX_INDEX>, float>> distances;
+    for (int i = 0; i < _faces.size(); ++i) {
+        for (int j = 0; j < 3; ++j) {//3 edges by face
+            VERTEX_INDEX v1;
+            VERTEX_INDEX v2;
+
+            v1 = _faces[i].vertex(std::max(0,j - 1));//first vertex of the edge
+            v2 = _faces[i].vertex(std::min(j + 1, 2));//second
+
+            std::pair<VERTEX_INDEX, VERTEX_INDEX> edge (v1, v2); //edge creation
+            std::pair<VERTEX_INDEX, VERTEX_INDEX> edge2 (v2, v1); // IN ORDER TO ACCEPT <v1,v2> == <v2,v1>
+
+           /* if (distances.find(edge) == distances.end() && distances.find(edge2) == distances.end()) {
+                //compute distance
+                distances[edge] = length(Vector(_vertices[v1].getPoint() - _vertices[v2].getPoint()));
+            }*/
+        }
+    }
+
+
+    //typedef std::function<bool(std::pair<std::string, int>, std::pair<std::string, int>)> Comparator;
+
+
+
+    while (_vertices.size() != n) {
+
+    }
+
+
+
+
+}
