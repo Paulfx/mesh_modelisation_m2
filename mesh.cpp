@@ -672,6 +672,39 @@ void Mesh::splitFaceMiddle(int faceIndex) {
 
 }
 
+void Mesh::remove_edge(VERTEX_INDEX v1, VERTEX_INDEX v2) {
+    //searching the two faces who hold these vextices
+    FACE_INDEX f1;
+    FACE_INDEX f2;
+    int local_v_index1;
+    int local_v_index2;
+    //In order to avoid this loop, we can also change our edge definition (maybe a global face id and the index of the oppsite vertex of the edge in this face).
+    for (int i = 0; i < _faces.size(); ++i) {
+        local_v_index1 = _faces[i].getLocalIndexOf(v1);
+        local_v_index2 = _faces[i].getLocalIndexOf(v2);
+        if (local_v_index1 != -1 && local_v_index2 != -1) {
+            f1 = (FACE_INDEX)i;
+            break;
+        }
+    }
+    int opposite = _faces[f1].getLocalIndexOfOppositeFromLocalIndex(local_v_index1, local_v_index2);
+    f2 = _faces[f1].getFrontFace(opposite);
+
+    //we use v1 as the new vertex and we remove v2, but before, we need to set neighbors. f1 and f2 will be removed
+    //For all faces around v2, set v1 instead and set the opposite faces.
+
+    // vertices_circulator_begin(vs)
+
+    //update v1 position
+    const Point& p1 = _vertices[v1].getPoint();
+    const Point& p2 = _vertices[v2].getPoint();
+   // Point center = center(p1, p2);
+    //_vertices[v1].setPoint(center);
+    //remove v2
+    _vertices.erase(_vertices.begin() + (v2 - 1));
+
+}
+
 void Mesh::edges_collapse(int n) {
     //Iterative collapse of the smallest edge of a surface
     //sort edges length
@@ -687,6 +720,7 @@ void Mesh::edges_collapse(int n) {
     */
     //std::map<std::pair<VERTEX_INDEX, VERTEX_INDEX>, float> distances; //map between an edge an this length
     //std::vector<std::pair<std::pair<VERTEX_INDEX, VERTEX_INDEX>, float>> distances;
+
     for (int i = 0; i < _faces.size(); ++i) {
         for (int j = 0; j < 3; ++j) {//3 edges by face
             VERTEX_INDEX v1;

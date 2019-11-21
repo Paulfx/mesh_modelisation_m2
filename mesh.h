@@ -34,6 +34,7 @@ public:
     Vertex(float x_, float y_, float z_, FACE_INDEX if_): p(x_,y_,z_), incidentFace(if_) {}
     Vertex(const Point& p_, FACE_INDEX if_) : p(p_), incidentFace(if_) {}
     const Point & getPoint() const { return p; }
+    void setPoint(Point newP) { p = newP; }
 
     //Return incident face
     FACE_INDEX getIncidentFace() const { return incidentFace; }
@@ -239,6 +240,8 @@ private:
 
     //pre-compute voronoi points
     void initVoronoiDiagram();
+
+    void remove_edge(VERTEX_INDEX v1, VERTEX_INDEX v2);
 
     //reduce the mesh to n vertices
     void edges_collapse(int n);
