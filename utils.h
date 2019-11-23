@@ -31,10 +31,13 @@ int pred_inCercle(Point a, Point b, Point c, Point d);
 //PriorityQueue comparator
 class CompareEdgeSize
 {
+
+    typedef std::pair<int, int> Edge;
+
 public:
-    bool operator()(std::pair<int, int> k1,
-                    std::pair<int, int> k2) {
-        return k1.first > k2.first;
+    bool operator()(std::pair<float, Edge> e1,
+                    std::pair<float, Edge> e2) {
+        return e1.first > e2.first;
     }
 };
 

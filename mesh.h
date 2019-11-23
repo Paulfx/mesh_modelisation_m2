@@ -8,6 +8,7 @@
 #include <fstream>
 #include <string>
 #include <queue>
+#include <unordered_map>
 
 #include "vec.h"
 #include "mesh_iterators.h" 
@@ -245,7 +246,7 @@ private:
     void remove_edge(VERTEX_INDEX v1, VERTEX_INDEX v2);
 
     //reduce the mesh to n vertices
-    void edges_collapse(int n);
+    void edges_collapse(unsigned int n);
 
 public:
 

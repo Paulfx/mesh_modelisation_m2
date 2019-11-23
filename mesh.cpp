@@ -705,7 +705,7 @@ void Mesh::remove_edge(VERTEX_INDEX v1, VERTEX_INDEX v2) {
 
 }
 
-void Mesh::edges_collapse(int n) {
+void Mesh::edges_collapse(unsigned int n) {
     //Iterative collapse of the smallest edge of a surface
     //sort edges length
     //selection of the two vertices of sortest edge
@@ -714,52 +714,50 @@ void Mesh::edges_collapse(int n) {
 
     //edge can be an id of face with the id of the opposite face (=> opposite edge)
 
-    /*Witch data structure used ?
-     * use priority queue, map, but need to write a comparaison function
-    * vector<std::pair<std::pair<VERTEX_INDEX, VERTEX_INDEX>, float>>, float>  sort ok but find...
-    */
-    //std::map<std::pair<VERTEX_INDEX, VERTEX_INDEX>, float> distances; //map between an edge an this length
-    //std::vector<std::pair<std::pair<VERTEX_INDEX, VERTEX_INDEX>, float>> distances;
 
-    std::priority_queue<std::pair<float, std::pair<VERTEX_INDEX, VERTEX_INDEX>>,
-                        std::vector<std::pair<float, std::pair<VERTEX_INDEX, VERTEX_INDEX>>>, CompareEdgeSize> edges_ordered;
+    float lenght;// length of an edge
+    //Construction of edges ordered by length
+    typedef std::pair<VERTEX_INDEX, VERTEX_INDEX> Edge;
+
+    //holds edges ordered by length (smallest first)
+    std::priority_queue<std::pair<float, Edge>, std::vector<std::pair<float, Edge>>, CompareEdgeSize> edges_size;
 
 
-    std::map<std::pair<VERTEX_INDEX, VERTEX_INDEX>, float, CompareEdgeSize> edges_container;
-
+    //needed to have ramdom acces in order to see if an edge is already in the priority queue
+    std::map<Edge, bool> edges_container;
 
     for (int i = 0; i < _faces.size(); ++i) {
         for (int j = 0; j < 3; ++j) {//3 edges by face
+            //edge creation
             VERTEX_INDEX v1;
             VERTEX_INDEX v2;
-
             v1 = _faces[i].vertex(std::max(0,j - 1));//first vertex of the edge
             v2 = _faces[i].vertex(std::min(j + 1, 2));//second
+            Edge edge (v1, v2); //edge creation
+            Edge edge2 (v2, v1); // IN ORDER TO ACCEPT <v1,v2> == <v2,v1>
 
-            //std::pair<VERTEX_INDEX, VERTEX_INDEX> edge (v1, v2); //edge creation
-            //std::pair<VERTEX_INDEX, VERTEX_INDEX> edge2 (v2, v1); // IN ORDER TO ACCEPT <v1,v2> == <v2,v1>
-
-            float sizeEdge = length(Vector(_vertices[v1].getPoint() - _vertices[v2].getPoint()));
-
-          /*  if (edges_contained.find(v1) != edges_contained.find(v2) && edges_contained.find(v1) != ) {
-                    edges_contained[edge] = idCurrentFace;
-
+            //adding edge..
+            if (edges_container.find(edge) == edges_container.find(edge2)/* && edges_container.find(edge1) == edges_container.end()*/) {
+                //compute length
+                lenght = length(Vector(_vertices[v1].getPoint() - _vertices[v2].getPoint()));
+                //..to map
+                edges_container[edge] = true;
+                //..to priority queue
+                //edges_size.push(std::pair<length, edge>);
              }
 
-
-            if (distances.find(edge) == distances.end() && distances.find(edge2) == distances.end()) {
-                //compute distance
-                distances[edge] = length(Vector(_vertices[v1].getPoint() - _vertices[v2].getPoint()));
-            }*/
         }
     }
 
 
-    //typedef std::function<bool(std::pair<std::string, int>, std::pair<std::string, int>)> Comparator;
-
-
-
+    //collapse edges until the mesh have only n vertices
     while (_vertices.size() != n) {
+        std::pair<float, Edge> edge_to_collapse = edges_size.top();
+        remove_edge(edge_to_collapse.second.first, edge_to_collapse.second.second);
+
+        //update map: edges size + remove edge entry in map & recompute neighbors edge sizes
+
+        edges_size.pop();
 
     }
 
