@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <queue>
 
 #include "vec.h"
 #include "mesh_iterators.h" 

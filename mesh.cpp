@@ -721,6 +721,13 @@ void Mesh::edges_collapse(int n) {
     //std::map<std::pair<VERTEX_INDEX, VERTEX_INDEX>, float> distances; //map between an edge an this length
     //std::vector<std::pair<std::pair<VERTEX_INDEX, VERTEX_INDEX>, float>> distances;
 
+    std::priority_queue<std::pair<float, std::pair<VERTEX_INDEX, VERTEX_INDEX>>,
+                        std::vector<std::pair<float, std::pair<VERTEX_INDEX, VERTEX_INDEX>>>, CompareEdgeSize> edges_ordered;
+
+
+    std::map<std::pair<VERTEX_INDEX, VERTEX_INDEX>, float, CompareEdgeSize> edges_container;
+
+
     for (int i = 0; i < _faces.size(); ++i) {
         for (int j = 0; j < 3; ++j) {//3 edges by face
             VERTEX_INDEX v1;
@@ -729,10 +736,18 @@ void Mesh::edges_collapse(int n) {
             v1 = _faces[i].vertex(std::max(0,j - 1));//first vertex of the edge
             v2 = _faces[i].vertex(std::min(j + 1, 2));//second
 
-            std::pair<VERTEX_INDEX, VERTEX_INDEX> edge (v1, v2); //edge creation
-            std::pair<VERTEX_INDEX, VERTEX_INDEX> edge2 (v2, v1); // IN ORDER TO ACCEPT <v1,v2> == <v2,v1>
+            //std::pair<VERTEX_INDEX, VERTEX_INDEX> edge (v1, v2); //edge creation
+            //std::pair<VERTEX_INDEX, VERTEX_INDEX> edge2 (v2, v1); // IN ORDER TO ACCEPT <v1,v2> == <v2,v1>
 
-           /* if (distances.find(edge) == distances.end() && distances.find(edge2) == distances.end()) {
+            float sizeEdge = length(Vector(_vertices[v1].getPoint() - _vertices[v2].getPoint()));
+
+          /*  if (edges_contained.find(v1) != edges_contained.find(v2) && edges_contained.find(v1) != ) {
+                    edges_contained[edge] = idCurrentFace;
+
+             }
+
+
+            if (distances.find(edge) == distances.end() && distances.find(edge2) == distances.end()) {
                 //compute distance
                 distances[edge] = length(Vector(_vertices[v1].getPoint() - _vertices[v2].getPoint()));
             }*/

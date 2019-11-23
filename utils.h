@@ -28,4 +28,14 @@ int pred_inTriangle(Point a, Point b, Point c, Point d);
 //Test if d is in circumscribed circle define by a, b and c
 int pred_inCercle(Point a, Point b, Point c, Point d);
 
+//PriorityQueue comparator
+class CompareEdgeSize
+{
+public:
+    bool operator()(std::pair<int, int> k1,
+                    std::pair<int, int> k2) {
+        return k1.first > k2.first;
+    }
+};
+
 #endif // UTILS_H
