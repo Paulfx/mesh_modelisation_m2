@@ -672,6 +672,30 @@ void Mesh::splitFaceMiddle(int faceIndex) {
 
 }
 
+//Replace v_old by v_new and uptade opposite faces.
+void Mesh::replace_vertex(FACE_INDEX f1, FACE_INDEX f2, VERTEX_INDEX v_new, VERTEX_INDEX v_old, Face &face){
+    //update opposite face if the current face have f1 or f2 as oppossite
+    for (int i = 0; i < 3; ++i) {
+        if (face.getFrontFace(i) == f1) {
+            FACE_INDEX new_opp_face = _faces[f1].getFrontFaceOf(v_old);
+            face.setOppositeFace(new_opp_face, i);
+            //TODO in return (what is the id of opposite in in _faces[new_opp_face]
+            //_faces[new_opp_face].setOppositeFace(face.currentFaceIndex,)
+            break;
+        } else if (face.getFrontFace(i) == f2) {
+            FACE_INDEX new_opp_face = _faces[f2].getFrontFaceOf(v_old);
+            face.setOppositeFace(new_opp_face, i);
+            //TODO in return
+            //_faces[new_opp_face].setOppositeFace(face.currentFaceIndex,)
+            break;
+        }
+    }
+
+    //replace vertices
+    int v_old_local = face.getLocalIndexOf(v_old);
+    face.setVertex(v_old_local, v_new);
+}
+
 void Mesh::remove_edge(VERTEX_INDEX v1, VERTEX_INDEX v2) {
     //searching the two faces who hold these vextices
     FACE_INDEX f1;
@@ -691,15 +715,18 @@ void Mesh::remove_edge(VERTEX_INDEX v1, VERTEX_INDEX v2) {
     f2 = _faces[f1].getFrontFace(opposite);
 
     //we use v1 as the new vertex and we remove v2, but before, we need to set neighbors. f1 and f2 will be removed
-    //For all faces around v2, set v1 instead and set the opposite faces.
-
-    // vertices_circulator_begin(vs)
+    //For all faces around v2, set v1 instead, and set the opposite faces.
+    Faces_circulator fcBegin = incident_faces_circulator(v2);
+    Faces_circulator fc;
+    for (fc = fcBegin, fc++; replace_vertex(f1, f2, v1, v2, _faces[fc.currentFaceIndex]), fc != fcBegin; fc++) {
+        ;
+    }
 
     //update v1 position
     const Point& p1 = _vertices[v1].getPoint();
     const Point& p2 = _vertices[v2].getPoint();
-   // Point center = center(p1, p2);
-    //_vertices[v1].setPoint(center);
+    Point c = center(p1, p2);
+    _vertices[v1].setPoint(c);
     //remove v2
     _vertices.erase(_vertices.begin() + (v2 - 1));
 
