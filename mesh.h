@@ -219,7 +219,7 @@ private:
 
     //Add the point newPoint contained in the face fi by splitting fi into 3 new faces
     //Pre condition : the face fi contains the point newPoint
-    void split_face(const Point& newPoint, FACE_INDEX fi);
+    VERTEX_INDEX split_face(const Point& newPoint, FACE_INDEX fi);
     //Add a point outside the convex hull and create all the necessary faces
     //Precondition: idsExtHull is not empty, and contains all the faces which
     //contain a point linked to the implicit infinite point
@@ -229,7 +229,7 @@ private:
     void flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDEX v1, const VERTEX_INDEX v2);
 
     //Split edge in front of localIndexF1
-    //void Mesh::flip_edge(const FACE_INDEX f1, int localIndexF1) {
+    void flip_edge(const FACE_INDEX f1, int localIndexF1);
 
     //Clear assignments in order to use a different mesh
     void resetShape();
@@ -244,7 +244,7 @@ private:
     void initVoronoiDiagram();
 
     //used in remove edge; replaces references of v_old in a face by v_new (who is the orther side of the edge to remove).
-    //It also manages update of apposite faces
+    //It also manages update of opposite faces
     void replace_vertex(FACE_INDEX f1, FACE_INDEX f2, VERTEX_INDEX v_new, VERTEX_INDEX v_old, Face &face);
 
     void remove_edge(VERTEX_INDEX v1, VERTEX_INDEX v2);

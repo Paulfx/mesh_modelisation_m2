@@ -431,17 +431,33 @@ void Mesh::resolved_conflict(const Faces_circulator &f, FACE_INDEX faceToResolve
     }
 }
 
+//Is the face delunay?
+// bool Mesh::isDelaunay(const Face& f) {
+
+//     //The face is not a delaunay one if 
+
+
+
+// }
+
 
 void Mesh::delaunayInsertion(const Point p) {
+    int isInTriangle;
     for (unsigned int i = 0; i < _faces.size(); i++) {
 
-        int isInTriangle = pred_inTriangle( _vertices[_faces[i].v1()].getPoint(), 
+        isInTriangle = pred_inTriangle( _vertices[_faces[i].v1()].getPoint(), 
                                             _vertices[_faces[i].v2()].getPoint(), 
                                             _vertices[_faces[i].v3()].getPoint(), 
                                             p);
         if (isInTriangle >= 0) {
 
             split_face(p, i);
+
+            //We can use the flip edge with localIndex of P and the 3 new faces
+
+
+
+
 
             //we splited the face, but we need a circulator around 3 vertices of old face (so 2 of the modified and one of a new face)
             //Circulators iterate on faces who possible are in conflict with the new face
@@ -651,7 +667,8 @@ void Mesh::initVoronoiDiagram() {
 
             ;
 
-            //This code is in the computeCenterFace function (in order to not skip the first face
+            //This code is in the computeCenterFace function (in order to not skip the first face,
+            //We put this function in the loop...., maybe we could find an other way)
             // if (fc.currentFaceIndex == -1 || fc.refVertex == -1) {
             //     printf("break voronoi\n");
             //     break;
