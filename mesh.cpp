@@ -432,13 +432,10 @@ void Mesh::resolved_conflict(const Faces_circulator &f, FACE_INDEX faceToResolve
 }
 
 //Is the face delunay?
-// bool Mesh::isDelaunay(const Face& f) {
+bool Mesh::isDelaunay(const Face& f) {
+    //The face is not a delaunay one if his neighbor faces contain a point 
 
-//     //The face is not a delaunay one if 
-
-
-
-// }
+}
 
 
 void Mesh::delaunayInsertion(const Point p) {
@@ -451,10 +448,13 @@ void Mesh::delaunayInsertion(const Point p) {
                                             p);
         if (isInTriangle >= 0) {
 
-            split_face(p, i);
+            VERTEX_INDEX newVertexIndex = split_face(p, i);
 
             //We can use the flip edge with localIndex of P and the 3 new faces
 
+            //We know the 3 new faces => i, i+1, i+2
+            //We will if necessary do flip_edge with i,i+1, or i+2 and the localIndex of
+            //The newVertex in faces i,i+1 or i+2
 
 
 
