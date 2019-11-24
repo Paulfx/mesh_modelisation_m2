@@ -230,7 +230,7 @@ void Mesh::resetShape() {
 }
 
 //Precondition : the face fi contains the newPoint
-void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
+VERTEX_INDEX Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
     printf("Split face %d\n", fi);
 
     Vertex newVertex = Vertex(newPoint, fi);
@@ -282,6 +282,8 @@ void Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
     //f.setOppositeFace(f.getFrontFace(2), 2);
 
     voronoiIsInit = false;
+
+    return newVertexIndex;
 }
 
 
