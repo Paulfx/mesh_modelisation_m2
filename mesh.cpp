@@ -322,12 +322,37 @@ void Mesh::flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDE
     voronoiIsInit = false;
 }
 
-//void Mesh::flip_edge(const FACE_INDEX f1, int localIndexF1) {
+void Mesh::flip_edge(const FACE_INDEX f1, int localIndexF1) {
+   //Split edge in front of localIndexF1
+    
+    Face& F1 = _faces[f1];
 
+    VERTEX_INDEX v1 = F1.vertex(localIndexF1);
+    VERTEX_INDEX v2 = F1.vertex((localIndexF1+1)%3);
+    VERTEX_INDEX v3 = F1.vertex((localIndexF1+2)%3);
 
-//    //Split edge in front of localIndexF1
+    //Get front face of f1
+    FACE_INDEX f2 = F1.getFrontFace(localIndexF1);
+    Face& F2 = _faces[f2];
 
-//}
+    //Index of vertex in F2, in front of face F1
+    int localvInF2_frontOfF1 = F2.getLocalIndexOfOppositeFromVertexIndex(v2,v3);
+    int globalvInF2_frontOfF1 = F2.vertex(localvInF2_frontOfF1);
+
+    //Incident faces that need to be modified:
+    FACE_INDEX if1 = F1.getFrontFace((localIndexF1+1)%3);
+    FACE_INDEX if2 = F2.getFrontFace((localvInF2_frontOfF1+1)%3);
+
+    F1.setVertex((localIndexF1+2)%3, globalvInF2_frontOfF1);
+
+    F2.setVertex((localvInF2_frontOfF1+1)%3, v3);
+    F2.setVertex((localvInF2_frontOfF1+2)%3, v1);
+
+    _faces[if1].setOppositeFace(f2, _faces[if1].getLocalIndexOfOppositeFromVertexIndex(v1,v3));
+    _faces[if2].setOppositeFace(f1, _faces[if2].getLocalIndexOfOppositeFromVertexIndex(v2,globalvInF2_frontOfF1));
+
+    voronoiIsInit = false;
+}
 
 void Mesh::addPointAndFlipToInfinite(std::vector<FACE_INDEX> idsExtHull, Point p) {
     assert(idsExtHull.size() > 0);
