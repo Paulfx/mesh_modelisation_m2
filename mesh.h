@@ -245,7 +245,7 @@ private:
 
     //used in remove edge; replaces references of v_old in a face by v_new (who is the orther side of the edge to remove).
     //It also manages update of opposite faces
-    void replace_vertex(FACE_INDEX f1, FACE_INDEX f2, VERTEX_INDEX v_new, VERTEX_INDEX v_old, Face &face);
+    void replace_vertex(FACE_INDEX f1, FACE_INDEX f2, VERTEX_INDEX v_new, VERTEX_INDEX v_old, FACE_INDEX face);
 
     void remove_edge(VERTEX_INDEX v1, VERTEX_INDEX v2);
 

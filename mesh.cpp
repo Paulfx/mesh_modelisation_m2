@@ -717,20 +717,27 @@ void Mesh::splitFaceMiddle(int faceIndex) {
 }
 
 //Replace v_old by v_new and uptade opposite faces.
-void Mesh::replace_vertex(FACE_INDEX f1, FACE_INDEX f2, VERTEX_INDEX v_new, VERTEX_INDEX v_old, Face &face){
+void Mesh::replace_vertex(FACE_INDEX f1, FACE_INDEX f2, VERTEX_INDEX v_new, VERTEX_INDEX v_old, FACE_INDEX face_id){
+    Face &face = _faces[face_id];
     //update opposite face if the current face have f1 or f2 as oppossite
     for (int i = 0; i < 3; ++i) {
         if (face.getFrontFace(i) == f1) {
             FACE_INDEX new_opp_face = _faces[f1].getFrontFaceOf(v_old);
             face.setOppositeFace(new_opp_face, i);
-            //TODO in return (what is the id of opposite in in _faces[new_opp_face]
-            //_faces[new_opp_face].setOppositeFace(face.currentFaceIndex,)
+            //in return
+            int opp_local_tmp = _faces[f1].getLocalIndexOfOppositeFromVertexIndex(v_new, v_old);
+            FACE_INDEX opp_tmp = _faces[f1].vertex(opp_local_tmp);
+            int opp_local_in_opp_face = _faces[new_opp_face].getLocalIndexOfOppositeFromVertexIndex(v_new, opp_tmp);
+            _faces[new_opp_face].setOppositeFace(face_id, opp_local_in_opp_face);
             break;
         } else if (face.getFrontFace(i) == f2) {
             FACE_INDEX new_opp_face = _faces[f2].getFrontFaceOf(v_old);
             face.setOppositeFace(new_opp_face, i);
-            //TODO in return
-            //_faces[new_opp_face].setOppositeFace(face.currentFaceIndex,)
+            //in return
+            int opp_local_tmp = _faces[f2].getLocalIndexOfOppositeFromVertexIndex(v_new, v_old);
+            FACE_INDEX opp_tmp = _faces[f2].vertex(opp_local_tmp);
+            int opp_local_in_opp_face = _faces[new_opp_face].getLocalIndexOfOppositeFromVertexIndex(v_new, opp_tmp);
+            _faces[new_opp_face].setOppositeFace(face_id, opp_local_in_opp_face);
             break;
         }
     }
@@ -762,7 +769,7 @@ void Mesh::remove_edge(VERTEX_INDEX v1, VERTEX_INDEX v2) {
     //For all faces around v2, set v1 instead, and set the opposite faces.
     Faces_circulator fcBegin = incident_faces_circulator(v2);
     Faces_circulator fc;
-    for (fc = fcBegin, fc++; replace_vertex(f1, f2, v1, v2, _faces[fc.currentFaceIndex]), fc != fcBegin; fc++) {
+    for (fc = fcBegin, fc++; replace_vertex(f1, f2, v1, v2, fc.currentFaceIndex), fc != fcBegin; fc++) {
         ;
     }
 
