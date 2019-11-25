@@ -431,7 +431,7 @@ void Mesh::resolved_conflict(const Faces_circulator &f, FACE_INDEX faceToResolve
     }
 }
 
-//Is the face delunay?
+//Is the face delaunay?
 bool Mesh::isDelaunay(const Face& f) {
     //The face is not a delaunay one if his neighbor faces contain a point 
 

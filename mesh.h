@@ -225,11 +225,7 @@ private:
     //contain a point linked to the implicit infinite point
     void addPointAndFlipToInfinite(std::vector<FACE_INDEX> idsExtHull,Point p);
 
-    //Flip an edge shared between two triangles
-    void flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDEX v1, const VERTEX_INDEX v2);
-
-    //Split edge in front of localIndexF1
-    void flip_edge(const FACE_INDEX f1, int localIndexF1);
+    bool isDelaunay(const Face& f);
 
     //Clear assignments in order to use a different mesh
     void resetShape();
@@ -270,6 +266,7 @@ public:
     FACE_INDEX currFace() { return currentNeighborFace; }
     VERTEX_INDEX currStartVertex() { return currentStartVertexIndex; }
     VERTEX_INDEX currVertex() { return currentNeighborVertex; }
+    int currentLocalVertex() { return _faces[currentNeighborFace].getLocalIndexOf(currentNeighborVertex); }
 
     //Set the index of the vertex to iterate over its neighbors
     void setVertexStart(int vs);
@@ -281,6 +278,13 @@ public:
     void resetVertexFaceIndex();
 
     void splitFaceMiddle(int faceIndex);
+
+    //Flip an edge shared between two triangles
+    void flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDEX v1, const VERTEX_INDEX v2);
+
+    //Split edge in front of localIndexF1
+    void flip_edge(const FACE_INDEX f1, int localIndexF1);
+
 
 //Draw functions
 

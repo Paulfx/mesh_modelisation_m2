@@ -30,12 +30,15 @@ public:
     int currentFace() { return _mesh.currFace(); }
     int currentStartVertex() { return _mesh.currStartVertex(); }
     int currentVertex() { return _mesh.currVertex(); }
+    int currentLocalVertex() { return _mesh.currentLocalVertex(); }
     void resetVertexFaceIndex() { _mesh.resetVertexFaceIndex(); }
     void createPyramid() { _mesh.createPyramid(); }
     void create2DSquare() {_mesh.create2DSquare(); }
     void createTetrahedron() { _mesh.createTetrahedron(); }
     void createFromOFF(const std::string& filename) { _mesh.createFromOFF(filename); }
     void testIterators();
+
+    void flipEdge(int faceIndex, int vertexLocal) { _mesh.flip_edge(faceIndex, vertexLocal); }
 
     void splitFaceMiddle(int faceIndex) { _mesh.splitFaceMiddle(faceIndex); }
     void addNaivePoint(double x, double y, double z) { _mesh.naiveInsertion(Point(x,y,z)); }
