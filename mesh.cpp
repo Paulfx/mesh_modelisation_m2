@@ -20,12 +20,15 @@ Mesh::Mesh()  {
     lcalc = new LaplacianCalc();
 
     //createPyramid();
-    createTetrahedron();
+    //createTetrahedron();
+
+
+    create2DSquare();
 
     //Point np(0,0,-0.5);
     //split_face(np, 3);
 
-    //flip_edge(3, 1, 2, 0);
+    flip_edge(0, 1, 0, 2);
 
 }
 
