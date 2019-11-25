@@ -25,11 +25,17 @@ Mesh::Mesh()  {
 
     create2DSquare();
 
+    printf("Before flip : \n");
+    printMesh();
+
     //Point np(0,0,-0.5);
     //split_face(np, 3);
 
-    flip_edge(0, 1, 0, 2);
+    //flip_edge(0, 1, 0, 2);
+    flip_edge(0,1);
 
+    printf("After flip : \n");
+    printMesh();
 }
 
 Mesh::~Mesh() { delete lcalc; }
@@ -232,6 +238,20 @@ void Mesh::resetShape() {
     voronoiIsInit = false;
 }
 
+void Mesh::printMesh() {
+
+    for (unsigned int i=0; i<_faces.size(); ++i) {
+
+        printf("Face %d :", i);
+
+        printf("\n\tVertex 0: vi=%d", _faces[i].vertex(0));
+        printf("\n\tVertex 1: vi=%d", _faces[i].vertex(1));
+        printf("\n\tVertex 2: vi=%d\n", _faces[i].vertex(2));
+
+    }
+
+}
+ 
 //Precondition : the face fi contains the newPoint
 VERTEX_INDEX Mesh::split_face(const Point &newPoint, FACE_INDEX fi) {
     printf("Split face %d\n", fi);
@@ -319,8 +339,10 @@ void Mesh::flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDE
 
     F2.setVertex(f2_localIndex_v2, F1.vertex(f1_localIndex_opposite));
 
-    _faces[if1].setOppositeFace(f2, (_faces[if1].getLocalIndexOf(v1) + 2) % 3);
-    _faces[if2].setOppositeFace(f1, (_faces[if2].getLocalIndexOf(v2) + 1) % 3);
+    if (if1 != -1)
+        _faces[if1].setOppositeFace(f2, (_faces[if1].getLocalIndexOf(v1) + 2) % 3);
+    if (if2 != -1)
+        _faces[if2].setOppositeFace(f1, (_faces[if2].getLocalIndexOf(v2) + 1) % 3);
 
     voronoiIsInit = false;
 }
@@ -328,31 +350,30 @@ void Mesh::flip_edge(const FACE_INDEX f1, const FACE_INDEX f2, const VERTEX_INDE
 void Mesh::flip_edge(const FACE_INDEX f1, int localIndexF1) {
    //Split edge in front of localIndexF1
     
-    Face& F1 = _faces[f1];
-
-    VERTEX_INDEX v1 = F1.vertex(localIndexF1);
-    VERTEX_INDEX v2 = F1.vertex((localIndexF1+1)%3);
-    VERTEX_INDEX v3 = F1.vertex((localIndexF1+2)%3);
+    VERTEX_INDEX v1 = _faces[f1].vertex(localIndexF1);
+    VERTEX_INDEX v2 = _faces[f1].vertex((localIndexF1+1)%3);
+    VERTEX_INDEX v3 = _faces[f1].vertex((localIndexF1+2)%3);
 
     //Get front face of f1
-    FACE_INDEX f2 = F1.getFrontFace(localIndexF1);
-    Face& F2 = _faces[f2];
+    FACE_INDEX f2 = _faces[f1].getFrontFace(localIndexF1);
 
     //Index of vertex in F2, in front of face F1
-    int localvInF2_frontOfF1 = F2.getLocalIndexOfOppositeFromVertexIndex(v2,v3);
-    int globalvInF2_frontOfF1 = F2.vertex(localvInF2_frontOfF1);
+    int localvInF2_frontOfF1 = _faces[f2].getLocalIndexOfOppositeFromVertexIndex(v2,v3);
+    int globalvInF2_frontOfF1 = _faces[f2].vertex(localvInF2_frontOfF1);
 
     //Incident faces that need to be modified:
-    FACE_INDEX if1 = F1.getFrontFace((localIndexF1+1)%3);
-    FACE_INDEX if2 = F2.getFrontFace((localvInF2_frontOfF1+1)%3);
+    FACE_INDEX if1 = _faces[f1].getFrontFace((localIndexF1+1)%3);
+    FACE_INDEX if2 = _faces[f2].getFrontFace((localvInF2_frontOfF1+1)%3);
 
-    F1.setVertex((localIndexF1+2)%3, globalvInF2_frontOfF1);
+    _faces[f1].setVertex((localIndexF1+2)%3, globalvInF2_frontOfF1);
 
-    F2.setVertex((localvInF2_frontOfF1+1)%3, v3);
-    F2.setVertex((localvInF2_frontOfF1+2)%3, v1);
+    _faces[f2].setVertex((localvInF2_frontOfF1+1)%3, v3);
+    _faces[f2].setVertex((localvInF2_frontOfF1+2)%3, v1);
 
-    _faces[if1].setOppositeFace(f2, _faces[if1].getLocalIndexOfOppositeFromVertexIndex(v1,v3));
-    _faces[if2].setOppositeFace(f1, _faces[if2].getLocalIndexOfOppositeFromVertexIndex(v2,globalvInF2_frontOfF1));
+    if (if1 != -1)
+        _faces[if1].setOppositeFace(f2, _faces[if1].getLocalIndexOfOppositeFromVertexIndex(v1,v3));
+    if (if2 != -1)
+        _faces[if2].setOppositeFace(f1, _faces[if2].getLocalIndexOfOppositeFromVertexIndex(v2,globalvInF2_frontOfF1));
 
     voronoiIsInit = false;
 }
@@ -438,6 +459,34 @@ void Mesh::resolved_conflict(const Faces_circulator &f, FACE_INDEX faceToResolve
 bool Mesh::isDelaunay(const Face& f) {
     //The face is not a delaunay one if his neighbor faces contain a point 
 
+    //On parcourt tous les sommets voisins
+
+    // for(int i=0; i<3; ++i) {
+        
+    //     Faces_circulator fcBegin = incident_faces_circulator(f.vertex(i));
+    //     Faces_circulator fc = fcBegin;
+
+    //     do {
+
+    //         //Pour tous les vertex
+    //         for (int j=0; j<3; ++j) {
+
+    //             //Ne regarder que le vertex qui n'est pas contenu dans le triangle
+
+    //         }
+
+
+
+
+    //         fc++;
+
+    //     } while(fc != fcBegin);
+
+    // }
+
+
+
+
 }
 
 
@@ -458,6 +507,8 @@ void Mesh::delaunayInsertion(const Point p) {
             //We know the 3 new faces => i, i+1, i+2
             //We will if necessary do flip_edge with i,i+1, or i+2 and the localIndex of
             //The newVertex in faces i,i+1 or i+2
+
+
 
 
 

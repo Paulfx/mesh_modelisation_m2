@@ -193,6 +193,8 @@ private:
     std::vector<std::vector<Point>> voronoi_points;
     bool voronoiIsInit = false;
 
+//Print the mesh
+    void printMesh();
 
 //Drawing functions
 
