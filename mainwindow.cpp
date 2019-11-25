@@ -40,6 +40,9 @@ void MainWindow::updateTextCurrentIndex() {
     text = "Current neighboor vertex : " + QString::number(ui->widget->currentVertex());
     ui->labelCurrVertex->setText(text);
 
+    text = "Current local vertex : " + QString::number(ui->widget->currentLocalVertex());
+    ui->labelCurrentLocalVertex->setText(text);
+
     //Start vertex index
     text = QString::number(ui->widget->currentStartVertex());
     ui->lineEditStartVertex->setText(text);
@@ -164,5 +167,17 @@ void MainWindow::on_pbDelaunayAdd_released()
     ui->doubleZ->setValue(0);
 
     ui->widget->addDelaunayPoint(x,y,z);
+
+}
+
+void MainWindow::on_pbFlipEdge_released()
+{
+    int faceIndex = ui->lineEditFlipEdgeFace->text().toInt();
+    int localVertexIndex = ui->lineEditFlipEdgeVertex->text().toInt();
+
+    if (localVertexIndex < 0 || localVertexIndex > 2)
+        return;
+
+    ui->widget->flipEdge(faceIndex, localVertexIndex);
 
 }

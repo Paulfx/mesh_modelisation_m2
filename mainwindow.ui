@@ -217,11 +217,22 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_8">
              <item>
-              <widget class="QLabel" name="labelCurrVertex">
-               <property name="text">
-                <string>Current neighboor vertex :</string>
-               </property>
-              </widget>
+              <layout class="QVBoxLayout" name="verticalLayout_16">
+               <item>
+                <widget class="QLabel" name="labelCurrVertex">
+                 <property name="text">
+                  <string>Current neighboor vertex :</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="labelCurrentLocalVertex">
+                 <property name="text">
+                  <string>Current local index :</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
              <item>
               <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -301,6 +312,68 @@
                  <widget class="QPushButton" name="pbSplitFaceMiddle">
                   <property name="text">
                    <string>Split face</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_5">
+             <item>
+              <widget class="QGroupBox" name="groupBox_8">
+               <property name="title">
+                <string>Flip edge</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_15">
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_12">
+                  <item>
+                   <widget class="QLabel" name="label_7">
+                    <property name="text">
+                     <string>Face index :</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLineEdit" name="lineEditFlipEdgeFace">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_11">
+                  <item>
+                   <widget class="QLabel" name="label_6">
+                    <property name="text">
+                     <string>Local index vertex :</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLineEdit" name="lineEditFlipEdgeVertex">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="pbFlipEdge">
+                  <property name="text">
+                   <string>Flip Edge</string>
                   </property>
                  </widget>
                 </item>

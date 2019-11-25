@@ -51,6 +51,8 @@ private slots:
 
     void on_pb2DSquare_released();
 
+    void on_pbFlipEdge_released();
+
 private:
     Ui::MainWindow *ui;
 

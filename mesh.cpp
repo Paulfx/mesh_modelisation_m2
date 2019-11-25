@@ -20,12 +20,15 @@ Mesh::Mesh()  {
     lcalc = new LaplacianCalc();
 
     //createPyramid();
-    createTetrahedron();
+    //createTetrahedron();
+
+
+    create2DSquare();
 
     //Point np(0,0,-0.5);
     //split_face(np, 3);
 
-    //flip_edge(3, 1, 2, 0);
+    flip_edge(0, 1, 0, 2);
 
 }
 
@@ -431,7 +434,7 @@ void Mesh::resolved_conflict(const Faces_circulator &f, FACE_INDEX faceToResolve
     }
 }
 
-//Is the face delunay?
+//Is the face delaunay?
 bool Mesh::isDelaunay(const Face& f) {
     //The face is not a delaunay one if his neighbor faces contain a point 
 
